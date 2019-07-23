@@ -466,8 +466,8 @@ export default [
 
   // 1.检测
   {
-    path: '/inspector',
-    name: 'inspector',
+    path: '/inspect',
+    name: 'inspect',
     meta: {
       hideInBread: true
     },
@@ -486,8 +486,8 @@ export default [
     ]
   },
   {
-    path: '/controlCabin',
-    name: 'controlCabin',
+    path: '/control',
+    name: 'control',
     meta: {
       hideInBread: true
     },
@@ -570,8 +570,8 @@ export default [
 
   // 4.配置
   {
-    path: '/disposeManage',
-    name: 'disposeManage',
+    path: '/dispose',
+    name: 'dispose',
     meta: {
       hideInBread: true
     },

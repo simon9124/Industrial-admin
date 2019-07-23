@@ -8,13 +8,11 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations } from 'vuex';
 export default {
   name: 'params',
   methods: {
-    ...mapMutations([
-      'closeTag'
-    ]),
+    ...mapMutations(['closeTag']),
     close () {
       /**
        * 如果是调用closeTag方法，普通的页面传入的对象参数只需要写name字段即可
@@ -25,12 +23,11 @@ export default {
         params: {
           id: this.$route.params.id
         }
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style>
-
 </style>

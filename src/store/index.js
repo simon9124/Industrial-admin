@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-import user from './module/user'
-import app from './module/app'
+import user from './module/user';
+import app from './module/app';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
@@ -20,4 +20,4 @@ export default new Vuex.Store({
     user,
     app
   }
-})
+});

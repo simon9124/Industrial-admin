@@ -34,7 +34,7 @@ export default [
     redirect: '/home',
     component: Main,
     meta: {
-      hideInMenu: true,
+      // hideInMenu: true,
       notCache: true
     },
     children: [
@@ -43,7 +43,7 @@ export default [
         path: '/home',
         name: 'home',
         meta: {
-          hideInMenu: true,
+          // hideInMenu: true,
           title: '首页',
           notCache: true,
           icon: 'md-home'
@@ -315,26 +315,26 @@ export default [
   // },
 
   // 多语言
-  {
-    path: '/i18n',
-    name: 'i18n',
-    meta: {
-      hideInBread: true
-    },
-    component: Main,
-    children: [
+  // {
+  //   path: '/i18n',
+  //   name: 'i18n',
+  //   meta: {
+  //     hideInBread: true
+  //   },
+  //   component: Main,
+  //   children: [
 
-      {
-        path: 'i18n_page',
-        name: 'i18n_page',
-        meta: {
-          icon: 'md-planet',
-          title: 'i18n - {{ i18n_page }}'
-        },
-        component: () => import('@/view/i18n/i18n-page.vue')
-      }
-    ]
-  },
+  //     {
+  //       path: 'i18n_page',
+  //       name: 'i18n_page',
+  //       meta: {
+  //         icon: 'md-planet',
+  //         title: 'i18n - {{ i18n_page }}'
+  //       },
+  //       component: () => import('@/view/i18n/i18n-page.vue')
+  //     }
+  //   ]
+  // },
 
   // 错误收集 - 左侧菜单
   // {
@@ -463,6 +463,132 @@ export default [
   //     }
   //   ]
   // },
+
+  // 1.检测
+  {
+    path: '/inspector',
+    name: 'inspector',
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+
+      {
+        path: 'inspector',
+        name: 'inspector',
+        meta: {
+          icon: 'ios-navigate',
+          title: '当前检测员'
+        },
+        component: () => import('@/view/1inspector/inspector.vue')
+      }
+    ]
+  },
+  {
+    path: '/controlCabin',
+    name: 'controlCabin',
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+
+      {
+        path: 'controlCabin',
+        name: 'controlCabin',
+        meta: {
+          icon: 'ios-navigate',
+          title: '驾驶舱模块数据'
+        },
+        component: () => import('@/view/1inspector/controlCabin.vue')
+      }
+    ]
+  },
+
+  // 2.系统
+  {
+    path: '/systemManage',
+    name: 'systemManage',
+    meta: {
+      hideInBread: true,
+      title: '系统管理',
+      icon: 'ios-navigate'
+    },
+    component: Main,
+    children: [
+
+      {
+        path: 'checkSearch',
+        name: 'checkSearch',
+        meta: {
+          title: '检测查询'
+        },
+        component: () => import('@/view/2systemManage/checkSearch.vue')
+      },
+      {
+        path: 'electricSearch',
+        name: 'electricSearch',
+        meta: {
+          title: '电机检测管理'
+        },
+        component: () => import('@/view/2systemManage/electricSearch.vue')
+      }
+    ]
+  },
+
+  // 3.管理
+  {
+    path: '/manage',
+    name: 'manage',
+    meta: {
+      hideInBread: true,
+      title: '管理',
+      icon: 'ios-navigate'
+    },
+    component: Main,
+    children: [
+
+      {
+        path: 'checkStandard',
+        name: 'checkStandard',
+        meta: {
+          title: '检测标准管理'
+        },
+        component: () => import('@/view/3manage/checkStandard.vue')
+      },
+      {
+        path: 'number',
+        name: 'number',
+        meta: {
+          title: '编号管理'
+        },
+        component: () => import('@/view/3manage/number.vue')
+      }
+    ]
+  },
+
+  // 4.配置
+  {
+    path: '/disposeManage',
+    name: 'disposeManage',
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+
+      {
+        path: 'disposeManage',
+        name: 'disposeManage',
+        meta: {
+          icon: 'ios-navigate',
+          title: '配置管理'
+        },
+        component: () => import('@/view/4disposeManage/disposeManage.vue')
+      }
+    ]
+  },
 
   {
     path: '/argu',

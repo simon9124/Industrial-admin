@@ -1,8 +1,8 @@
-const path = require('path')
+const path = require('path');
 
 const resolve = dir => {
-  return path.join(__dirname, dir)
-}
+  return path.join(__dirname, dir);
+};
 
 // 项目部署基础
 // 默认情况下，我们假设你的应用将被部署在域的根目录下,
@@ -14,7 +14,7 @@ const resolve = dir => {
 // iview-admin线上演示打包路径： https://file.iviewui.com/admin-dist/
 const BASE_URL = process.env.NODE_ENV === 'production'
   ? '/vue-iview-admin-simon'
-  : '/'
+  : '/';
 
 module.exports = {
   // Project deployment base
@@ -32,7 +32,7 @@ module.exports = {
   chainWebpack: config => {
     config.resolve.alias
       .set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
-      .set('_c', resolve('src/components'))
+      .set('_c', resolve('src/components'));
   },
   // 打包时不生成.map文件
   productionSourceMap: false
@@ -40,4 +40,4 @@ module.exports = {
   // devServer: {
   //   proxy: 'localhost:3000'
   // }
-}
+};

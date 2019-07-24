@@ -8,7 +8,8 @@
         <div style="float: right;">
           <Page :total="100"
                 :current="1"
-                @on-change="changePage"></Page>
+                @on-change="changePage"
+                @on-page-size-change="changePageSize"></Page>
         </div>
       </div>
     </Card>
@@ -16,12 +17,12 @@
 </template>
 
 <script>
-import Mock from 'mockjs';
+import list from './mockData.js';
 
 export default {
   data () {
     return {
-      tableData: this.mockTableData(),
+      tableData: [],
       tableColumns: [
         {
           title: '编号',
@@ -33,6 +34,10 @@ export default {
           title: '线号',
           key: 'lineNumber',
           align: 'center',
+          render: (h, params) => {
+            const text = params.row.lineNumber;
+            return h('div', text);
+          },
           minWidth: 100
         },
         {
@@ -41,8 +46,8 @@ export default {
           align: 'center',
           render: (h, params) => {
             const row = params.row;
-            const color = row.testing === 1 ? 'success' : 'error';
-            const text = row.testing === 1 ? '合格' : '不合格';
+            const color = row.testing ? 'success' : 'error';
+            const text = row.testing ? '合格' : '不合格';
             return h(
               'Tag',
               {
@@ -73,8 +78,8 @@ export default {
           align: 'center',
           render: (h, params) => {
             const row = params.row;
-            const color = row.mute === 1 ? 'success' : 'error';
-            const text = row.mute === 1 ? '合格' : '不合格';
+            const color = row.mute ? 'success' : 'error';
+            const text = row.mute ? '合格' : '不合格';
             return h(
               'Tag',
               {
@@ -107,13 +112,12 @@ export default {
         },
         {
           title: '检测结果',
-          key: 'result',
+          key: 'appearance',
           align: 'center',
           render: (h, params) => {
             const row = params.row;
-            const text =
-              row.testing === 1 && row.mute === 1 ? '合格' : '不合格';
-            const color = text === '合格' ? 'success' : 'error';
+            const color = row.appearance === 1 ? 'success' : 'error';
+            const text = row.appearance === 1 ? '合格' : '不合格';
             return h(
               'Tag',
               {
@@ -152,35 +156,54 @@ export default {
             ]);
           }
         }
-      ]
+      ],
+      pageNum: 1,
+      pageSize: 10
     };
   },
+  created () {
+    this.getData();
+  },
   methods: {
-    // mock数据
-    mockTableData () {
-      let data = [];
-      for (let i = 0; i < 10; i++) {
-        data.push({
-          number:
-            '22Y13060E00' +
-            Math.floor(Math.random() * 9) +
-            Math.floor(Math.random() * 9),
-          lineNumber: Math.floor(Math.random() * 99) + '#线',
-          testing: Math.floor(Math.random() * 2 + 1),
-          testBeginTime: Mock.mock('@datetime("yyyy-MM-dd HH:mm:ss")'),
-          testInspector: Mock.mock('@cname'),
-          mute: Math.floor(Math.random() * 2 + 1),
-          muteBeginTime: Mock.mock('@datetime("yyyy-MM-dd HH:mm:ss")'),
-          muteInspector: Mock.mock('@cname'),
-          appearanceInspector: Mock.mock('@cname'),
-          result: Math.floor(Math.random() * 2 + 1)
-        });
-      }
-      return data;
+    // 获取首页数据
+    getData () {
+      // 数据处理
+      list.forEach(row => {
+        this.$set(
+          row,
+          'veer',
+          row.veer1Slip === 1 && row.veer2Slip === 1 && row.veer3Slip === 1
+        );
+        this.$set(
+          row,
+          'turn',
+          row.turn1Slip === 1 && row.turn2Slip === 1 && row.turn3Slip === 1
+        );
+        this.$set(row, 'testing', row.veer && row.turn);
+        this.$set(
+          row,
+          'mute',
+          row.lowPressure === 1 &&
+            row.decibel === 1 &&
+            row.landing === 1 &&
+            row.pressurization === 1
+        );
+        return row;
+      });
+      this.tableData = list.slice(
+        (this.pageNum - 1) * this.pageSize,
+        this.pageNum * this.pageSize
+      );
     },
     // 分页
-    changePage () {
-      this.tableData = this.mockTableData();
+    changePage (pageNum) {
+      this.pageNum = pageNum;
+      this.getData();
+    },
+    // 每页条数变化
+    changePageSize (pageSize) {
+      this.pageSize = pageSize;
+      this.getData();
     },
     // 点击按钮 - 详情
     show (row) {

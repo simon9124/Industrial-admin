@@ -53,7 +53,7 @@ export default {
               text
             );
           },
-          minWidth: 120
+          minWidth: 100
         },
         {
           title: '综合测试开始时间',
@@ -73,8 +73,8 @@ export default {
           align: 'center',
           render: (h, params) => {
             const row = params.row;
-            const color = row.testing === 1 ? 'success' : 'error';
-            const text = row.testing === 1 ? '合格' : '不合格';
+            const color = row.mute === 1 ? 'success' : 'error';
+            const text = row.mute === 1 ? '合格' : '不合格';
             return h(
               'Tag',
               {
@@ -85,7 +85,7 @@ export default {
               text
             );
           },
-          minWidth: 120
+          minWidth: 100
         },
         {
           title: '静音开始时间',
@@ -111,8 +111,9 @@ export default {
           align: 'center',
           render: (h, params) => {
             const row = params.row;
-            const color = row.testing === 1 ? 'success' : 'error';
-            const text = row.testing === 1 ? '合格' : '不合格';
+            const text =
+              row.testing === 1 && row.mute === 1 ? '合格' : '不合格';
+            const color = text === '合格' ? 'success' : 'error';
             return h(
               'Tag',
               {
@@ -123,13 +124,13 @@ export default {
               text
             );
           },
-          minWidth: 120
+          minWidth: 100
         },
         {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 120,
+          minWidth: 100,
           align: 'center',
           render: (h, params) => {
             return h('div', [
@@ -139,12 +140,12 @@ export default {
                   props: {
                     type: 'primary',
                     size: 'small'
+                  },
+                  on: {
+                    click: () => {
+                      this.show(params.row);
+                    }
                   }
-                  // on: {
-                  //     click: () => {
-                  //         this.show(params.index)
-                  //     }
-                  // }
                 },
                 '详情'
               )
@@ -180,6 +181,16 @@ export default {
     // 分页
     changePage () {
       this.tableData = this.mockTableData();
+    },
+    // 点击按钮 - 详情
+    show (row) {
+      // console.log(row);
+      const result = row.result === 1 ? '合格' : '不合格';
+      this.$Modal.info({
+        title: row.number,
+        content: `线号：${row.lineNumber}<br>综合测试检测人：${row.testInspector}<br>静音间检测人：${row.muteInspector}<br>外观检测人：${row.appearanceInspector}<br>检测结果：${result}`,
+        closable: true
+      });
     }
   }
 };

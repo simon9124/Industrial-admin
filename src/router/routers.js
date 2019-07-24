@@ -44,7 +44,7 @@ export default [
         name: 'home',
         meta: {
           // hideInMenu: true,
-          title: '首页',
+          title: '首页概览',
           notCache: true,
           icon: 'md-home'
         },

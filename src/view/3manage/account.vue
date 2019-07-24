@@ -47,17 +47,25 @@ export default {
           minWidth: 120
         },
         {
+          title: '登录',
+          key: 'loginTime',
+          align: 'center',
+          render: (h, params) => {
+            return h('div', params.row.login ? '是' : '否');
+          },
+          minWidth: 120
+        },
+        {
           title: '最近登录时间',
           key: 'loginTime',
           align: 'center',
           minWidth: 150
         },
-
         {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          minWidth: 100,
+          minWidth: 180,
           align: 'center',
           render: (h, params) => {
             return h('div', [
@@ -68,13 +76,49 @@ export default {
                     type: 'primary',
                     size: 'small'
                   },
+                  style: {
+                    marginRight: '5px'
+                  },
                   on: {
                     click: () => {
-                      this.show(params.row);
+                      // this.show(params.row);
                     }
                   }
                 },
-                '详情'
+                '编辑'
+              ),
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'warning',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      // this.show(params.row);
+                    }
+                  }
+                },
+                '锁定'
+              ),
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'error',
+                    size: 'small'
+                  },
+                  on: {
+                    click: () => {
+                      // this.show(params.row);
+                    }
+                  }
+                },
+                '删除'
               )
             ]);
           }

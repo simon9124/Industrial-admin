@@ -558,6 +558,15 @@ export default [
         component: () => import('@/view/3manage/checkStandard.vue')
       },
       {
+        path: 'account',
+        name: 'account',
+        meta: {
+          access: ['super_admin'],
+          title: '账号管理'
+        },
+        component: () => import('@/view/3manage/account.vue')
+      },
+      {
         path: 'number',
         name: 'number',
         meta: {

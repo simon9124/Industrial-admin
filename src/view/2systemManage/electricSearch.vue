@@ -6,7 +6,7 @@
              stripe></Table>
       <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
-          <Page :total="100"
+          <Page :total="tableDataOrg.length"
                 :current="1"
                 @on-change="changePage"
                 @on-page-size-change="changePageSize"></Page>
@@ -22,7 +22,11 @@ import list from './mockData.js';
 export default {
   data () {
     return {
+      // 原始数据
+      tableDataOrg: [],
+      // 处理后的当页数据
       tableData: [],
+      // 表头列项
       tableColumns: [
         {
           title: '编号',
@@ -157,7 +161,9 @@ export default {
           }
         }
       ],
+      // 页码
       pageNum: 1,
+      // 每页显示数量
       pageSize: 10
     };
   },
@@ -190,6 +196,7 @@ export default {
         );
         return row;
       });
+      this.tableDataOrg = list;
       this.tableData = list.slice(
         (this.pageNum - 1) * this.pageSize,
         this.pageNum * this.pageSize

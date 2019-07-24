@@ -300,7 +300,7 @@ export default {
               row.decibel === 1 &&
               row.landing === 1 &&
               row.pressurization === 1;
-            // 总结过
+            // 总结果
             this.FormData.result =
               this.FormData.veer &&
               this.FormData.mute &&

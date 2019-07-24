@@ -13,6 +13,39 @@
         </div>
       </div>
     </Card>
+
+    <!-- Modal -->
+    <Modal v-model="modalShow"
+           :mask-closable="false"
+           :closable="false"
+           footer-hide
+           title="Modal 1"
+           @on-ok="handleSubmit">
+      <Form ref="formModalData"
+            :model="modalData"
+            :rules="formModalRule"
+            :label-width="100">
+        <FormItem label="名称："
+                  prop="userName">
+          <Input type="text"
+                 v-model="modalData.userName"></Input>
+        </FormItem>
+        <FormItem label="用户组："
+                  prop="userGroup">
+          <Select v-model="modalData.userGroup">
+            <Option value="测试组">测试组</Option>
+            <Option value="开发组">开发组</Option>
+            <Option value="产品组">产品组</Option>
+          </Select>
+        </FormItem>
+        <FormItem>
+          <Button type="primary"
+                  @click="handleSubmit('formModalData')">确定</Button>
+          <Button @click="handleReset('formModalData')"
+                  style="margin-left: 8px">取消</Button>
+        </FormItem>
+      </Form>
+    </Modal>
   </div>
 </template>
 
@@ -36,7 +69,7 @@ export default {
         },
         {
           title: '名称',
-          key: 'account',
+          key: 'userName',
           align: 'center',
           minWidth: 120
         },
@@ -69,57 +102,48 @@ export default {
           align: 'center',
           render: (h, params) => {
             return h('div', [
-              h(
-                'Button',
-                {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      // this.show(params.row);
-                    }
-                  }
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small',
+                  icon: 'ios-create-outline'
                 },
-                '编辑'
-              ),
-              h(
-                'Button',
-                {
-                  props: {
-                    type: 'warning',
-                    size: 'small'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      // this.show(params.row);
-                    }
-                  }
+                style: {
+                  marginRight: '5px'
                 },
-                '锁定'
-              ),
-              h(
-                'Button',
-                {
-                  props: {
-                    type: 'error',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      // this.show(params.row);
-                    }
+                on: {
+                  click: () => {
+                    this.edit(params.row);
                   }
+                }
+              }),
+              h('Button', {
+                props: {
+                  type: 'warning',
+                  size: 'small',
+                  icon: params.row.lock ? 'ios-key-outline' : 'ios-key'
                 },
-                '删除'
-              )
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.lock(params.row);
+                  }
+                }
+              }),
+              h('Button', {
+                props: {
+                  type: 'error',
+                  size: 'small',
+                  icon: 'md-close'
+                },
+                on: {
+                  click: () => {
+                    this.delete(params.row);
+                  }
+                }
+              })
             ]);
           }
         }
@@ -127,7 +151,12 @@ export default {
       // 页码
       pageNum: 1,
       // 每页显示数量
-      pageSize: 10
+      pageSize: 10,
+      modalShow: false,
+      modalData: {},
+      formModalRule: {
+        userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }]
+      }
     };
   },
   created () {
@@ -153,12 +182,51 @@ export default {
       this.getData();
     },
     // 点击按钮 - 详情
-    show (row) {
-      // console.log(row);
-      const result = row.result === 1 ? '合格' : '不合格';
-      this.$Modal.info({
-        title: row.number,
-        content: `线号：${row.lineNumber}<br>综合测试检测人：${row.testInspector}<br>静音间检测人：${row.muteInspector}<br>外观检测人：${row.appearanceInspector}<br>检测结果：${result}`,
+    edit (row) {
+      this.modalShow = true;
+      this.modalData = row;
+    },
+    // 点击表单按钮 - 确定
+    handleSubmit () {
+      this.$refs.formModalData.validate(valid => {
+        if (valid) {
+          this.$Message.success('修改成功!');
+          this.modalShow = false;
+        } else {
+          this.$Message.error('修改失败!');
+        }
+      });
+    },
+    // 点击表单按钮 - 取消
+    handleReset () {
+      this.$refs.formModalData.validate(valid => {
+        if (valid) {
+          this.modalShow = false;
+        } else {
+          this.$Message.error('有未填写的内容!');
+        }
+      });
+    },
+    // 点击表单按钮 - 取消
+    // 点击按钮 - 锁定/解锁
+    lock (row) {
+      row.lock = !row.lock;
+      this.$Message.success('修改成功');
+    },
+    // 点击按钮 - 删除
+    delete (row) {
+      this.$Modal.confirm({
+        title: '确定删除该用户？',
+        onOk: () => {
+          this.tableData.forEach(list => {
+            if (row.account === list.account) {
+              const index = this.tableDataOrg.indexOf(list);
+              this.tableDataOrg.splice(index, 1);
+            }
+          });
+          this.$Message.success('删除成功');
+          this.getData();
+        },
         closable: true
       });
     }

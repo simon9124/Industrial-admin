@@ -6,11 +6,15 @@
   <div class="login">
     <div class="login-con">
       <Card icon="log-in"
-            title="欢迎登录"
             :bordered="false">
+        <p slot="title">
+          <Icon type="ios-log-in" />
+          杜亚管理登录
+        </p>
         <div class="form-con">
           <login-form @on-success-valid="handleSubmit"></login-form>
-          <p class="login-tip">输入任意用户名和密码即可</p>
+          <p class="login-tip">超级管理员：super_admin，123456</p>
+          <p class="login-tip">管理员：admin，123456</p>
         </div>
       </Card>
     </div>

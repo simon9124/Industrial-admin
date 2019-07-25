@@ -12,7 +12,8 @@
       <Table :data="tableData"
              :columns="tableColumns"
              stripe
-             @on-selection-change="onSelectChange">
+             @on-select="onSelectChange">
+        <!-- @on-selection-change="onSelectChange" -->
       </Table>
       <!-- 分页 -->
       <div style="margin: 10px;overflow: hidden">
@@ -86,7 +87,7 @@ export default {
         },
         {
           title: '条码',
-          key: 'account',
+          key: 'code',
           align: 'center',
           minWidth: 180,
           render: (h, params) => {
@@ -146,8 +147,10 @@ export default {
       pageNum: 1,
       // 每页显示数量
       pageSize: 10,
-      // 选中的选项
+      // 选中的选项 - 历史
       selection: [],
+      // 选中的选项 - 当前
+      selectionChange: [],
       JsBarcodeFormat: 'ROC12345'
     };
   },
@@ -187,14 +190,40 @@ export default {
       // });
     },
     // 点击按钮 - 打印
-    print (row) {
-      row.isUsed = 1;
+    print (paramsRow) {
+      this.tableData.forEach(row => {
+        if (paramsRow.number === row.number) {
+          // this.$set(row, 'isUsed', 1);
+          row.isUsed = 1;
+        }
+      });
+      this.tableData.forEach(row => {
+        if (this.selection.indexOf(row.number) > -1) {
+          this.$nextTick(() => {
+            JsBarcode('.barcode-' + row.number, this.JsBarcodeFormat, {
+              format: 'CODE128', // 选择要使用的条形码类型
+              lineColor: '#0aa', // 条形码颜色
+              width: 1, // 条形码宽度
+              height: 20, // 条形码高度
+              text: row.number,
+              value: '123',
+              displayValue: true, // 是否在条形码下方显示文字
+              textPosition: 'bottom' // 设置文本的垂直位置
+            });
+          });
+        }
+      });
+      this.$Message.success('打印成功');
+      // console.log(this.tableData);
     },
     // 选项发生改变
     onSelectChange (selection) {
+      const select = [];
       selection.forEach(row => {
         this.selection.push(row.number);
+        select.push(row.number);
       });
+      this.selectionChange = select;
     },
     // 批量生成条形码
     createCode () {
@@ -218,8 +247,9 @@ export default {
           },
           onOk: () => {
             this.tableData.forEach(row => {
-              if (this.selection.indexOf(row.number) > -1) {
+              if (this.selectionChange.indexOf(row.number) > -1) {
                 row.isCreateCode = true;
+                row.isUsed = 0;
               }
             });
             this.tableData.forEach(row => {

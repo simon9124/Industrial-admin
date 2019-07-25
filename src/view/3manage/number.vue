@@ -91,8 +91,7 @@ export default {
           minWidth: 180,
           render: (h, params) => {
             return h('img', {
-              class: 'barcode-' + params.row.number,
-              props: {}
+              class: 'barcode-' + params.row.number
             });
           }
         },
@@ -148,7 +147,8 @@ export default {
       // 每页显示数量
       pageSize: 10,
       // 选中的选项
-      selection: []
+      selection: [],
+      JsBarcodeFormat: 'ROC12345'
     };
   },
   created () {
@@ -179,36 +179,67 @@ export default {
     // 点击按钮 - 详情
     show (row) {
       // console.log(row);
-      const result = row.result === 1 ? '合格' : '不合格';
-      this.$Modal.info({
-        title: row.number,
-        content: `线号：${row.lineNumber}<br>综合测试检测人：${row.testInspector}<br>静音间检测人：${row.muteInspector}<br>外观检测人：${row.appearanceInspector}<br>检测结果：${result}`,
-        closable: true
-      });
+      // const result = row.result === 1 ? '合格' : '不合格';
+      // this.$Modal.info({
+      //   title: row.number,
+      //   content: `线号：${row.lineNumber}<br>综合测试检测人：${row.testInspector}<br>静音间检测人：${row.muteInspector}<br>外观检测人：${row.appearanceInspector}<br>检测结果：${result}`,
+      //   closable: true
+      // });
     },
     // 点击按钮 - 打印
     print (row) {
       row.isUsed = 1;
-      JsBarcode('.barcode-' + row.number, 'ROC12345', {
-        format: 'CODE128', // 选择要使用的条形码类型
-        lineColor: '#0aa', // 条形码颜色
-        width: 1, // 条形码宽度
-        height: 20, // 条形码高度
-        text: row.number,
-        value: '123',
-        displayValue: true, // 是否在条形码下方显示文字
-        textPosition: 'bottom' // 设置文本的垂直位置
-      });
     },
     // 选项发生改变
     onSelectChange (selection) {
-      this.selection = selection;
+      selection.forEach(row => {
+        this.selection.push(row.number);
+      });
     },
     // 批量生成条形码
     createCode () {
       if (this.selection.length === 0) {
         this.$Message.warning('请选择数据！');
       } else {
+        this.$Modal.confirm({
+          render: h => {
+            return h('Input', {
+              props: {
+                value: this.JsBarcodeFormat,
+                autofocus: true,
+                placeholder: '请输入128条形码值'
+              },
+              on: {
+                input: val => {
+                  this.JsBarcodeFormat = val;
+                }
+              }
+            });
+          },
+          onOk: () => {
+            this.tableData.forEach(row => {
+              if (this.selection.indexOf(row.number) > -1) {
+                row.isCreateCode = true;
+              }
+            });
+            this.tableData.forEach(row => {
+              if (this.selection.indexOf(row.number) > -1) {
+                this.$nextTick(() => {
+                  JsBarcode('.barcode-' + row.number, this.JsBarcodeFormat, {
+                    format: 'CODE128', // 选择要使用的条形码类型
+                    lineColor: '#0aa', // 条形码颜色
+                    width: 1, // 条形码宽度
+                    height: 20, // 条形码高度
+                    text: row.number,
+                    value: '123',
+                    displayValue: true, // 是否在条形码下方显示文字
+                    textPosition: 'bottom' // 设置文本的垂直位置
+                  });
+                });
+              }
+            });
+          }
+        });
       }
     }
     // 批量打印

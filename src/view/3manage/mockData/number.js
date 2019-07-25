@@ -9,7 +9,8 @@ for (let i = 0; i < count; i++) {
     identification: /^[1-9]{1}[0-9]{4}$/,
     synchroTime: '@datetime("yyyy-MM-dd HH:mm:ss")',
     number: /^[0-9A-Z]{11}$/,
-    'isUsed|1': [0]
+    'isUsed|1': [0],
+    isCreateCode: false
   }));
 }
 

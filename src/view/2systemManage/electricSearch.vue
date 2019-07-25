@@ -6,7 +6,8 @@
              stripe></Table>
       <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
-          <Page :total="tableDataOrg.length"
+          <Page show-sizer
+                :total="tableDataOrg.length"
                 :current="1"
                 @on-change="changePage"
                 @on-page-size-change="changePageSize"></Page>
@@ -215,11 +216,12 @@ export default {
     // 点击按钮 - 详情
     show (row) {
       // console.log(row);
-      const result = row.result === 1 ? '合格' : '不合格';
-      this.$Modal.info({
-        title: row.number,
-        content: `线号：${row.lineNumber}<br>综合测试检测人：${row.testInspector}<br>静音间检测人：${row.muteInspector}<br>外观检测人：${row.appearanceInspector}<br>检测结果：${result}`,
-        closable: true
+      this.$router.push({
+        path: '/systemManage/checkSearch',
+        name: 'checkSearch',
+        params: {
+          checkSearchNumber: row.number
+        }
       });
     }
   }

@@ -1,5 +1,6 @@
 <template>
-  <i :class="`iconfont icon-${type}`" :style="styles"></i>
+  <i :class="`iconfont icon-${type}`"
+     :style="styles"></i>
 </template>
 
 <script>
@@ -24,12 +25,11 @@ export default {
       return {
         fontSize: `${this.size}px`,
         color: this.color
-      }
+      };
     }
   }
-}
+};
 </script>
 
 <style>
-
 </style>

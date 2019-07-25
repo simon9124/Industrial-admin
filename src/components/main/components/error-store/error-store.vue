@@ -1,8 +1,11 @@
 <template>
   <div class="error-store">
-    <Badge dot :count="countComputed">
-      <Button type="text" @click="openErrorLoggerPage">
-        <Icon :size="20" type="ios-bug"/>
+    <Badge dot
+           :count="countComputed">
+      <Button type="text"
+              @click="openErrorLoggerPage">
+        <Icon :size="20"
+              type="ios-bug" />
       </Button>
     </Badge>
   </div>
@@ -23,26 +26,26 @@ export default {
   },
   computed: {
     countComputed () {
-      return this.hasRead ? 0 : this.count
+      return this.hasRead ? 0 : this.count;
     }
   },
   methods: {
     openErrorLoggerPage () {
       this.$router.push({
         name: 'error_logger_page'
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style lang="less">
-.error-store{
+.error-store {
   margin-right: 12px;
-  .ivu-badge-dot{
+  .ivu-badge-dot {
     top: 20px;
   }
-  .ivu-btn.ivu-btn-text{
+  .ivu-btn.ivu-btn-text {
     padding: 5px 1px 6px;
   }
 }

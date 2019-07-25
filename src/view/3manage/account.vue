@@ -6,7 +6,8 @@
              stripe></Table>
       <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
-          <Page :total="tableDataOrg.length"
+          <Page show-sizer
+                :total="tableDataOrg.length"
                 :current="1"
                 @on-change="changePage"
                 @on-page-size-change="changePageSize"></Page>
@@ -190,10 +191,10 @@ export default {
     handleSubmit () {
       this.$refs.formModalData.validate(valid => {
         if (valid) {
-          this.$Message.success('修改成功!');
+          this.$Message.success('修改成功！');
           this.modalShow = false;
         } else {
-          this.$Message.error('修改失败!');
+          this.$Message.error('修改失败！');
         }
       });
     },
@@ -203,7 +204,7 @@ export default {
         if (valid) {
           this.modalShow = false;
         } else {
-          this.$Message.error('有未填写的内容!');
+          this.$Message.error('有未填写的内容！');
         }
       });
     },

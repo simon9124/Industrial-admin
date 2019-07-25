@@ -9,13 +9,13 @@ export default {
   },
   computed: {
     parentName () {
-      return this.parentItem.name
+      return this.parentItem.name;
     },
     children () {
-      return this.parentItem.children
+      return this.parentItem.children;
     },
     textColor () {
-      return this.theme === 'dark' ? '#fff' : '#495060'
+      return this.theme === 'dark' ? '#fff' : '#495060';
     }
   }
-}
+};

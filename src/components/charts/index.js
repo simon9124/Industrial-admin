@@ -1,3 +1,6 @@
-import ChartPie from './pie.vue'
-import ChartBar from './bar.vue'
-export { ChartPie, ChartBar }
+import ChartPie from './pie.vue';
+import ChartBar from './bar.vue';
+export {
+  ChartPie,
+  ChartBar
+};

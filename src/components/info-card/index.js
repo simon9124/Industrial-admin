@@ -1,2 +1,2 @@
-import InforCard from './infor-card.vue'
-export default InforCard
+import InforCard from './infor-card.vue';
+export default InforCard;

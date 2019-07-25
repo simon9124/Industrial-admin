@@ -269,17 +269,23 @@
 
 <script>
 import list from './mockData.js';
+import { params } from '@/libs/params';
 
 export default {
   data () {
     return {
-      // 搜索数据
+      // 搜索主键
       number: '',
       // 表单数据
       FormData: {}
     };
   },
-  created () {},
+  created () {
+    this.number = params(this, 'checkSearchNumber');
+    if (this.number !== undefined) {
+      this.search();
+    }
+  },
   methods: {
     // 顶部搜索
     search () {

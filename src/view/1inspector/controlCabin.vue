@@ -37,10 +37,16 @@
         <div class="col-block-title">
           流水线生产数量
         </div>
+        <div class="col-block-chart">
+          <assembly-line-number style="height: 340px;" />
+        </div>
       </div>
       <div class="col-block col-block-min">
         <div class="col-block-title">
           流水线合格率
+        </div>
+        <div class="col-block-chart">
+          <assembly-line-pass style="height: 340px;" />
         </div>
       </div>
       </Col>
@@ -50,7 +56,15 @@
 </template>
 
 <script>
+// components
+import AssemblyLineNumber from './assemblyLineNumber.vue';
+import AssemblyLinePass from './assemblyLinePass.vue';
+
 export default {
+  components: {
+    AssemblyLineNumber,
+    AssemblyLinePass
+  },
   data () {
     return {};
   }

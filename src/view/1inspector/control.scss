@@ -97,6 +97,11 @@
 
     &-large {
       height: 730px;
+      background: url('../../../static/images/bg/bg01warp.png');
+      // background-size: 100%;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: top right;
     }
 
     &-min {

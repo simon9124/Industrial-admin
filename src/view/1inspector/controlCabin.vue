@@ -32,7 +32,10 @@
       <Col :span="12">
       <div class="col-block col-block-large">
         <div class="col-block-title">
-          监测数据
+          检测总数
+        </div>
+        <div class="col-block-chart">
+          <Check-count style="height: 400px;" />
         </div>
       </div>
       </Col>
@@ -67,13 +70,15 @@ import AssemblyLineNumber from './assemblyLineNumber.vue';
 import AssemblyLinePass from './assemblyLinePass.vue';
 import QualificationRateToday from './qualificationRateToday.vue';
 import QualificationRateAll from './qualificationRateAll.vue';
+import CheckCount from './checkCount.vue';
 
 export default {
   components: {
     AssemblyLineNumber,
     AssemblyLinePass,
     QualificationRateToday,
-    QualificationRateAll
+    QualificationRateAll,
+    CheckCount
   },
   data () {
     return {};

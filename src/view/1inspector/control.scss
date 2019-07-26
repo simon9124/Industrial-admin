@@ -23,6 +23,7 @@
     height: 60px;
 
     h2 {
+      font-size: 24px;
       width: 200px;
       line-height: 60px;
       color: #ffffff;
@@ -83,7 +84,7 @@
 
   .ivu-row {
     height: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 
     .ivu-col {
       height: 100%;
@@ -95,7 +96,7 @@
     position: relative;
 
     &-large {
-      height: 800px;
+      height: 730px;
     }
 
     &-min {

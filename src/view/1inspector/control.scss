@@ -83,11 +83,12 @@
   }
 
   .ivu-row {
-    height: 100%;
-    margin-bottom: 30px;
+    // height: 100%;
+    // margin-bottom: 30px;
 
     .ivu-col {
-      height: 100%;
+      // height: 100%;
+      margin-bottom: 30px;
     }
   }
 
@@ -99,9 +100,9 @@
       height: 730px;
       background: url('../../../static/images/bg/bg01warp.png');
       // background-size: 100%;
-      // background-attachment: fixed;
+      background-attachment: fixed;
       background-repeat: no-repeat;
-      background-position: top right;
+      background-position: bottom right;
     }
 
     &-min {

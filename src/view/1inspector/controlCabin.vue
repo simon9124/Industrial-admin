@@ -9,7 +9,9 @@
     <Row :gutter="20">
 
       <!-- 左 -->
-      <Col :span="6">
+      <Col :xs="24"
+           :sm="24"
+           :lg="6">
       <div class="col-block col-block-min">
         <div class="col-block-title">
           今日合格率
@@ -29,7 +31,9 @@
       </Col>
 
       <!-- 中 -->
-      <Col :span="12">
+      <Col :xs="24"
+           :sm="24"
+           :lg="12">
       <div class="col-block col-block-large">
         <div class="col-block-title">
           检测总数
@@ -41,7 +45,9 @@
       </Col>
 
       <!-- 右 -->
-      <Col :span="6">
+      <Col :xs="24"
+           :sm="24"
+           :lg="6">
       <div class="col-block col-block-min">
         <div class="col-block-title">
           流水线生产数量

@@ -489,21 +489,23 @@ export default [
     path: '/control',
     name: 'control',
     meta: {
+      icon: 'ios-navigate',
+      title: '驾驶舱模块数据',
       hideInBread: true
     },
-    component: Main,
-    children: [
-
-      {
-        path: 'controlCabin',
-        name: 'controlCabin',
-        meta: {
-          icon: 'ios-navigate',
-          title: '驾驶舱模块数据'
-        },
-        component: () => import('@/view/1inspector/controlCabin.vue')
-      }
-    ]
+    component: () => import('@/view/1inspector/controlCabin.vue')
+    // component: Main,
+    // children: [
+    //   {
+    //     path: 'controlCabin',
+    //     name: 'controlCabin',
+    //     meta: {
+    //       icon: 'ios-navigate',
+    //       title: '驾驶舱模块数据'
+    //     },
+    //     component: () => import('@/view/1inspector/controlCabin.vue')
+    //   }
+    // ]
   },
 
   // 2.系统

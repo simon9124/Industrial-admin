@@ -1,0 +1,129 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
+}
+
+.control-container /deep/ {
+  // background-image: url(../../assets/images/blue.jpg);
+  // background-size: 100% 100%;
+  // background-attachment: fixed;
+  padding: 0 20px;
+  background: #081832;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+
+  .title {
+    margin: 20px 0 60px;
+    text-align: center;
+    position: relative;
+    height: 60px;
+
+    h2 {
+      width: 200px;
+      line-height: 60px;
+      color: #ffffff;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      // box-shadow: inset 0 0 0 1px rgba(105, 202, 98, 0.5);
+      box-shadow: inset 0 0 0 1px #034c6a;
+    }
+
+    // h2,
+    h2::before,
+    h2::after {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    h2::before,
+    h2::after {
+      content: '';
+      z-index: -1;
+      margin: -5%;
+      box-shadow: inset 0 0 0 2px;
+      animation: clipMe 8s linear infinite;
+    }
+
+    h2::before {
+      animation-delay: -4s;
+    }
+
+    @keyframes clipMe {
+
+      0% {
+        clip: rect(0px, 220px, 2px, 0px);
+      }
+
+      25% {
+        clip: rect(0px, 2px, 80px, 0px);
+      }
+
+      50% {
+        clip: rect(78px, 220px, 80px, 0px);
+      }
+
+      75% {
+        clip: rect(0px, 220px, 80px, 219px);
+      }
+
+      100% {
+        clip: rect(0px, 220px, 2px, 0px);
+      }
+    }
+
+  }
+
+  .ivu-row {
+    height: 100%;
+    margin-bottom: 20px;
+
+    .ivu-col {
+      height: 100%;
+    }
+  }
+
+  .col-block {
+    box-shadow: inset 0 0 10px 10px #034c6a;
+    position: relative;
+
+    &-large {
+      height: 800px;
+    }
+
+    &-min {
+      height: 300px;
+
+      &:not(:first-child) {
+        margin-top: 30px;
+      }
+    }
+
+    &-title {
+      background-color: #034c6a;
+      border-radius: 18px;
+      height: 35px;
+      line-height: 35px;
+      text-align: center;
+      width: 60%;
+      position: absolute;
+      top: -15px;
+      left: 20%;
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 16px;
+    }
+  }
+}
+
+/* 滚动条 */
+.control-container::-webkit-scrollbar {
+  width: 0;
+}

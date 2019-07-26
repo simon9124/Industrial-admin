@@ -14,10 +14,16 @@
         <div class="col-block-title">
           今日合格率
         </div>
+        <div class="col-block-chart">
+          <qualification-rate-today style="height: 340px;" />
+        </div>
       </div>
       <div class="col-block col-block-min">
         <div class="col-block-title">
           总合格率
+        </div>
+        <div class="col-block-chart">
+          <qualification-rate-all style="height: 340px;" />
         </div>
       </div>
       </Col>
@@ -59,11 +65,15 @@
 // components
 import AssemblyLineNumber from './assemblyLineNumber.vue';
 import AssemblyLinePass from './assemblyLinePass.vue';
+import QualificationRateToday from './qualificationRateToday.vue';
+import QualificationRateAll from './qualificationRateAll.vue';
 
 export default {
   components: {
     AssemblyLineNumber,
-    AssemblyLinePass
+    AssemblyLinePass,
+    QualificationRateToday,
+    QualificationRateAll
   },
   data () {
     return {};

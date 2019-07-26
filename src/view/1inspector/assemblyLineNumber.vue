@@ -34,7 +34,7 @@ export default {
       },
       grid: {
         top: '40px',
-        left: '30px',
+        left: '20px',
         right: '30px',
         bottom: '30px',
         containLabel: true
@@ -64,6 +64,9 @@ export default {
             lineStyle: {
               color: '#034c6a'
             }
+          },
+          axisLabel: {
+            formatter: '{value}件'
           }
         }
       ],

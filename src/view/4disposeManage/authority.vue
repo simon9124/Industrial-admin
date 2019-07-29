@@ -1,5 +1,13 @@
 <template>
   <div class="dooya-container">
+    <Row>
+      <Button type="primary"
+              icon="md-add">权限</Button>
+      <!-- @click="insert" -->
+    </Row>
+
+    <br>
+
     <Row :gutter="16">
 
       <!-- 服务器 -->

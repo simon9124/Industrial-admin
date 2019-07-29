@@ -3,8 +3,8 @@
     <Row :gutter="16">
 
       <!-- QC1 -->
-      <Col :md="12"
-           :sm="24"
+      <Col :md="8"
+           :sm="12"
            :xs="24">
       <Card>
         <p slot="title">检测标准</p>
@@ -69,6 +69,7 @@ export default {
       margin-bottom: 5px;
     }
     label {
+      font-size: 13px;
       font-weight: bold;
     }
   }

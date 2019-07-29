@@ -39,6 +39,7 @@
       <!-- 表格 -->
       <Table :data="tableData"
              :columns="tableColumns"
+             size="large"
              stripe></Table>
       <!-- 分页 -->
       <div style="margin: 10px;overflow: hidden">

@@ -1,13 +1,50 @@
 <template>
   <div class="dooya-container">
     <Card>
+      <!-- 筛选 -->
+      <div style="marginTop:10px">
+        <Form ref="filterFormData"
+              :model="filterFormData"
+              :label-width="80"
+              inline>
+          <FormItem prop="user"
+                    label="用户："
+                    :label-width="70">
+            <Select v-model="filterFormData.user"
+                    placeholder="请选择用户类型"
+                    style="width: 150px"
+                    @on-change="refreshTable">
+              <Option value="全部">全部</Option>
+              <Option value="超级用户">超级用户</Option>
+              <Option value="检测员">检测员</Option>
+            </Select>
+          </FormItem>
+          <FormItem prop="time"
+                    label="时间区间：">
+            <!-- confirm -->
+            <DatePicker type="datetimerange"
+                        placeholder="请选择时间区间"
+                        style="width: 280px"
+                        @on-change="timeOnChange"
+                        @on-ok="timeOnOk"></DatePicker>
+            </Input>
+          </FormItem>
+          <FormItem :label-width="0">
+            <Button type="primary"
+                    @click="clearData">清空</Button>
+            </Input>
+          </FormItem>
+        </Form>
+      </div>
+      <!-- 表格 -->
       <Table :data="tableData"
              :columns="tableColumns"
              stripe></Table>
+      <!-- 分页 -->
       <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
           <Page show-sizer
-                :total="tableDataOrg.length"
+                :total="tableDataAll.length"
                 :current="1"
                 @on-change="changePage"
                 @on-page-size-change="changePageSize"></Page>
@@ -18,163 +55,75 @@
 </template>
 
 <script>
-import list from './mockData.js';
+import list from './mockData/log';
 
 export default {
   data () {
     return {
-      // 原始数据
+      // 原始数据 - 所有
       tableDataOrg: [],
-      // 处理后的当页数据
+      // 表格数据 - 筛选后所有
+      tableDataAll: [],
+      // 表格数据 - 当前页
       tableData: [],
       // 表头列项
       tableColumns: [
         {
-          title: '编号',
-          key: 'number',
+          title: 'URL',
+          key: 'URL',
           align: 'center',
-          minWidth: 150
+          minWidth: 250,
+          tooltip: true
         },
         {
-          title: '线号',
-          key: 'lineNumber',
-          align: 'center',
-          render: (h, params) => {
-            const text = params.row.lineNumber;
-            return h('div', text);
-          },
-          minWidth: 100
-        },
-        {
-          title: '综合测试',
-          key: 'testing',
-          align: 'center',
-          render: (h, params) => {
-            const row = params.row;
-            const color = row.testing ? 'success' : 'error';
-            const text = row.testing ? '合格' : '不合格';
-            return h(
-              'Tag',
-              {
-                props: {
-                  color: color
-                }
-              },
-              text
-            );
-          },
-          minWidth: 100
-        },
-        {
-          title: '综合测试开始时间',
-          key: 'testBeginTime',
-          align: 'center',
-          minWidth: 150
-        },
-        {
-          title: '综合测试检测人',
-          key: 'testInspector',
+          title: '类别',
+          key: 'classification',
           align: 'center',
           minWidth: 120
         },
         {
-          title: '静音结果',
-          key: 'mute',
+          title: '消息',
+          key: 'message',
           align: 'center',
-          render: (h, params) => {
-            const row = params.row;
-            const color = row.mute ? 'success' : 'error';
-            const text = row.mute ? '合格' : '不合格';
-            return h(
-              'Tag',
-              {
-                props: {
-                  color: color
-                }
-              },
-              text
-            );
-          },
-          minWidth: 100
+          minWidth: 220
         },
         {
-          title: '静音开始时间',
-          key: 'muteBeginTime',
+          title: '用户',
+          key: 'user',
+          align: 'center',
+          minWidth: 120
+        },
+        {
+          title: 'IP',
+          key: 'logIP',
           align: 'center',
           minWidth: 150
         },
         {
-          title: '静音间检测人',
-          key: 'muteInspector',
+          title: '时间',
+          key: 'logTime',
           align: 'center',
-          minWidth: 120
-        },
-        {
-          title: '外观检测人',
-          key: 'appearanceInspector',
-          align: 'center',
-          minWidth: 120
-        },
-        {
-          title: '检测结果',
-          key: 'appearance',
-          align: 'center',
-          render: (h, params) => {
-            const row = params.row;
-            const color = row.appearance === 1 ? 'success' : 'error';
-            const text = row.appearance === 1 ? '合格' : '不合格';
-            return h(
-              'Tag',
-              {
-                props: {
-                  color: color
-                }
-              },
-              text
-            );
-          },
-          minWidth: 100
-        },
-        {
-          title: '操作',
-          key: 'action',
-          fixed: 'right',
-          minWidth: 100,
-          align: 'center',
-          render: (h, params) => {
-            return h('div', [
-              h(
-                'Button',
-                {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.show(params.row);
-                    }
-                  }
-                },
-                '详情'
-              )
-            ]);
-          }
+          minWidth: 150
         }
       ],
       // 页码
       pageNum: 1,
       // 每页显示数量
-      pageSize: 10
+      pageSize: 10,
+      // 筛选表单
+      filterFormData: {
+        user: '全部'
+      },
+      // 时间区间
+      timeArray: ['1900-00-00 00:00:00', '3000-00-00 00:00:00']
     };
   },
   created () {
-    this.getData();
+    this.init();
   },
   methods: {
-    // 获取首页数据
-    getData () {
-      // 数据处理
+    // 表格数据初始化
+    init () {
       list.forEach(row => {
         this.$set(
           row,
@@ -198,31 +147,51 @@ export default {
         return row;
       });
       this.tableDataOrg = list;
-      this.tableData = list.slice(
+      this.refreshTable();
+    },
+    // 根据条件渲染页面数据
+    refreshTable (value) {
+      // console.log(this.filterFormData.user);
+      // console.log(this.timeArray);
+      // 全部符合筛选条件的数据 -> 计总数用
+      this.tableDataAll = this.tableDataOrg.filter(row => {
+        if (
+          (row.user.indexOf(this.filterFormData.user).toString() > -1 ||
+            this.filterFormData.user === '全部') &&
+          (this.timeArray[0] < row.logTime && this.timeArray[1] > row.logTime)
+        ) {
+          return row;
+        }
+      });
+      // 当前页要显示的数据
+      this.tableData = this.tableDataAll.slice(
         (this.pageNum - 1) * this.pageSize,
         this.pageNum * this.pageSize
       );
     },
+    // timePicker - 数据发生改变
+    timeOnChange (timeArray) {
+      this.timeArray = timeArray;
+    },
+    // timePicker - 确认
+    timeOnOk () {
+      this.refreshTable();
+    },
+    // 清空筛选
+    clearData () {
+      this.filterFormData.user = '全部';
+      this.timeArray = ['1900-00-00 00:00:00', '3000-00-00 00:00:00'];
+      this.refreshTable();
+    },
     // 分页
     changePage (pageNum) {
       this.pageNum = pageNum;
-      this.getData();
+      this.refreshTable();
     },
     // 每页条数变化
     changePageSize (pageSize) {
       this.pageSize = pageSize;
-      this.getData();
-    },
-    // 点击按钮 - 详情
-    show (row) {
-      // console.log(row);
-      this.$router.push({
-        path: '/systemManage/checkSearch',
-        name: 'checkSearch',
-        params: {
-          checkSearchNumber: row.number
-        }
-      });
+      this.refreshTable();
     }
   }
 };

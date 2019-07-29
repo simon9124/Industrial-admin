@@ -1,232 +1,160 @@
 <template>
   <div class="dooya-container">
-    <Card>
-      <Table :data="tableData"
-             :columns="tableColumns"
-             stripe></Table>
-      <div style="margin: 10px;overflow: hidden">
-        <div style="float: right;">
-          <Page show-sizer
-                :total="tableDataOrg.length"
-                :current="1"
-                @on-change="changePage"
-                @on-page-size-change="changePageSize"></Page>
-        </div>
-      </div>
-    </Card>
+    <Row :gutter="16">
+
+      <!-- 服务器 -->
+      <Col :lg="8"
+           :sm="12"
+           :xs="24">
+      <Card>
+        <p slot="title">
+          <Icon type="ios-desktop-outline" />
+          服务器
+        </p>
+        <Form ref="server"
+              :model="server"
+              label-position="left"
+              :label-width="120">
+          <FormItem label="服务器地址："
+                    class="gray">
+            <Tag color="success">{{server.ip}}</Tag>
+          </FormItem>
+          <FormItem label="服务器端口："
+                    class="gray">
+            <Tag color="success">{{server.port}}</Tag>
+          </FormItem>
+          <FormItem label="前端地址："
+                    class="gray">
+            <Tag color="success">{{'http://'+server.frontEnd}}</Tag>
+          </FormItem>
+          <FormItem label="数据库链接类型："
+                    class="gray">
+            <Tag color="success">{{server.dataBase}}</Tag>
+          </FormItem>
+          <FormItem label="./cache/可写："
+                    class="red">
+            <Tag :color="server.cache?'success':'error'">{{server.cache?'success':'error'}}</Tag>
+          </FormItem>
+          <FormItem label="upload/可写："
+                    class="red">
+            <Tag :color="server.upload?'success':'error'">{{server.upload?'success':'error'}}</Tag>
+          </FormItem>
+          <FormItem label="内存大小限制："
+                    class="gray">
+            <Tag color="success">{{server.internalStorage+'M'}}</Tag>
+          </FormItem>
+          <FormItem label="上传大小限制："
+                    class="gray">
+            <Tag color="success">{{server.uploadSize+'M'}}</Tag>
+          </FormItem>
+          <div class="explain">
+          </div>
+        </Form>
+
+      </Card>
+      </Col>
+
+      <!-- 服务器扩展检查 -->
+      <Col :lg="8"
+           :sm="12"
+           :xs="24">
+      <Card>
+        <p slot="title">
+          <Icon type="ios-desktop" />
+          服务器扩展检查
+        </p>
+        <Form ref="server"
+              :model="server"
+              label-position="left"
+              :label-width="120">
+          <FormItem label="GD图片处理："
+                    class="gray">
+            <Tag color="success">{{server.GDPic}}</Tag>
+          </FormItem>
+          <FormItem label="Mysql："
+                    class="gray">
+            <Tag color="success">{{server.Mysql}}</Tag>
+          </FormItem>
+          <FormItem label="Mysqli："
+                    class="gray">
+            <Tag color="success">{{server.Mysqli}}</Tag>
+          </FormItem>
+          <FormItem label="XML："
+                    class="gray">
+            <Tag color="success">{{server.XML}}</Tag>
+          </FormItem>
+          <FormItem label="iconv："
+                    class="gray">
+            <Tag color="success">{{server.iconv}}</Tag>
+          </FormItem>
+          <FormItem label="json："
+                    class="gray">
+            <Tag color="success">{{server.json}}</Tag>
+          </FormItem>
+          <FormItem label="Zip："
+                    class="gray">
+            <Tag color="success">{{server.Zip}}</Tag>
+          </FormItem>
+          <FormItem label="CURL："
+                    class="gray">
+            <Tag color="success">{{server.CURL}}</Tag>
+          </FormItem>
+          <div class="explain">
+            *扩展保证了站点正常的运行
+          </div>
+        </Form>
+
+      </Card>
+      </Col>
+
+    </Row>
   </div>
 </template>
 
 <script>
-import list from './mockData.js';
+import server from './mockData/server';
 
 export default {
+  name: 'inspector',
   data () {
     return {
-      // 原始数据
-      tableDataOrg: [],
-      // 处理后的当页数据
-      tableData: [],
-      // 表头列项
-      tableColumns: [
-        {
-          title: '编号',
-          key: 'number',
-          align: 'center',
-          minWidth: 150
-        },
-        {
-          title: '线号',
-          key: 'lineNumber',
-          align: 'center',
-          render: (h, params) => {
-            const text = params.row.lineNumber;
-            return h('div', text);
-          },
-          minWidth: 100
-        },
-        {
-          title: '综合测试',
-          key: 'testing',
-          align: 'center',
-          render: (h, params) => {
-            const row = params.row;
-            const color = row.testing ? 'success' : 'error';
-            const text = row.testing ? '合格' : '不合格';
-            return h(
-              'Tag',
-              {
-                props: {
-                  color: color
-                }
-              },
-              text
-            );
-          },
-          minWidth: 100
-        },
-        {
-          title: '综合测试开始时间',
-          key: 'testBeginTime',
-          align: 'center',
-          minWidth: 150
-        },
-        {
-          title: '综合测试检测人',
-          key: 'testInspector',
-          align: 'center',
-          minWidth: 120
-        },
-        {
-          title: '静音结果',
-          key: 'mute',
-          align: 'center',
-          render: (h, params) => {
-            const row = params.row;
-            const color = row.mute ? 'success' : 'error';
-            const text = row.mute ? '合格' : '不合格';
-            return h(
-              'Tag',
-              {
-                props: {
-                  color: color
-                }
-              },
-              text
-            );
-          },
-          minWidth: 100
-        },
-        {
-          title: '静音开始时间',
-          key: 'muteBeginTime',
-          align: 'center',
-          minWidth: 150
-        },
-        {
-          title: '静音间检测人',
-          key: 'muteInspector',
-          align: 'center',
-          minWidth: 120
-        },
-        {
-          title: '外观检测人',
-          key: 'appearanceInspector',
-          align: 'center',
-          minWidth: 120
-        },
-        {
-          title: '检测结果',
-          key: 'appearance',
-          align: 'center',
-          render: (h, params) => {
-            const row = params.row;
-            const color = row.appearance === 1 ? 'success' : 'error';
-            const text = row.appearance === 1 ? '合格' : '不合格';
-            return h(
-              'Tag',
-              {
-                props: {
-                  color: color
-                }
-              },
-              text
-            );
-          },
-          minWidth: 100
-        },
-        {
-          title: '操作',
-          key: 'action',
-          fixed: 'right',
-          minWidth: 100,
-          align: 'center',
-          render: (h, params) => {
-            return h('div', [
-              h(
-                'Button',
-                {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.show(params.row);
-                    }
-                  }
-                },
-                '详情'
-              )
-            ]);
-          }
-        }
-      ],
-      // 页码
-      pageNum: 1,
-      // 每页显示数量
-      pageSize: 10
+      server: server
     };
   },
-  created () {
-    this.getData();
-  },
-  methods: {
-    // 获取首页数据
-    getData () {
-      // 数据处理
-      list.forEach(row => {
-        this.$set(
-          row,
-          'veer',
-          row.veer1Slip === 1 && row.veer2Slip === 1 && row.veer3Slip === 1
-        );
-        this.$set(
-          row,
-          'turn',
-          row.turn1Slip === 1 && row.turn2Slip === 1 && row.turn3Slip === 1
-        );
-        this.$set(row, 'testing', row.veer && row.turn);
-        this.$set(
-          row,
-          'mute',
-          row.lowPressure === 1 &&
-            row.decibel === 1 &&
-            row.landing === 1 &&
-            row.pressurization === 1
-        );
-        return row;
-      });
-      this.tableDataOrg = list;
-      this.tableData = list.slice(
-        (this.pageNum - 1) * this.pageSize,
-        this.pageNum * this.pageSize
-      );
-    },
-    // 分页
-    changePage (pageNum) {
-      this.pageNum = pageNum;
-      this.getData();
-    },
-    // 每页条数变化
-    changePageSize (pageSize) {
-      this.pageSize = pageSize;
-      this.getData();
-    },
-    // 点击按钮 - 详情
-    show (row) {
-      // console.log(row);
-      this.$router.push({
-        path: '/systemManage/checkSearch',
-        name: 'checkSearch',
-        params: {
-          checkSearchNumber: row.number
-        }
-      });
-    }
-  }
+  methods: {}
 };
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+.dooya-container /deep/ {
+  .ivu-card {
+    margin-bottom: 20px;
+    .ivu-card-body {
+      // padding: 10px;
+    }
+  }
+  .ivu-form {
+    &-item {
+      margin-bottom: 5px;
+      &-content {
+        text-align: right;
+      }
+    }
+    label {
+      font-size: 13px;
+      font-weight: bold;
+    }
+    .gray label {
+      color: #808695;
+    }
+    .red label {
+      color: #ed4014;
+    }
+    .explain {
+      height: 20px;
+      font-size: 12px;
+      color: #ed4014;
+    }
+  }
+}
 </style>

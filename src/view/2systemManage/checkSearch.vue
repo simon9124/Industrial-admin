@@ -17,7 +17,7 @@
         <Card>
           <Form ref="formValidate"
                 :model="FormData"
-                :label-width="100">
+                :label-width="120">
             <FormItem label="电机编码：">
               {{FormData.number}}
             </FormItem>
@@ -43,7 +43,7 @@
           <p slot="title">QC1综合测试</p>
           <Form ref="formValidate"
                 :model="FormData"
-                :label-width="100">
+                :label-width="120">
             <FormItem label="测试员：">
               {{FormData.testInspector}}
             </FormItem>
@@ -187,7 +187,7 @@
             <p slot="title">静音间测试</p>
             <Form ref="formValidate"
                   :model="FormData"
-                  :label-width="100">
+                  :label-width="120">
               <FormItem label="测试员：">
                 {{FormData.muteInspector}}
               </FormItem>
@@ -243,7 +243,7 @@
             <p slot="title">外观检测</p>
             <Form ref="formValidate"
                   :model="FormData"
-                  :label-width="100">
+                  :label-width="120">
               <FormItem label="测试员：">
                 {{FormData.appearanceInspector}}
               </FormItem>
@@ -338,7 +338,7 @@ export default {
         }
       }
       label {
-        // font-size: 13px;
+        font-size: 13px;
         font-weight: bold;
       }
     }

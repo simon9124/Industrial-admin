@@ -584,19 +584,44 @@ export default [
     path: '/dispose',
     name: 'dispose',
     meta: {
-      hideInBread: true
+      hideInBread: true,
+      title: '配置管理',
+      icon: 'ios-navigate'
     },
     component: Main,
     children: [
 
       {
-        path: 'disposeManage',
-        name: 'disposeManage',
+        path: 'log',
+        name: 'log',
         meta: {
-          icon: 'ios-navigate',
-          title: '配置管理'
+          title: '日志管理'
         },
-        component: () => import('@/view/4disposeManage/disposeManage.vue')
+        component: () => import('@/view/4disposeManage/log.vue')
+      },
+      {
+        path: 'authority',
+        name: 'authority',
+        meta: {
+          title: '权限管理'
+        },
+        component: () => import('@/view/4disposeManage/authority.vue')
+      },
+      {
+        path: 'userGroup',
+        name: 'userGroup',
+        meta: {
+          title: '用户组管理'
+        },
+        component: () => import('@/view/4disposeManage/userGroup.vue')
+      },
+      {
+        path: 'server',
+        name: 'server',
+        meta: {
+          title: '服务器信息'
+        },
+        component: () => import('@/view/4disposeManage/server.vue')
       }
     ]
   },

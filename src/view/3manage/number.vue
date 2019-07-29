@@ -218,30 +218,34 @@ export default {
     },
     // 点击按钮 - 批量打印
     printMount () {
-      console.log(this.selectionChange);
-      this.tableData.forEach(row => {
-        if (this.selectionChange.indexOf(row.number) > -1) {
-          // row.isUsed = row.isCreateCode ? 1 : 0;
-          row.isUsed = 1;
-        }
-      });
-      this.tableData.forEach(row => {
-        if (this.selection.indexOf(row.number) > -1) {
-          this.$nextTick(() => {
-            JsBarcode('.barcode-' + row.number, this.JsBarcodeFormat, {
-              format: 'CODE128', // 选择要使用的条形码类型
-              lineColor: '#0aa', // 条形码颜色
-              width: 1, // 条形码宽度
-              height: 20, // 条形码高度
-              text: row.number,
-              value: '123',
-              displayValue: true, // 是否在条形码下方显示文字
-              textPosition: 'bottom' // 设置文本的垂直位置
+      // console.log(this.selectionChange);
+      if (this.selectionChange.length === 0) {
+        this.$Message.warning('请选择数据！');
+      } else {
+        this.tableData.forEach(row => {
+          if (this.selectionChange.indexOf(row.number) > -1) {
+            // row.isUsed = row.isCreateCode ? 1 : 0;
+            row.isUsed = 1;
+          }
+        });
+        this.tableData.forEach(row => {
+          if (this.selection.indexOf(row.number) > -1) {
+            this.$nextTick(() => {
+              JsBarcode('.barcode-' + row.number, this.JsBarcodeFormat, {
+                format: 'CODE128', // 选择要使用的条形码类型
+                lineColor: '#0aa', // 条形码颜色
+                width: 1, // 条形码宽度
+                height: 20, // 条形码高度
+                text: row.number,
+                value: '123',
+                displayValue: true, // 是否在条形码下方显示文字
+                textPosition: 'bottom' // 设置文本的垂直位置
+              });
             });
-          });
-        }
-      });
-      this.$Message.success('打印成功');
+          }
+        });
+        this.$Message.success('打印成功');
+      }
     },
     // 选项发生改变
     onSelectChange (selection) {

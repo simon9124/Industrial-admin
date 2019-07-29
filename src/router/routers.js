@@ -603,7 +603,8 @@ export default [
         path: 'authority',
         name: 'authority',
         meta: {
-          title: '权限管理'
+          title: '权限管理',
+          access: ['super_admin']
         },
         component: () => import('@/view/4disposeManage/authority.vue')
       },
@@ -611,7 +612,8 @@ export default [
         path: 'userGroup',
         name: 'userGroup',
         meta: {
-          title: '用户组管理'
+          title: '用户组管理',
+          access: ['super_admin']
         },
         component: () => import('@/view/4disposeManage/userGroup.vue')
       },

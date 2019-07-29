@@ -20,7 +20,7 @@
            :mask-closable="false"
            :closable="false"
            footer-hide
-           title="Modal 1"
+           title="账号详情"
            @on-ok="handleSubmit">
       <Form ref="formModalData"
             :model="modalData"
@@ -153,8 +153,11 @@ export default {
       pageNum: 1,
       // 每页显示数量
       pageSize: 10,
+      // modal弹框 - 是否显示
       modalShow: false,
+      // modal弹框 - 数据
       modalData: {},
+      // modal弹框 - form规则
       formModalRule: {
         userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }]
       }
@@ -208,7 +211,6 @@ export default {
         }
       });
     },
-    // 点击表单按钮 - 取消
     // 点击按钮 - 锁定/解锁
     lock (row) {
       row.lock = !row.lock;

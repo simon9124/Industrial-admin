@@ -1,201 +1,235 @@
 <template>
   <div class="dooya-container">
-    <Card>
-      <!-- 筛选 -->
-      <div style="marginTop:10px">
-        <Form ref="filterFormData"
-              :model="filterFormData"
-              :label-width="80"
-              inline>
-          <FormItem prop="user"
-                    label="用户："
-                    :label-width="70">
-            <Select v-model="filterFormData.user"
-                    placeholder="请选择用户类型"
-                    style="width: 150px"
-                    @on-change="refreshTable">
-              <Option value="全部">全部</Option>
-              <Option value="超级用户">超级用户</Option>
-              <Option value="检测员">检测员</Option>
-            </Select>
-          </FormItem>
-          <FormItem prop="time"
-                    label="时间区间：">
-            <!-- confirm -->
-            <DatePicker type="datetimerange"
-                        placeholder="请选择时间区间"
-                        style="width: 280px"
-                        @on-change="timeOnChange"
-                        @on-ok="timeOnOk"></DatePicker>
-            </Input>
-          </FormItem>
-          <FormItem :label-width="0">
+    <Row :gutter="16">
+      <Col :md="12"
+           :sm="24"
+           :xs="24">
+      <Card>
+        <p slot="title">
+          <Checkbox @on-change="toggleSelectAll"></Checkbox>
+          <Icon type="md-people" />
+          &nbsp;用户组
+        </p>
+
+        <!-- buttons -->
+        <Button slot="extra"
+                type="error"
+                icon="md-trash"
+                size="small"
+                style="margin-right:5px"
+                @click="batcthDelete">批量删除</Button>
+        <Button slot="extra"
+                type="success"
+                icon="md-add"
+                size="small"
+                @click="insert">用户组</Button>
+
+        <!-- item -->
+        <div v-for="(item,index) in userGroup"
+             :key="index"
+             class="group-item">
+          <Checkbox v-model="item.check"></Checkbox>
+          <span>{{item.groupName}}</span>
+          <div class="group-item-buttons">
             <Button type="primary"
-                    @click="clearData">清空</Button>
-            </Input>
-          </FormItem>
-        </Form>
-      </div>
-      <!-- 表格 -->
-      <Table :data="tableData"
-             :columns="tableColumns"
-             stripe></Table>
-      <!-- 分页 -->
-      <div style="margin: 10px;overflow: hidden">
-        <div style="float: right;">
-          <Page show-sizer
-                :total="tableDataAll.length"
-                :current="1"
-                @on-change="changePage"
-                @on-page-size-change="changePageSize"></Page>
+                    icon="ios-create-outline"
+                    size="small"
+                    style="margin-right:5px"
+                    @click="edit(item)">
+            </Button>
+            <Button type="error"
+                    icon="md-close"
+                    size="small"
+                    @click="deleteGroup(item)">
+            </Button>
+          </div>
         </div>
-      </div>
-    </Card>
+
+        <span class="group-item"></span>
+
+        <!-- Modal -->
+        <Modal v-model="modalShow"
+               :mask-closable="false"
+               :closable="false"
+               footer-hide
+               :title="isEdit?'用户组详情':'新增用户组'"
+               @on-ok="handleSubmit">
+          <Form ref="formModalData"
+                :model="modalData"
+                :rules="formModalRule"
+                :label-width="80">
+            <FormItem label="名称："
+                      prop="groupName">
+              <Input type="text"
+                     v-model="modalData.groupName"></Input>
+            </FormItem>
+            <FormItem>
+              <Button type="primary"
+                      @click="handleSubmit('formModalData')">确定</Button>
+              <Button @click="handleReset('formModalData')"
+                      style="margin-left: 8px">取消</Button>
+            </FormItem>
+          </Form>
+        </Modal>
+
+      </Card>
+      </Col>
+
+    </Row>
   </div>
 </template>
 
 <script>
-import list from './mockData/log';
+import userGroup from './mockData/userGroup';
 
 export default {
+  name: 'inspector',
   data () {
     return {
-      // 原始数据 - 所有
-      tableDataOrg: [],
-      // 表格数据 - 筛选后所有
-      tableDataAll: [],
-      // 表格数据 - 当前页
-      tableData: [],
-      // 表头列项
-      tableColumns: [
-        {
-          title: 'URL',
-          key: 'URL',
-          align: 'center',
-          minWidth: 250,
-          tooltip: true
-        },
-        {
-          title: '类别',
-          key: 'classification',
-          align: 'center',
-          minWidth: 120
-        },
-        {
-          title: '消息',
-          key: 'message',
-          align: 'center',
-          minWidth: 220
-        },
-        {
-          title: '用户',
-          key: 'user',
-          align: 'center',
-          minWidth: 120
-        },
-        {
-          title: 'IP',
-          key: 'logIP',
-          align: 'center',
-          minWidth: 150
-        },
-        {
-          title: '时间',
-          key: 'logTime',
-          align: 'center',
-          minWidth: 150
-        }
-      ],
-      // 页码
-      pageNum: 1,
-      // 每页显示数量
-      pageSize: 10,
-      // 筛选表单
-      filterFormData: {
-        user: '全部'
+      // 用户组数据
+      userGroup: userGroup,
+      // modal弹框 - 是否显示
+      modalShow: false,
+      // modal弹框 - 数据
+      modalData: {},
+      // modal弹框 - form规则
+      formModalRule: {
+        groupName: [
+          { required: true, message: '请输入用户组名称', trigger: 'blur' }
+        ]
       },
-      // 时间区间
-      timeArray: ['1900-00-00 00:00:00', '3000-00-00 00:00:00']
+      // 新增 or 编辑
+      isEdit: true,
+      // 是否已全选
+      toggleSelect: false
     };
   },
-  created () {
-    this.init();
-  },
   methods: {
-    // 表格数据初始化
-    init () {
-      list.forEach(row => {
-        this.$set(
-          row,
-          'veer',
-          row.veer1Slip === 1 && row.veer2Slip === 1 && row.veer3Slip === 1
-        );
-        this.$set(
-          row,
-          'turn',
-          row.turn1Slip === 1 && row.turn2Slip === 1 && row.turn3Slip === 1
-        );
-        this.$set(row, 'testing', row.veer && row.turn);
-        this.$set(
-          row,
-          'mute',
-          row.lowPressure === 1 &&
-            row.decibel === 1 &&
-            row.landing === 1 &&
-            row.pressurization === 1
-        );
-        return row;
-      });
-      this.tableDataOrg = list;
-      this.refreshTable();
+    // 点击按钮 - 详情
+    edit (item) {
+      this.modalShow = true;
+      this.isEdit = true;
+      this.modalData = item;
     },
-    // 根据条件渲染页面数据
-    refreshTable (value) {
-      // console.log(this.filterFormData.user);
-      // console.log(this.timeArray);
-      // 全部符合筛选条件的数据 -> 计总数用
-      this.tableDataAll = this.tableDataOrg.filter(row => {
-        if (
-          (row.user.indexOf(this.filterFormData.user).toString() > -1 ||
-            this.filterFormData.user === '全部') &&
-          (this.timeArray[0] < row.logTime && this.timeArray[1] > row.logTime)
-        ) {
-          return row;
+    // 点击表单按钮 - 确定
+    handleSubmit () {
+      if (this.isEdit) {
+        this.$refs.formModalData.validate(valid => {
+          if (valid) {
+            this.$Message.success('修改成功！');
+            this.modalShow = false;
+          }
+        });
+      } else {
+        this.$refs.formModalData.validate(valid => {
+          if (valid) {
+            this.$Message.success('新增成功！');
+            this.userGroup.push({
+              groupName: this.modalData.groupName,
+              check: false
+            });
+            console.log(this.userGroup);
+
+            this.modalShow = false;
+          }
+        });
+      }
+    },
+    // 点击表单按钮 - 取消
+    handleReset () {
+      if (this.isEdit) {
+        this.$refs.formModalData.validate(valid => {
+          if (valid) {
+            this.modalShow = false;
+          } else {
+            this.$Message.error('有未填写的内容！');
+          }
+        });
+      } else {
+        this.modalShow = false;
+      }
+    },
+    // 点击按钮 - 删除
+    deleteGroup (item) {
+      this.$Modal.confirm({
+        title: '确定删除该用户组？',
+        onOk: () => {
+          this.userGroup.forEach(group => {
+            if (item.groupName === group.groupName) {
+              const index = this.userGroup.indexOf(group);
+              this.userGroup.splice(index, 1);
+            }
+          });
+          this.$Message.success('删除成功');
+        },
+        closable: true
+      });
+    },
+    // 点击按钮 - 批量删除
+    batcthDelete () {
+      const multipleSelection = [];
+      this.userGroup.forEach(group => {
+        if (group.check === true) {
+          multipleSelection.push(group);
         }
       });
-      // 当前页要显示的数据
-      this.tableData = this.tableDataAll.slice(
-        (this.pageNum - 1) * this.pageSize,
-        this.pageNum * this.pageSize
-      );
+      if (multipleSelection.length === 0) {
+        this.$Message.warning('未选择数据');
+      } else {
+        this.$Modal.confirm({
+          title: '确定删除该用户组？',
+          onOk: () => {
+            multipleSelection.forEach(group => {
+              if (group.check === true) {
+                const index = this.userGroup.indexOf(group);
+                this.userGroup.splice(index, 1);
+              }
+            });
+            this.toggleSelect = false;
+            this.$Message.success('删除成功');
+          },
+          closable: true
+        });
+      }
     },
-    // timePicker - 数据发生改变
-    timeOnChange (timeArray) {
-      this.timeArray = timeArray;
+    // 点击按钮 - 新增
+    insert () {
+      this.$refs.formModalData.resetFields();
+      this.isEdit = false;
+      this.modalShow = true;
     },
-    // timePicker - 确认
-    timeOnOk () {
-      this.refreshTable();
-    },
-    // 清空筛选
-    clearData () {
-      this.filterFormData.user = '全部';
-      this.timeArray = ['1900-00-00 00:00:00', '3000-00-00 00:00:00'];
-      this.refreshTable();
-    },
-    // 分页
-    changePage (pageNum) {
-      this.pageNum = pageNum;
-      this.refreshTable();
-    },
-    // 每页条数变化
-    changePageSize (pageSize) {
-      this.pageSize = pageSize;
-      this.refreshTable();
+    // 顶部全选
+    toggleSelectAll () {
+      this.userGroup.forEach(group => {
+        group.check = !this.toggleSelect;
+      });
+      this.toggleSelect = !this.toggleSelect;
     }
   }
 };
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+.dooya-container /deep/ {
+  .ivu-card {
+    margin-bottom: 20px;
+    .ivu-card-body {
+      padding: 0;
+    }
+    .group-item {
+      &:not(:last-child) {
+        padding: 15px 16px;
+        .ivu-checkbox-default {
+          margin-right: 12px;
+        }
+      }
+      &:not(:nth-last-child(2)) {
+        border-bottom: 1px solid #e8eaec;
+      }
+      &-buttons {
+        float: right;
+      }
+    }
+  }
+}
 </style>

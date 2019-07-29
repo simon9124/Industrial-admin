@@ -9,7 +9,7 @@
       <Card>
         <p slot="title">
           <Icon type="ios-desktop-outline" />
-          服务器
+          &nbsp;服务器
         </p>
         <Form ref="server"
               :model="server"
@@ -61,7 +61,7 @@
       <Card>
         <p slot="title">
           <Icon type="ios-desktop" />
-          服务器扩展检查
+          &nbsp;服务器扩展检查
         </p>
         <Form ref="server"
               :model="server"

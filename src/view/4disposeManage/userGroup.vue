@@ -128,8 +128,6 @@ export default {
               groupName: this.modalData.groupName,
               check: false
             });
-            console.log(this.userGroup);
-
             this.modalShow = false;
           }
         });

@@ -595,7 +595,7 @@ export default [
         path: 'log',
         name: 'log',
         meta: {
-          title: '日志管理'
+          title: '日志记录'
         },
         component: () => import('@/view/4disposeManage/log.vue')
       },

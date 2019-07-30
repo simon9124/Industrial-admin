@@ -478,7 +478,7 @@ export default [
         path: 'inspector',
         name: 'inspector',
         meta: {
-          icon: 'ios-navigate',
+          icon: 'md-person',
           title: '当前检测员'
         },
         component: () => import('@/view/1inspector/inspector.vue')
@@ -489,7 +489,7 @@ export default [
     path: '/control',
     name: 'control',
     meta: {
-      icon: 'ios-navigate',
+      icon: 'md-laptop',
       title: '驾驶舱模块数据',
       hideInBread: true
     },
@@ -514,8 +514,8 @@ export default [
     name: 'systemManage',
     meta: {
       hideInBread: true,
-      title: '系统管理',
-      icon: 'ios-navigate'
+      title: '检测管理',
+      icon: 'md-options'
     },
     component: Main,
     children: [
@@ -545,8 +545,8 @@ export default [
     name: 'manage',
     meta: {
       hideInBread: true,
-      title: '管理',
-      icon: 'ios-navigate'
+      title: '系统管理',
+      icon: 'md-settings'
     },
     component: Main,
     children: [

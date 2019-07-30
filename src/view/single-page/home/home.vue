@@ -1,9 +1,11 @@
 <template>
-  <div>
+  <div class="dooya-container">
+
+    <!-- count -->
     <Row :gutter="20">
       <i-col :xs="12"
-             :md="8"
-             :lg="4"
+             :md="12"
+             :lg="6"
              v-for="(infor, i) in inforCardData"
              :key="`infor-${i}`"
              style="height: 120px;padding-bottom: 10px;">
@@ -17,90 +19,92 @@
         </infor-card>
       </i-col>
     </Row>
+
+    <!-- charts -->
     <Row :gutter="20"
          style="margin-top: 10px;">
       <i-col :md="24"
              :lg="8"
              style="margin-bottom: 20px;">
         <Card shadow>
-          <chart-pie style="height: 300px;"
-                     :value="pieData"
-                     text="用户访问来源"></chart-pie>
+          <qualification-rate-today style="height: 320px;"></qualification-rate-today>
         </Card>
       </i-col>
       <i-col :md="24"
-             :lg="16"
+             :lg="8"
              style="margin-bottom: 20px;">
         <Card shadow>
-          <chart-bar style="height: 300px;"
-                     :value="barData"
-                     text="每周用户活跃量" />
+          <check-standard class='chart-check-standard'
+                          style="height: 320px;"></check-standard>
+        </Card>
+      </i-col>
+      <i-col :md="24"
+             :lg="8"
+             style="margin-bottom: 20px;">
+        <Card shadow>
+          <product-sum style="height: 320px;"></product-sum>
         </Card>
       </i-col>
     </Row>
+
+    <!-- table -->
     <Row>
-      <Card shadow>
-        <example style="height: 310px;" />
-      </Card>
+      <ElectricSearch></ElectricSearch>
     </Row>
+
   </div>
 </template>
 
 <script>
 import InforCard from '_c/info-card';
 import CountTo from '_c/count-to';
-import { ChartPie, ChartBar } from '_c/charts';
+import CheckStandard from './checkStandard.vue';
+import ProductSum from './productSum.vue';
+import QualificationRateToday from './qualificationRateToday.vue';
 import Example from './example.vue';
+import ElectricSearch from '@/view/2systemManage/electricSearch';
+
 export default {
   name: 'home',
   components: {
     InforCard,
     CountTo,
-    ChartPie,
-    ChartBar,
-    Example
+    Example,
+    ProductSum,
+    CheckStandard,
+    QualificationRateToday,
+    ElectricSearch
   },
   data () {
     return {
       inforCardData: [
         {
-          title: '新增用户',
-          icon: 'md-person-add',
-          count: 803,
+          title: '今日检测',
+          icon: 'ios-build',
+          count: 12,
           color: '#2d8cf0'
         },
-        { title: '累计点击', icon: 'md-locate', count: 232, color: '#19be6b' },
         {
-          title: '新增问答',
-          icon: 'md-help-circle',
-          count: 142,
+          title: '本月检测',
+          icon: 'ios-build-outline',
+          count: 298,
+          color: '#19be6b'
+        },
+        {
+          title: '本季检测',
+          icon: 'md-build',
+          count: 744,
           color: '#ff9900'
         },
-        { title: '分享统计', icon: 'md-share', count: 657, color: '#ed3f14' },
+        // { title: '合格率', icon: 'md-share', count: 92, color: '#ed3f14' },
         {
-          title: '新增互动',
-          icon: 'md-chatbubbles',
-          count: 12,
+          title: '生产总量',
+          icon: 'md-hand',
+          count: 1288,
           color: '#E46CBB'
-        },
-        { title: '新增页面', icon: 'md-map', count: 14, color: '#9A66E4' }
-      ],
-      pieData: [
-        { value: 335, name: '直接访问' },
-        { value: 310, name: '邮件营销' },
-        { value: 234, name: '联盟广告' },
-        { value: 135, name: '视频广告' },
-        { value: 1548, name: '搜索引擎' }
-      ],
-      barData: {
-        Mon: 13253,
-        Tue: 34235,
-        Wed: 26321,
-        Thu: 12340,
-        Fri: 24643,
-        Sat: 1322,
-        Sun: 1324
-      }
+        }
+        // { title: '新增页面', icon: 'md-map', count: 14, color: '#9A66E4' }
+      ]
     };
   },
   mounted () {
@@ -109,8 +113,15 @@ export default {
 };
 </script>
 
-<style lang="less">
-.count-style {
-  font-size: 50px;
+<style rel="stylesheet/scss" lang="scss" scoped>
+.dooya-container /deep/ {
+  .count-style {
+    font-size: 50px;
+  }
+  .chart-check-standard > div {
+    canvas:not(:first-child) {
+      top: 10px !important;
+    }
+  }
 }
 </style>

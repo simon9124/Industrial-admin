@@ -35,9 +35,21 @@ export default {
           subtext: this.subtext,
           x: 'center'
         },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            label: {
+              backgroundColor: '#6a7985'
+            }
+          }
+        },
         xAxis: {
           type: 'category',
-          data: xAxisData
+          data: xAxisData,
+          splitLine: {
+            show: false
+          }
         },
         yAxis: {
           type: 'value'
@@ -45,7 +57,8 @@ export default {
         series: [
           {
             data: seriesData,
-            type: 'bar'
+            type: 'bar',
+            barWidth: 30
           }
         ]
       };

@@ -29,6 +29,7 @@ export default {
     this.$nextTick(() => {
       let legend = this.value.map(_ => _.name);
       let option = {
+        color: ['#9A66E4', '#ff9900'],
         title: {
           text: this.text,
           subtext: this.subtext,

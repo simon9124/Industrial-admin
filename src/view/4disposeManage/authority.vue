@@ -1,13 +1,5 @@
 <template>
   <div class="dooya-container">
-    <Row>
-      <Button type="primary"
-              icon="md-add">权限</Button>
-      <!-- @click="insert" -->
-    </Row>
-
-    <br>
-
     <Row :gutter="16">
 
       <!-- 服务器 -->
@@ -19,6 +11,12 @@
           <Icon type="ios-lock-outline" />
           &nbsp;栏目权限
         </p>
+
+        <Button slot="extra"
+                type="primary"
+                icon="md-add"
+                size="small">权限</Button>
+
         <Form ref="authority"
               :model="authority"
               label-position="left"

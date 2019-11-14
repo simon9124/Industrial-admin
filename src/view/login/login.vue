@@ -6,14 +6,14 @@
   <div class="login">
     <div class="login-con">
 
-      <!-- 杜亚管理登录 -->
+      <!-- 追溯系统登录 -->
       <Card v-if="isManage"
             icon="log-in"
             :bordered="false">
         <p slot="title"
            style="color:#2d8cf0">
           <Icon type="ios-log-in" />
-          &nbsp;杜亚管理登录
+          &nbsp;追溯系统登录
         </p>
 
         <a class="toggle-login"
@@ -47,7 +47,7 @@
            type="primary"
            icon="md-add"
            size="small"
-           @click="isManage=!isManage">杜亚管理登录</a>
+           @click="isManage=!isManage">追溯系统登录</a>
 
         <p class="login-tip">选择所在流水线进入</p>
         <div class="form-con">

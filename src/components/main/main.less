@@ -9,7 +9,7 @@
       height: 50px;
       width: auto;
       display: block;
-      margin: 0 auto;
+      margin: 5px auto;
     }
   }
 
@@ -17,6 +17,15 @@
     background: #fff;
     padding: 0 20px;
     width: 100%;
+
+    .line-num {
+      float: right;
+      font-size: 16px;
+      font-weight: bold;
+      margin-right: 10px;
+      line-height: 66px;
+    }
+
   }
 
   .main-layout-con {
@@ -88,4 +97,24 @@
 
 .ivu-select-dropdown.ivu-dropdown-transfer {
   max-height: 400px;
+}
+
+@media screen and (max-width: 900px) {
+  .main {
+    .logo-con {
+      width: 65px;
+
+      img {
+        height: 44px;
+        // height: 50px;
+        width: auto;
+        display: block;
+        margin: 5px auto;
+      }
+    }
+
+    .menu-collapsed {
+      width: 65px;
+    }
+  }
 }

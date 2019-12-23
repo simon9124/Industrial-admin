@@ -17,7 +17,8 @@
           <menu-item v-else
                      :name="getNameOrHref(item, true)"
                      :key="`menu-${item.children[0].name}`">
-            <common-icon :type="item.children[0].icon || ''" /><span>{{ showTitle(item.children[0]) }}</span></menu-item>
+            <common-icon :type="item.children[0].icon || ''" />
+            <span>{{ showTitle(item.children[0]) }}</span></menu-item>
         </template>
         <template v-else>
           <side-menu-item v-if="showChildren(item)"
@@ -26,7 +27,8 @@
           <menu-item v-else
                      :name="getNameOrHref(item)"
                      :key="`menu-${item.name}`">
-            <common-icon :type="item.icon || ''" /><span>{{ showTitle(item) }}</span></menu-item>
+            <common-icon :type="item.icon || ''" />
+            <span>{{ showTitle(item) }}</span></menu-item>
         </template>
       </template>
     </Menu>
@@ -52,20 +54,21 @@
              :style="{textAlign: 'center'}">
             <common-icon :size="rootIconSize"
                          :color="textColor"
-                         :type="item.icon || (item.children && item.children[0].icon)" /></a>
+                         :type="item.icon || (item.children && item.children[0].icon)" />
+          </a>
         </Tooltip>
       </template>
     </div>
   </div>
 </template>
 <script>
-import SideMenuItem from './side-menu-item.vue';
-import CollapsedMenu from './collapsed-menu.vue';
-import { getUnion } from '@/libs/tools';
-import mixin from './mixin';
+import SideMenuItem from "./side-menu-item.vue";
+import CollapsedMenu from "./collapsed-menu.vue";
+import { getUnion } from "@/libs/tools";
+import mixin from "./mixin";
 
 export default {
-  name: 'SideMenu',
+  name: "SideMenu",
   mixins: [mixin],
   components: {
     SideMenuItem,
@@ -74,7 +77,7 @@ export default {
   props: {
     menuList: {
       type: Array,
-      default () {
+      default() {
         return [];
       }
     },
@@ -83,7 +86,7 @@ export default {
     },
     theme: {
       type: String,
-      default: 'dark'
+      default: "dark"
     },
     rootIconSize: {
       type: Number,
@@ -96,39 +99,39 @@ export default {
     accordion: Boolean,
     activeName: {
       type: String,
-      default: ''
+      default: ""
     },
     openNames: {
       type: Array,
       default: () => []
     }
   },
-  data () {
+  data() {
     return {
       openedNames: []
     };
   },
   methods: {
-    handleSelect (name) {
-      this.$emit('on-select', name);
+    handleSelect(name) {
+      this.$emit("on-select", name);
     },
-    getOpenedNamesByActiveName (name) {
+    getOpenedNamesByActiveName(name) {
       return this.$route.matched
         .map(item => item.name)
         .filter(item => item !== name);
     },
-    updateOpenName (name) {
+    updateOpenName(name) {
       if (name === this.$config.homeName) this.openedNames = [];
       else this.openedNames = this.getOpenedNamesByActiveName(name);
     }
   },
   computed: {
-    textColor () {
-      return this.theme === 'dark' ? '#fff' : '#495060';
+    textColor() {
+      return this.theme === "dark" ? "#fff" : "#495060";
     }
   },
   watch: {
-    activeName (name) {
+    activeName(name) {
       if (this.accordion) {
         this.openedNames = this.getOpenedNamesByActiveName(name);
       } else {
@@ -138,16 +141,16 @@ export default {
         );
       }
     },
-    openNames (newNames) {
+    openNames(newNames) {
       this.openedNames = newNames;
     },
-    openedNames () {
+    openedNames() {
       this.$nextTick(() => {
         this.$refs.menu.updateOpened();
       });
     }
   },
-  mounted () {
+  mounted() {
     this.openedNames = getUnion(
       this.openedNames,
       this.getOpenedNamesByActiveName(name)

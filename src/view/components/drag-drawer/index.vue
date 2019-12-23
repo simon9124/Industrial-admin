@@ -54,9 +54,9 @@
 </template>
 
 <script>
-import DragDrawer from '_c/drag-drawer'
+import DragDrawer from "_c/drag-drawer";
 export default {
-  name: 'drag_drawer_page',
+  name: "drag_drawer_page",
   components: {
     DragDrawer
   },
@@ -69,16 +69,16 @@ export default {
       width2: 200,
       placement: false,
       draggable: true
-    }
+    };
   },
   computed: {
     placementComputed () {
-      return this.placement ? 'left' : 'right'
+      return this.placement ? "left" : "right";
     }
   },
   methods: {
     handleResize (event) {
-      const { atMin } = event
+      const { atMin } = event;
       /* eslint-disable */
       console.log(atMin);
     },

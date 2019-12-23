@@ -15,14 +15,14 @@
                  @on-select="turnToPage"
                  :menu-list="menuList">
         <!-- 需要放在菜单上面的内容，如Logo，写在side-menu标签内部，如下 -->
-        <div class="logo-con">
+        <!-- <div class="logo-con">
           <img v-show="!collapsed"
                :src="maxLogo"
                key="max-logo" />
           <img v-show="collapsed"
                :src="minLogo"
                key="min-logo" />
-        </div>
+        </div> -->
       </side-menu>
     </Sider>
     <Layout>
@@ -49,16 +49,19 @@
           <fullscreen v-model="isFullscreen"
                       style="margin-right: 10px;" />
 
+          <!-- 产线号 -->
+          <div class="line-num">{{lineNo}}号产线</div>
+
         </header-bar>
       </Header>
       <Content class="main-content-con">
         <Layout class="main-layout-con">
-          <div class="tag-nav-wrapper">
+          <!-- <div class="tag-nav-wrapper">
             <tags-nav :value="$route"
                       @input="handleClick"
                       :list="tagNavList"
                       @on-close="handleCloseTag" />
-          </div>
+          </div> -->
           <Content class="content-wrapper">
             <keep-alive :include="cacheList">
               <router-view />
@@ -74,22 +77,27 @@
   </Layout>
 </template>
 <script>
-import SideMenu from './components/side-menu';
-import HeaderBar from './components/header-bar';
-import TagsNav from './components/tags-nav';
-import User from './components/user';
-import ABackTop from './components/a-back-top';
-import Fullscreen from './components/fullscreen';
+import SideMenu from "./components/side-menu";
+import HeaderBar from "./components/header-bar";
+import TagsNav from "./components/tags-nav";
+import User from "./components/user";
+import ABackTop from "./components/a-back-top";
+import Fullscreen from "./components/fullscreen";
 // import Language from './components/language';
-import ErrorStore from './components/error-store';
-import { mapMutations, mapActions, mapGetters } from 'vuex';
-import { getNewTagList, routeEqual } from '@/libs/util';
-import routers from '@/router/routers';
-import minLogo from '@/assets/images/dooya-min.png';
-import maxLogo from '@/assets/images/dooya.jpg';
-import './main.less';
+import ErrorStore from "./components/error-store";
+import { mapMutations, mapActions, mapGetters } from "vuex";
+import { getNewTagList, routeEqual } from "@/libs/util";
+import routers from "@/router/routers";
+import minLogo from "@/assets/images/dooya-min.png";
+import maxLogo from "@/assets/images/dooya.jpg";
+// import minLogo from '@/assets/images/702-180_small.png';
+// import maxLogo from '@/assets/images/702-180_big.png';
+import "./main.less";
+// function
+import { params } from "@/libs/params";
+
 export default {
-  name: 'Main',
+  name: "Main",
   components: {
     SideMenu,
     HeaderBar,
@@ -100,69 +108,74 @@ export default {
     User,
     ABackTop
   },
-  data () {
+  data() {
     return {
       collapsed: false,
       minLogo,
       maxLogo,
-      isFullscreen: false
+      isFullscreen: false,
+      lineNo: ""
     };
   },
   computed: {
-    ...mapGetters(['errorCount']),
-    tagNavList () {
+    ...mapGetters(["errorCount"]),
+    tagNavList() {
       return this.$store.state.app.tagNavList;
     },
-    tagRouter () {
+    tagRouter() {
       return this.$store.state.app.tagRouter;
     },
-    userAvator () {
+    userAvator() {
       return this.$store.state.user.avatorImgPath;
     },
-    cacheList () {
+    /* eslint-disable */
+    cacheList() {
       const list = [
-        'ParentView',
+        "ParentView",
         ...(this.tagNavList.length
           ? this.tagNavList
-            .filter(item => !(item.meta && item.meta.notCache))
-            .map(item => item.name)
+              .filter(item => !(item.meta && item.meta.notCache))
+              .map(item => item.name)
           : [])
       ];
       return list;
     },
-    menuList () {
+    menuList() {
       return this.$store.getters.menuList;
     },
-    local () {
+    local() {
       return this.$store.state.app.local;
     },
-    hasReadErrorPage () {
+    hasReadErrorPage() {
       return this.$store.state.app.hasReadErrorPage;
     },
-    unreadCount () {
+    unreadCount() {
       return this.$store.state.user.unreadCount;
     }
   },
   methods: {
     ...mapMutations([
-      'setBreadCrumb',
-      'setTagNavList',
-      'addTag',
-      'setLocal',
-      'setHomeRoute',
-      'closeTag'
+      "setBreadCrumb",
+      "setTagNavList",
+      "addTag",
+      "setLocal",
+      "setHomeRoute",
+      "closeTag"
     ]),
-    ...mapActions(['handleLogin', 'getUnreadMessageCount']),
-    turnToPage (route) {
+    ...mapActions([
+      "handleLogin"
+      // 'getUnreadMessageCount'
+    ]),
+    turnToPage(route) {
       let { name, params, query } = {};
-      if (typeof route === 'string') name = route;
+      if (typeof route === "string") name = route;
       else {
         name = route.name;
         params = route.params;
         query = route.query;
       }
-      if (name.indexOf('isTurnByHref_') > -1) {
-        window.open(name.split('_')[1]);
+      if (name.indexOf("isTurnByHref_") > -1) {
+        window.open(name.split("_")[1]);
         return;
       }
       this.$router.push({
@@ -171,12 +184,12 @@ export default {
         query
       });
     },
-    handleCollapsedChange (state) {
+    handleCollapsedChange(state) {
       this.collapsed = state;
     },
-    handleCloseTag (res, type, route) {
-      if (type !== 'others') {
-        if (type === 'all') {
+    handleCloseTag(res, type, route) {
+      if (type !== "others") {
+        if (type === "all") {
           this.turnToPage(this.$config.homeName);
         } else {
           if (routeEqual(this.$route, route)) {
@@ -186,23 +199,27 @@ export default {
       }
       this.setTagNavList(res);
     },
-    handleClick (item) {
+    handleClick(item) {
       this.turnToPage(item);
     }
   },
   watch: {
-    $route (newRoute) {
+    $route(newRoute) {
       const { name, query, params, meta } = newRoute;
       this.addTag({
         route: { name, query, params, meta },
-        type: 'push'
+        type: "push"
       });
       this.setBreadCrumb(newRoute);
       this.setTagNavList(getNewTagList(this.tagNavList, newRoute));
       this.$refs.sideMenu.updateOpenName(newRoute.name);
     }
   },
-  mounted () {
+  created() {
+    // 产线号
+    this.lineNo = params(this, "loginLineNo") || "22";
+  },
+  mounted() {
     /**
      * 解决 css 引入图片在 github pages 无法获取的问题
      */
@@ -227,7 +244,7 @@ export default {
       });
     }
     // 获取未读消息条数
-    this.getUnreadMessageCount();
+    // this.getUnreadMessageCount();
   }
 };
 </script>

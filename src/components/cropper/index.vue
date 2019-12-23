@@ -47,15 +47,15 @@
 </template>
 
 <script>
-import Cropper from 'cropperjs'
-import './index.less'
-import 'cropperjs/dist/cropper.min.css'
+import Cropper from "cropperjs";
+import "./index.less";
+import "cropperjs/dist/cropper.min.css";
 export default {
-  name: 'Cropper',
+  name: "Cropper",
   props: {
     src: {
       type: String,
-      default: ''
+      default: ""
     },
     preview: {
       type: Boolean,
@@ -67,73 +67,73 @@ export default {
     },
     cropButtonText: {
       type: String,
-      default: '裁剪'
+      default: "裁剪"
     }
   },
   data () {
     return {
       cropper: null,
-      insideSrc: ''
-    }
+      insideSrc: ""
+    };
   },
   computed: {
     imgId () {
-      return `cropper${this._uid}`
+      return `cropper${this._uid}`;
     },
     previewId () {
-      return `cropper_preview${this._uid}`
+      return `cropper_preview${this._uid}`;
     }
   },
   watch: {
     src (src) {
-      this.replace(src)
+      this.replace(src);
     },
     insideSrc (src) {
-      this.replace(src)
+      this.replace(src);
     }
   },
   methods: {
     beforeUpload (file) {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
       reader.onload = (event) => {
-        this.insideSrc = event.srcElement.result
-      }
-      return false
+        this.insideSrc = event.srcElement.result;
+      };
+      return false;
     },
     replace (src) {
-      this.cropper.replace(src)
-      this.insideSrc = src
+      this.cropper.replace(src);
+      this.insideSrc = src;
     },
     rotate () {
-      this.cropper.rotate(90)
+      this.cropper.rotate(90);
     },
     shrink () {
-      this.cropper.zoom(-0.1)
+      this.cropper.zoom(-0.1);
     },
     magnify () {
-      this.cropper.zoom(0.1)
+      this.cropper.zoom(0.1);
     },
     scale (d) {
-      this.cropper[`scale${d}`](-this.cropper.getData()[`scale${d}`])
+      this.cropper[`scale${d}`](-this.cropper.getData()[`scale${d}`]);
     },
     move (...argu) {
-      this.cropper.move(...argu)
+      this.cropper.move(...argu);
     },
     crop () {
       this.cropper.getCroppedCanvas().toBlob(blob => {
-        this.$emit('on-crop', blob)
-      })
+        this.$emit("on-crop", blob);
+      });
     }
   },
   mounted () {
     this.$nextTick(() => {
-      let dom = document.getElementById(this.imgId)
+      let dom = document.getElementById(this.imgId);
       this.cropper = new Cropper(dom, {
         preview: `#${this.previewId}`,
         checkCrossOrigin: true
-      })
-    })
+      });
+    });
   }
-}
+};
 </script>

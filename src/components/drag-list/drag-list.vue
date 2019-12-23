@@ -19,9 +19,9 @@
   </div>
 </template>
 <script>
-import draggable from 'vuedraggable'
+import draggable from "vuedraggable";
 export default {
-  name: 'DragList',
+  name: "DragList",
   components: {
     draggable
   },
@@ -41,45 +41,45 @@ export default {
   },
   data () {
     return {
-      options: { group: 'drag_list' }
-    }
+      options: { group: "drag_list" }
+    };
   },
   methods: {
     handleListChange (value, type) {
-      if (type === 'left') this.$emit('update:list1', value)
-      else this.$emit('update:list2', value)
+      if (type === "left") this.$emit("update:list1", value);
+      else this.$emit("update:list2", value);
     },
     handleEnd (event, type) {
-      const srcClassName = (event.srcElement || event.target).classList[0]
-      const targetClassName = event.to.classList[0]
-      let src = ''
-      let target = ''
+      const srcClassName = (event.srcElement || event.target).classList[0];
+      const targetClassName = event.to.classList[0];
+      let src = "";
+      let target = "";
       if (srcClassName === targetClassName) {
-        if (type === 'left') {
-          src = 'left'
-          target = 'left'
+        if (type === "left") {
+          src = "left";
+          target = "left";
         } else {
-          src = 'right'
-          target = 'right'
+          src = "right";
+          target = "right";
         }
       } else {
-        if (type === 'left') {
-          src = 'left'
-          target = 'right'
+        if (type === "left") {
+          src = "left";
+          target = "right";
         } else {
-          src = 'right'
-          target = 'left'
+          src = "right";
+          target = "left";
         }
       }
-      this.$emit('on-change', {
+      this.$emit("on-change", {
         src: src,
         target: target,
         oldIndex: event.oldIndex,
         newIndex: event.newIndex
-      })
+      });
     }
   }
-}
+};
 </script>
 <style lang="less">
 .drag-list-wrapper{

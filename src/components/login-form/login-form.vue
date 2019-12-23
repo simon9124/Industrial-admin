@@ -24,38 +24,55 @@
     </FormItem>
     <FormItem>
       <Button @click="handleSubmit"
+              :loading="buttonLoading"
               type="primary"
               long>登录</Button>
     </FormItem>
   </Form>
 </template>
+
 <script>
+// getUrlKey 截取地址栏参数
+// function getUrlKey(name) {
+//   return (
+//     decodeURIComponent(
+//       (new RegExp("[?|&]" + name + "=" + "([^&;]+?)(&|#|;|$)").exec(
+//         location.href
+//         // eslint-disable-next-line no-sparse-arrays
+//       ) || [, ""])[1].replace(/\+/g, "%20")
+//     ) || null
+//   );
+// }
+
 export default {
-  name: 'LoginForm',
+  name: "LoginForm",
   props: {
     userNameRules: {
       type: Array,
       default: () => {
-        return [{ required: true, message: '账号不能为空', trigger: 'blur' }];
+        return [{ required: true, message: "账号不能为空", trigger: "blur" }];
       }
     },
     passwordRules: {
       type: Array,
       default: () => {
-        return [{ required: true, message: '密码不能为空', trigger: 'blur' }];
+        return [{ required: true, message: "密码不能为空", trigger: "blur" }];
       }
     }
   },
-  data () {
+  data() {
     return {
       form: {
-        userName: 'super_admin',
-        password: ''
-      }
+        userName: "",
+        password: "",
+        // lineNo: getUrlKey('lineNo') || '22'
+        lineNo: this.$route.query.lineNo || "22"
+      },
+      buttonLoading: false
     };
   },
   computed: {
-    rules () {
+    rules() {
       return {
         userName: this.userNameRules,
         password: this.passwordRules
@@ -63,13 +80,19 @@ export default {
     }
   },
   methods: {
-    handleSubmit () {
+    handleSubmit() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.$emit('on-success-valid', {
+          this.buttonLoading = true;
+          this.$emit("on-success-valid", {
             userName: this.form.userName,
-            password: this.form.password
+            password: this.form.password,
+            lineNo: this.form.lineNo
           });
+          localStorage.setItem("loginLineNo", this.form.lineNo);
+          setTimeout(() => {
+            this.buttonLoading = false;
+          }, 1500);
         }
       });
     }

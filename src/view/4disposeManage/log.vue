@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import list from './mockData/log';
+import list from "./mockData/log";
 
 export default {
   data () {
@@ -70,40 +70,40 @@ export default {
       // 表头列项
       tableColumns: [
         {
-          title: 'URL',
-          key: 'URL',
-          align: 'center',
+          title: "URL",
+          key: "URL",
+          align: "center",
           minWidth: 250,
           tooltip: true
         },
         {
-          title: '类别',
-          key: 'classification',
-          align: 'center',
+          title: "类别",
+          key: "classification",
+          align: "center",
           minWidth: 120
         },
         {
-          title: '消息',
-          key: 'message',
-          align: 'center',
+          title: "消息",
+          key: "message",
+          align: "center",
           minWidth: 220
         },
         {
-          title: '用户',
-          key: 'user',
-          align: 'center',
+          title: "用户",
+          key: "user",
+          align: "center",
           minWidth: 120
         },
         {
-          title: 'IP',
-          key: 'logIP',
-          align: 'center',
+          title: "IP",
+          key: "logIP",
+          align: "center",
           minWidth: 150
         },
         {
-          title: '时间',
-          key: 'logTime',
-          align: 'center',
+          title: "时间",
+          key: "logTime",
+          align: "center",
           minWidth: 150
         }
       ],
@@ -113,10 +113,10 @@ export default {
       pageSize: 10,
       // 筛选表单
       filterFormData: {
-        user: '全部'
+        user: "全部"
       },
       // 时间区间
-      timeArray: ['1900-00-00 00:00:00', '3000-00-00 00:00:00']
+      timeArray: ["1900-00-00 00:00:00", "3000-00-00 00:00:00"]
     };
   },
   created () {
@@ -128,18 +128,18 @@ export default {
       list.forEach(row => {
         this.$set(
           row,
-          'veer',
+          "veer",
           row.veer1Slip === 1 && row.veer2Slip === 1 && row.veer3Slip === 1
         );
         this.$set(
           row,
-          'turn',
+          "turn",
           row.turn1Slip === 1 && row.turn2Slip === 1 && row.turn3Slip === 1
         );
-        this.$set(row, 'testing', row.veer && row.turn);
+        this.$set(row, "testing", row.veer && row.turn);
         this.$set(
           row,
-          'mute',
+          "mute",
           row.lowPressure === 1 &&
             row.decibel === 1 &&
             row.landing === 1 &&
@@ -158,7 +158,7 @@ export default {
       this.tableDataAll = this.tableDataOrg.filter(row => {
         if (
           (row.user.indexOf(this.filterFormData.user).toString() > -1 ||
-            this.filterFormData.user === '全部') &&
+            this.filterFormData.user === "全部") &&
           (this.timeArray[0] < row.logTime && this.timeArray[1] > row.logTime)
         ) {
           return row;
@@ -180,8 +180,8 @@ export default {
     },
     // 清空筛选
     clearData () {
-      this.filterFormData.user = '全部';
-      this.timeArray = ['1900-00-00 00:00:00', '3000-00-00 00:00:00'];
+      this.filterFormData.user = "全部";
+      this.timeArray = ["1900-00-00 00:00:00", "3000-00-00 00:00:00"];
       this.refreshTable();
     },
     // 分页

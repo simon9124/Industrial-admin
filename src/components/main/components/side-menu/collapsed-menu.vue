@@ -33,12 +33,12 @@
   </Dropdown>
 </template>
 <script>
-import mixin from './mixin';
-import itemMixin from './item-mixin';
-import { findNodeUpperByClasses } from '@/libs/util';
+import mixin from "./mixin";
+import itemMixin from "./item-mixin";
+import { findNodeUpperByClasses } from "@/libs/util";
 
 export default {
-  name: 'CollapsedMenu',
+  name: "CollapsedMenu",
   mixins: [mixin, itemMixin],
   props: {
     hideTitle: {
@@ -50,28 +50,28 @@ export default {
       default: 16
     }
   },
-  data () {
+  data() {
     return {
-      placement: 'right-end'
+      placement: "right-end"
     };
   },
   methods: {
-    handleClick (name) {
-      this.$emit('on-click', name);
+    handleClick(name) {
+      this.$emit("on-click", name);
     },
-    handleMousemove (event, children) {
+    handleMousemove(event, children) {
       const { pageY } = event;
       const height = children.length * 38;
       const isOverflow = pageY + height < window.innerHeight;
-      this.placement = isOverflow ? 'right-start' : 'right-end';
+      this.placement = isOverflow ? "right-start" : "right-end";
     }
   },
-  mounted () {
+  mounted() {
     let dropdown = findNodeUpperByClasses(this.$refs.dropdown.$el, [
-      'ivu-select-dropdown',
-      'ivu-dropdown-transfer'
+      "ivu-select-dropdown",
+      "ivu-dropdown-transfer"
     ]);
-    if (dropdown) dropdown.style.overflow = 'visible';
+    if (dropdown) dropdown.style.overflow = "visible";
   }
 };
 </script>

@@ -14,7 +14,13 @@ module.exports = {
     }],
     'no-undef': 'off',
     'camelcase': 'off',
-    'semi': ["error", "always"]
+    "quotes": [1, "double"],
+    'semi': ["error", "always"],
+    'space-before-function-paren': [0, 'always'],
+    // "space-before-function-paren": [2, {
+    //   "anonymous": "never",
+    //   "named": "never"
+    // }]
   },
   parserOptions: {
     parser: 'babel-eslint'

@@ -1,16 +1,12 @@
-import Mock from 'mockjs';
-import {
-  login,
-  logout,
-  getUserInfo
-} from './login';
+import Mock from "mockjs";
+import { login, logout, getUserInfo } from "./login";
 import {
   getTableData,
   getDragList,
   uploadImage,
   getOrgData,
   getTreeSelectData
-} from './data';
+} from "./data";
 import {
   getMessageInit,
   getContentByMsgId,
@@ -18,7 +14,7 @@ import {
   removeReaded,
   restoreTrash,
   messageCount
-} from './user';
+} from "./user";
 
 // 配置Ajax请求延时，可用来测试网络延迟大时项目中一些效果
 Mock.setup({
@@ -26,12 +22,14 @@ Mock.setup({
 });
 
 // 登录相关和获取用户信息
-Mock.mock(/\/login/, login);
-Mock.mock(/\/get_info/, getUserInfo);
+// Mock.mock(/\/login/, login);
+Mock.mock(/\/api\/token/, login);
+// Mock.mock(/\/get_info/, getUserInfo);
+Mock.mock(/\/api\/user\/getUserInfo/, getUserInfo);
 Mock.mock(/\/logout/, logout);
 Mock.mock(/\/get_table_data/, getTableData);
 Mock.mock(/\/get_drag_list/, getDragList);
-Mock.mock(/\/save_error_logger/, 'success');
+Mock.mock(/\/save_error_logger/, "success");
 Mock.mock(/\/image\/upload/, uploadImage);
 Mock.mock(/\/message\/init/, getMessageInit);
 Mock.mock(/\/message\/content/, getContentByMsgId);

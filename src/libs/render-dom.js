@@ -1,5 +1,5 @@
 export default {
-  name: 'RenderDom',
+  name: "RenderDom",
   functional: true,
   props: {
     render: Function

@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import CountUp from 'countup';
-import './index.less';
+import CountUp from "countup";
+import "./index.less";
 export default {
-  name: 'CountTo',
+  name: "CountTo",
   props: {
     init: {
       type: Number,
@@ -43,7 +43,7 @@ export default {
      */
     decimal: {
       type: String,
-      default: '.'
+      default: "."
     },
     /**
      * @description 动画持续的时间，单位是秒
@@ -78,7 +78,7 @@ export default {
      */
     separator: {
       type: String,
-      default: ','
+      default: ","
     },
     /**
      * @description 是否简化显示，设为true后会使用unit单位来做相关省略
@@ -93,42 +93,42 @@ export default {
      */
     unit: {
       type: Array,
-      default () {
-        return [[3, 'K+'], [6, 'M+'], [9, 'B+']];
+      default() {
+        return [[3, "K+"], [6, "M+"], [9, "B+"]];
       }
     },
     countClass: {
       type: String,
-      default: ''
+      default: ""
     },
     unitClass: {
       type: String,
-      default: ''
+      default: ""
     }
   },
-  data () {
+  data() {
     return {
       counter: null,
-      unitText: ''
+      unitText: ""
     };
   },
   computed: {
-    counterId () {
+    counterId() {
       return `count_to_${this._uid}`;
     }
   },
   methods: {
-    getHandleVal (val, len) {
+    getHandleVal(val, len) {
       return {
         endVal: parseInt(val / Math.pow(10, this.unit[len - 1][0])),
         unitText: this.unit[len - 1][1]
       };
     },
-    transformValue (val) {
+    transformValue(val) {
       let len = this.unit.length;
       let res = {
         endVal: 0,
-        unitText: ''
+        unitText: ""
       };
       if (val < Math.pow(10, this.unit[0][0])) res.endVal = val;
       else {
@@ -146,7 +146,7 @@ export default {
       }
       return res;
     },
-    getValue (val) {
+    getValue(val) {
       let res = 0;
       if (this.simplify) {
         let { endVal, unitText } = this.transformValue(val);
@@ -158,7 +158,7 @@ export default {
       return res;
     }
   },
-  mounted () {
+  mounted() {
     this.$nextTick(() => {
       let endVal = this.getValue(this.end);
       this.counter = new CountUp(
@@ -180,7 +180,7 @@ export default {
     });
   },
   watch: {
-    end (newVal) {
+    end(newVal) {
       let endVal = this.getValue(newVal);
       this.counter.update(endVal);
     }

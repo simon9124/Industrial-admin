@@ -30,10 +30,10 @@
 </template>
 
 <script>
-import Icons from '_c/icons'
-import CommonIcon from '_c/common-icon'
+import Icons from "_c/icons";
+import CommonIcon from "_c/common-icon";
 export default {
-  name: 'icons_pages',
+  name: "icons_pages",
   components: {
     Icons,
     CommonIcon
@@ -41,16 +41,16 @@ export default {
   data () {
     return {
       customIconList: [
-        'woman',
-        'man',
-        'smile',
-        'meh',
-        'frown',
-        'bear'
+        "woman",
+        "man",
+        "smile",
+        "meh",
+        "frown",
+        "bear"
       ]
-    }
+    };
   }
-}
+};
 </script>
 
 <style lang="less">

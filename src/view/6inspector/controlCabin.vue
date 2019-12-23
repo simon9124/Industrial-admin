@@ -1,0 +1,490 @@
+<template>
+  <div class="control-container"
+       element-loading-spinner="el-icon-loading"
+       element-loading-background="rgba(0, 0, 0, 0.8)">
+    <img class="control-container-header"
+         src="@/assets/images/control/bg_top.png">
+
+    <!-- 清除浮动 -->
+    <table></table>
+
+    <!-- title -->
+    <div class="control-container-title">
+      <h2 @click="backRouter">车间驾驶舱</h2>
+    </div>
+
+    <!-- content -->
+    <div class="control-container-inner">
+      <Row :gutter="20">
+
+        <!-- 左 -->
+        <Col :xs="24"
+             :sm="24"
+             :md="8"
+             :xl="6"
+             :style="{height:parseInt(colBlockHeight)+20+'px'}"
+             class="col-left">
+
+        <ul :style="animate==true?animStyle:''">
+          <li v-for='(item,i) in alertList'
+              :key="i"
+              class="col-block col-block-min col-block-min-alert"
+              :style="{height:colBlockMinHeight}"
+              @mouseenter="alertEnter"
+              @mouseleave="alertLeave">
+            <div class="col-block-title left">
+              {{alertList[0].LineNo!==''?'预警：'+item.LineNo+'#产线':'暂无预警'}}
+            </div>
+            <div class="col-block-chart">
+              <lineChart :style="{height:parseInt(colBlockMinHeight)-70+'px'}"
+                         :chartData="item.chartData"
+                         :standardValue="item.AverageCount||20"
+                         :yAxisMaxValue="item.AverageCount+5||30"
+                         unit="件" />
+            </div>
+          </li>
+        </ul>
+
+        </Col>
+
+        <!-- 中 -->
+        <Col :xs="24"
+             :sm="24"
+             :md="16"
+             :xl="12">
+        <div class="col-block col-block-large"
+             ref="colBlockLarge"
+             :style="{height:colBlockLargeHeight}">
+          <div class="col-block-title">
+            检测总览
+          </div>
+          <div class="col-block-chart whole"
+               :style="{height:parseInt(colBlockLargeHeight)-70+'px',
+                        padding:screenHeight>900?'2% 0':'1% 0'}">
+
+            <div v-for="(item,j) in todayList"
+                 :key="j"
+                 class="MainBlock"
+                 :style="{padding:screenHeight>1000?'20px 0':screenHeight>800?'10px 0':'0'}">
+
+              <div class="MainBlock-title">{{item.ProductClass}}</div>
+
+              <span class="MainBlock-title-block-small">目标</span>
+              <span class="MainBlock-title-block-huge">{{item.TaskCount}}</span>
+              <span class="MainBlock-title-block-small">台</span>
+              <span class="MainBlock-title-block-small">/</span>
+              <span class="MainBlock-title-block-small">完成</span>
+              <span class="MainBlock-title-block-huge">{{item.QualifiedCount}}</span>
+              <span class="MainBlock-title-block-small">台</span>
+
+              <span class="MainBlock-title-block-small"></span>
+
+              <span class="MainBlock-title-block"
+                    style="vertical-align:bottom">
+                <i-circle :percent="item.CompletedRate"
+                          :stroke-color="item.CompletedRate===100?'#5cb85c':item.CompletedRate>=60?'#2db7f5':'#ff5500'"
+                          :size="70">
+                  <span class="demo-Circle-inner"
+                        style="font-size:1.2em;color:#fff">
+                    <p style="line-height:1.3em">达成率</p>
+                    {{item.CompletedRate}}%
+                  </span>
+                </i-circle>
+              </span>
+
+            </div>
+
+          </div>
+        </div>
+
+        <Row :gutter="20">
+          <Col :xs="24"
+               :sm="24"
+               :md="12"
+               :xl="12">
+          <div class="col-block col-block-min col-block-min-mid"
+               :style="{height:colBlockMidHeight}">
+            <div class="col-block-title">
+              生产任务
+            </div>
+            <div class="col-block-chart">
+              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+                        :chartData="todayAssign.proAssign"
+                        :legendData="todayAssign.legendDataAssign||['A型', 'B型', 'R型', 'SS型']"
+                        :seriesCenter="['60%','50%']" />
+            </div>
+
+          </div>
+          </Col>
+
+          <Col :xs="24"
+               :sm="24"
+               :md="12"
+               :xl="12">
+          <div class="col-block col-block-min col-block-min-mid"
+               :style="{height:colBlockMidHeight}">
+            <div class="col-block-title">
+              产线概况
+            </div>
+            <div class="col-block-chart">
+              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+                        :chartData="todayAssign.proLine"
+                        :color="['#32ce32','#fc8a53','#2db7f5']"
+                        :legendData="['生产中', '预警', '未生产']"
+                        :seriesCenter="['60%','50%']"
+                        unit="台" />
+            </div>
+
+          </div>
+          </Col>
+        </Row>
+
+        </Col>
+
+        <!-- 右 -->
+        <Col :xs="24"
+             :sm="24"
+             :md="24"
+             :xl="6">
+        <div class="col-block col-block-min"
+             :style="{height:colBlockHeight}">
+          <div class="col-block-title">
+            今日各产线概况
+          </div>
+          <div class="col-block-chart"
+               style="background:transparent">
+            <Row class="col-block-chart-row"
+                 :gutter="15"
+                 :style="{height:parseInt(colBlockHeight)-70+'px',padding:'0'}">
+              <Col :xs="24"
+                   :sm="24"
+                   :md="12"
+                   :xl="24"
+                   class="col-block-chart-box"
+                   v-for="(pro,i) in todayPro"
+                   :key="i">
+
+              <div class="BoxWrap"
+                   :style="{height:proBlockHeight}"
+                   @click="proHandleClick(i)">
+
+                <!-- 蓝色边框 -->
+                <div class="horn">
+                  <div class="lt"></div>
+                  <div class="rt"></div>
+                  <div class="rb"></div>
+                  <div class="lb"></div>
+                </div>
+
+                <!-- 清除浮动 -->
+                <table></table>
+                <div class="BoxWrap-title">
+                  <Tag :color="!pro.IsWarning?'success':'error'"
+                       style="padding:0 5px">
+                    {{!pro.IsWarning?'正常':'预警'}}
+                  </Tag>
+                  &nbsp;{{pro.LineNo}}#&nbsp;{{pro.captain}}&nbsp;{{pro.captionPhone}}
+                </div>
+                <div class="BoxWrap-block">
+                  <p class="BoxWrap-block-num">
+                    {{isMock?pro.ProductClass:pro.ProductClass.substring(0,pro.ProductClass.length-2)}}
+                  </p>
+                  <p>
+                    型号
+                  </p>
+                </div>
+                <div class="BoxWrap-block">
+                  <p class="BoxWrap-block-num">
+                    {{pro.TaskCount}}件
+                  </p>
+                  <p>
+                    任务量
+                  </p>
+                </div>
+                <div class="BoxWrap-block">
+                  <p class="BoxWrap-block-num">
+                    {{pro.QualifiedCount}}件
+                  </p>
+                  <p>
+                    达成量
+                  </p>
+                </div>
+                <div class="BoxWrap-block">
+                  <p class="BoxWrap-block-num">
+                    {{pro.CompletedRate}}%
+                  </p>
+                  <p>
+                    达成率
+                  </p>
+                </div>
+                <div class="BoxWrap-block">
+                  <p class="BoxWrap-block-num">
+                    {{pro.QualifiedRate}}%
+                  </p>
+                  <p>
+                    良品率
+                  </p>
+                </div>
+
+              </div>
+              </Col>
+
+            </Row>
+          </div>
+        </div>
+        </Col>
+
+      </Row>
+    </div>
+
+  </div>
+</template>
+
+<script>
+// components
+import lineChart from "./lineChart.vue";
+import pieChart from "./pieChart.vue";
+// mockData
+import { todayList, todayAssign, todayPro, alertList } from "./mockData";
+// mqtt
+import { mqtt, MQTT_SERVICE, options } from "@/libs/sysconstant.js";
+// vuex
+import { mapGetters } from "vuex";
+
+export default {
+  components: {
+    lineChart,
+    pieChart
+  },
+  data() {
+    return {
+      /* 动态高度 */
+      screenHeight: 0, // 屏幕
+      colBlockMinHeight: "0px", // 左 - 预警（每个）
+      colBlockLargeHeight: "0px", // 中 - 检测总览
+      colBlockMidHeight: "0px", // 中 - 生产任务 & 产线概况
+      colBlockHeight: "0px", // 右 - 各产线（总）
+      proBlockHeight: "0px", // 右 - 各产线（每个）
+      /* 页面数据 */
+      alertList: [], // 左 - 预警总览
+      todayPro: [], // 右 - 今日各产线
+      todayList: [], // 中 - 检测总览
+      todayAssign: [], // 中 - 生产任务 & 产线概况
+      /* 多个预警栏时的动效 */
+      animate: false,
+      animStyle: {
+        transition: "all .5s",
+        marginTop: ""
+      },
+      timer: ""
+    };
+  },
+  computed: {
+    ...mapGetters(["userAccess"])
+  },
+  async mounted() {
+    // 设置各组件高度
+    this.getHeight();
+    // 屏幕缩放
+    window.onresize = () => {
+      return (() => {
+        this.getHeight();
+      })();
+    };
+    // 监听浏览器的返回按钮：向历史记录中插入了当前页
+    if (window.history && window.history.pushState) {
+      history.pushState(null, null, document.URL);
+      window.addEventListener("popstate", this.goBack, false);
+    }
+  },
+  created() {
+    // 获取数据
+    this.getData();
+    // 如果预警产线超过3个，则采用轮播动画
+    if (this.alertList.length > 3) {
+      this.timer = setInterval(this.scroll, 3000);
+    }
+  },
+  // 监听浏览器的返回按钮：页面销毁时取消监听（否则其他路由页面也会被监听）
+  destroyed() {
+    window.removeEventListener("popstate", this.goBack, false);
+  },
+  methods: {
+    // 左侧预警向上滚动
+    scroll() {
+      // 消息向上滚动时，添加过渡动画
+      this.animate = true;
+      setTimeout(() => {
+        // 数组首元素添加到尾部，并删除首元素
+        this.alertList.push(this.alertList[0]);
+        this.alertList.shift();
+        // margin-top 为 0 的时候取消动画，实现无缝滚动
+        this.animate = false;
+      }, 500);
+    },
+    // 获取动态高度
+    getHeight() {
+      this.screenHeight = document.body.clientHeight;
+      // const imgTitle = document.getElementsByClassName(
+      //   "control-container-header"
+      // )[0].clientHeight;
+      const imgTitle = 80;
+
+      this.colBlockMinHeight =
+        (this.screenHeight - imgTitle - 40 - 60) / 3 + "px";
+      this.colBlockLargeHeight =
+        ((this.screenHeight - imgTitle - 40 - 40) * 2) / 3 + "px";
+      this.colBlockMidHeight =
+        ((this.screenHeight - imgTitle - 40 - 40) * 1) / 3 + "px";
+      this.colBlockHeight = this.screenHeight - imgTitle - 40 - 20 + "px";
+      this.proBlockHeight = this.screenHeight / 8 + "px";
+      this.animStyle.marginTop =
+        "-" + (parseInt(this.colBlockMinHeight) + 20) + "px";
+    },
+    // 初始化数据
+    async getData() {
+      if (!this.isMock) {
+        /* 非mock数据 */
+        this.client = mqtt.connect(MQTT_SERVICE, options);
+
+        // mqtt连接
+        this.client.on("connect", e => {
+          // 连接成功
+          this.client.subscribe("ProductRoom", { qos: 1 }, error => {
+            if (!error) {
+              // 订阅成功
+            } else {
+              // 订阅失败
+            }
+          });
+        });
+        /* eslint-disable */
+        // 接收消息处理
+        this.client.on("message", (topic, message) => {
+          const msg = JSON.parse(message.toString());
+          console.log(msg);
+          // 产线总览
+          msg.ProductClassOverview.forEach(row => {
+            this.$set(
+              row,
+              "CompletedRate",
+              parseInt(row.CompletedRate * 10000) / 100
+            );
+          });
+          this.todayList = msg.ProductClassOverview;
+          // 生产任务 & 产线概况
+          const legendDataAssign = [];
+          msg.ProductClassTask.forEach(row => {
+            this.$set(row, "value", row.TaskCount);
+            this.$set(row, "name", row.ProductClass);
+            legendDataAssign.push(row.ProductClass);
+          });
+          const proLine = [];
+          Object.keys(msg.LineStatuOverview).forEach(key => {
+            proLine.push({
+              name:
+                key === "NormalCount"
+                  ? "生产中"
+                  : key === "WaringCount"
+                  ? "预警"
+                  : "未生产",
+              value: msg.LineStatuOverview[key]
+            });
+          });
+          this.todayAssign = {
+            proAssign: msg.ProductClassTask,
+            proLine: proLine,
+            legendDataAssign: legendDataAssign
+          };
+          // 预警
+          if (msg.LineWorkingTimeWarning.length !== 0) {
+            msg.LineWorkingTimeWarning.forEach(row => {
+              const xAxisData = [];
+              const seriesData = [];
+              row.WorkInfo.forEach(work => {
+                xAxisData.push(
+                  work.StartTime.substring(0, work.StartTime.length - 3)
+                );
+                seriesData.push(work.CompleteCount);
+              });
+              this.$set(row, "chartData", {
+                xAxisData: xAxisData,
+                seriesData: seriesData
+              });
+            });
+            this.alertList = msg.LineWorkingTimeWarning;
+          } else {
+            this.alertList = [
+              {
+                LineNo: "",
+                chartData: {
+                  xAxisData: [],
+                  seriesData: []
+                }
+              }
+            ];
+          }
+          // 今日各产线
+          this.todayPro = msg.LineOverviewReport;
+        });
+        // 断开发起重连
+        // this.client.on("reconnect", error => {
+        //   console.log("正在重连:", error);
+        // });
+        // 链接异常处理
+        // this.client.on("error", error => {
+        //   console.log("连接失败:", error);
+        // });
+      } else {
+        /* mock数据 */
+        this.alertList = alertList;
+        this.todayPro = todayPro;
+        this.todayList = todayList;
+        this.todayAssign = todayAssign;
+      }
+    },
+    // 车间主管可以返回首页 / 其他角色不可以
+    backRouter() {
+      if (this.userAccess.indexOf("workshop_manager") !== -1) {
+        this.$router.push({
+          name: this.$config.homeName
+        });
+      }
+      // this.$router.go(-1);
+    },
+    // 鼠标进入预警框 - 动效暂停
+    alertEnter() {
+      clearInterval(this.timer);
+    },
+    // 鼠标离开预警框 - 动效再次开始
+    alertLeave() {
+      if (this.alertList.length > 3) {
+        this.timer = setInterval(this.scroll, 3000);
+      }
+    },
+    // 前往驾驶舱 - 产线
+    proHandleClick(i) {
+      clearInterval(this.timer);
+      if (!this.isMock) this.client.end();
+      this.$router.push({
+        path: "/control-leader-line",
+        name: "control-leader-line",
+        query: {
+          lineNo: this.todayPro[i].LineNo
+        }
+      });
+    },
+    // 监听浏览器的返回按钮
+    goBack() {
+      sessionStorage.clear();
+      window.history.back();
+      if (!this.isMock) this.client.end();
+      clearInterval(this.timer);
+    }
+  }
+};
+</script>
+
+<style rel="stylesheet/scss" lang="scss" scoped>
+@import "./control.scss";
+</style>

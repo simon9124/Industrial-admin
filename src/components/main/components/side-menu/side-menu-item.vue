@@ -12,7 +12,8 @@
         <menu-item v-else
                    :name="getNameOrHref(item, true)"
                    :key="`menu-${item.children[0].name}`">
-          <common-icon :type="item.children[0].icon || ''" /><span>{{ showTitle(item.children[0]) }}</span></menu-item>
+          <common-icon :type="item.children[0].icon || ''" />
+          <span>{{ showTitle(item.children[0]) }}</span></menu-item>
       </template>
       <template v-else>
         <side-menu-item v-if="showChildren(item)"
@@ -21,16 +22,18 @@
         <menu-item v-else
                    :name="getNameOrHref(item)"
                    :key="`menu-${item.name}`">
-          <common-icon :type="item.icon || ''" /><span>{{ showTitle(item) }}</span></menu-item>
+          <!-- 如果仅剩下子路由，则隐藏子路由icon -->
+          <!-- <common-icon :type="item.icon || ''" /> -->
+          <span>{{ showTitle(item) }}</span></menu-item>
       </template>
     </template>
   </Submenu>
 </template>
 <script>
-import mixin from './mixin';
-import itemMixin from './item-mixin';
+import mixin from "./mixin";
+import itemMixin from "./item-mixin";
 export default {
-  name: 'SideMenuItem',
+  name: "SideMenuItem",
   mixins: [mixin, itemMixin]
 };
 </script>

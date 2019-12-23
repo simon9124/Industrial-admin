@@ -6,8 +6,8 @@
 
 <script>
 export default {
-  name: 'App',
-  mounted () {
+  name: "App",
+  mounted() {
     /**
      * 解决 css 引入图片在 github pages 无法获取的问题
      */

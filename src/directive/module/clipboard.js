@@ -1,4 +1,4 @@
-import Clipboard from 'clipboard';
+import Clipboard from "clipboard";
 export default {
   bind: (el, binding) => {
     const clipboard = new Clipboard(el, {
@@ -6,11 +6,11 @@ export default {
     });
     el.__success_callback__ = binding.value.success;
     el.__error_callback__ = binding.value.error;
-    clipboard.on('success', e => {
+    clipboard.on("success", e => {
       const callback = el.__success_callback__;
       callback && callback(e);
     });
-    clipboard.on('error', e => {
+    clipboard.on("error", e => {
       const callback = el.__error_callback__;
       callback && callback(e);
     });

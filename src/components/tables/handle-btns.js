@@ -1,28 +1,28 @@
 const btns = {
   delete: (h, params, vm) => {
-    return h('Poptip', {
+    return h("Poptip", {
       props: {
         confirm: true,
-        title: '你确定要删除吗?'
+        title: "你确定要删除吗?"
       },
       on: {
-        'on-ok': () => {
-          vm.$emit('on-delete', params);
-          vm.$emit('input', params.tableData.filter((item, index) => index !== params.row.initRowIndex));
+        "on-ok": () => {
+          vm.$emit("on-delete", params);
+          vm.$emit("input", params.tableData.filter((item, index) => index !== params.row.initRowIndex));
         }
       }
     }, [
-      h('Button', {
+      h("Button", {
         props: {
-          type: 'text',
+          type: "text",
           ghost: true
         }
       }, [
-        h('Icon', {
+        h("Icon", {
           props: {
-            type: 'md-trash',
+            type: "md-trash",
             size: 18,
-            color: '#000000'
+            color: "#000000"
           }
         })
       ])

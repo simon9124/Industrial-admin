@@ -63,20 +63,20 @@
 </template>
 
 <script>
-import { showTitle, routeEqual } from '@/libs/util';
-import beforeClose from '@/router/before-close';
+import { showTitle, routeEqual } from "@/libs/util";
+import beforeClose from "@/router/before-close";
 export default {
-  name: 'TagsNav',
+  name: "TagsNav",
   props: {
     value: Object,
     list: {
       type: Array,
-      default () {
+      default() {
         return [];
       }
     }
   },
-  data () {
+  data() {
     return {
       tagBodyLeft: 0,
       rightOffset: 40,
@@ -85,27 +85,27 @@ export default {
       contextMenuTop: 0,
       visible: false,
       menuList: {
-        others: '关闭其他',
-        all: '关闭所有'
+        others: "关闭其他",
+        all: "关闭所有"
       }
     };
   },
   computed: {
-    currentRouteObj () {
+    currentRouteObj() {
       const { name, params, query } = this.value;
       return { name, params, query };
     }
   },
   methods: {
-    handlescroll (e) {
+    handlescroll(e) {
       var type = e.type;
       let delta = 0;
-      if (type === 'DOMMouseScroll' || type === 'mousewheel') {
+      if (type === "DOMMouseScroll" || type === "mousewheel") {
         delta = e.wheelDelta ? e.wheelDelta : -(e.detail || 0) * 40;
       }
       this.handleScroll(delta);
     },
-    handleScroll (offset) {
+    handleScroll(offset) {
       const outerWidth = this.$refs.scrollOuter.offsetWidth;
       const bodyWidth = this.$refs.scrollBody.offsetWidth;
       if (offset > 0) {
@@ -125,25 +125,25 @@ export default {
         }
       }
     },
-    handleTagsOption (type) {
-      if (type.includes('all')) {
+    handleTagsOption(type) {
+      if (type.includes("all")) {
         // 关闭所有，除了home
         let res = this.list.filter(item => item.name === this.$config.homeName);
-        this.$emit('on-close', res, 'all');
-      } else if (type.includes('others')) {
+        this.$emit("on-close", res, "all");
+      } else if (type.includes("others")) {
         // 关闭除当前页和home页的其他页
         let res = this.list.filter(
           item =>
             routeEqual(this.currentRouteObj, item) ||
             item.name === this.$config.homeName
         );
-        this.$emit('on-close', res, 'others', this.currentRouteObj);
+        this.$emit("on-close", res, "others", this.currentRouteObj);
         setTimeout(() => {
           this.getTagElementByRoute(this.currentRouteObj);
         }, 100);
       }
     },
-    handleClose (current) {
+    handleClose(current) {
       if (
         current.meta &&
         current.meta.beforeCloseName &&
@@ -158,20 +158,20 @@ export default {
         this.close(current);
       }
     },
-    close (route) {
+    close(route) {
       let res = this.list.filter(item => !routeEqual(route, item));
-      this.$emit('on-close', res, undefined, route);
+      this.$emit("on-close", res, undefined, route);
     },
-    handleClick (item) {
-      this.$emit('input', item);
+    handleClick(item) {
+      this.$emit("input", item);
     },
-    showTitleInside (item) {
+    showTitleInside(item) {
       return showTitle(item, this);
     },
-    isCurrentTag (item) {
+    isCurrentTag(item) {
       return routeEqual(this.currentRouteObj, item);
     },
-    moveToView (tag) {
+    moveToView(tag) {
       const outerWidth = this.$refs.scrollOuter.offsetWidth;
       const bodyWidth = this.$refs.scrollBody.offsetWidth;
       if (bodyWidth < outerWidth) {
@@ -196,18 +196,18 @@ export default {
         );
       }
     },
-    getTagElementByRoute (route) {
+    getTagElementByRoute(route) {
       this.$nextTick(() => {
         this.refsTag = this.$refs.tagsPageOpened;
         this.refsTag.forEach((item, index) => {
-          if (routeEqual(route, item.$attrs['data-route-item'])) {
+          if (routeEqual(route, item.$attrs["data-route-item"])) {
             let tag = this.refsTag[index].$el;
             this.moveToView(tag);
           }
         });
       });
     },
-    contextMenu (item, e) {
+    contextMenu(item, e) {
       if (item.name === this.$config.homeName) {
         return;
       }
@@ -216,23 +216,23 @@ export default {
       this.contextMenuLeft = e.clientX - offsetLeft + 10;
       this.contextMenuTop = e.clientY - 64;
     },
-    closeMenu () {
+    closeMenu() {
       this.visible = false;
     }
   },
   watch: {
-    $route (to) {
+    $route(to) {
       this.getTagElementByRoute(to);
     },
-    visible (value) {
+    visible(value) {
       if (value) {
-        document.body.addEventListener('click', this.closeMenu);
+        document.body.addEventListener("click", this.closeMenu);
       } else {
-        document.body.removeEventListener('click', this.closeMenu);
+        document.body.removeEventListener("click", this.closeMenu);
       }
     }
   },
-  mounted () {
+  mounted() {
     setTimeout(() => {
       this.getTagElementByRoute(this.$route);
     }, 200);

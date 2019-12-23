@@ -1,5 +1,5 @@
-import draggable from './module/draggable';
-import clipboard from './module/clipboard';
+import draggable from "./module/draggable";
+import clipboard from "./module/clipboard";
 
 const directives = {
   draggable,

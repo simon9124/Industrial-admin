@@ -10,13 +10,13 @@ import {
   getRouteTitleHandled,
   localSave,
   localRead
-} from '@/libs/util';
+} from "@/libs/util";
 import {
   saveErrorLogger
-} from '@/api/data';
-import router from '@/router';
-import routers from '@/router/routers';
-import config from '@/config';
+} from "@/api/data";
+import router from "@/router";
+import routers from "@/router/routers";
+import config from "@/config";
 const {
   homeName
 } = config;
@@ -34,7 +34,7 @@ export default {
     breadCrumbList: [],
     tagNavList: [],
     homeRoute: {},
-    local: localRead('local'),
+    local: localRead("local"),
     errorList: [],
     hasReadErrorPage: false
   },
@@ -43,13 +43,13 @@ export default {
     errorCount: state => state.errorList.length
   },
   mutations: {
-    setBreadCrumb (state, route) {
+    setBreadCrumb(state, route) {
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute);
     },
-    setHomeRoute (state, routes) {
+    setHomeRoute(state, routes) {
       state.homeRoute = getHomeRoute(routes, homeName);
     },
-    setTagNavList (state, list) {
+    setTagNavList(state, list) {
       let tagList = [];
       if (list) {
         tagList = [...list];
@@ -63,19 +63,19 @@ export default {
       state.tagNavList = tagList;
       setTagNavListInLocalstorage([...tagList]);
     },
-    closeTag (state, route) {
+    closeTag(state, route) {
       let tag = state.tagNavList.filter(item => routeEqual(item, route));
       route = tag[0] ? tag[0] : null;
       if (!route) return;
       closePage(state, route);
     },
-    addTag (state, {
+    addTag(state, {
       route,
-      type = 'unshift'
+      type = "unshift"
     }) {
       let router = getRouteTitleHandled(route);
       if (!routeHasExist(state.tagNavList, router)) {
-        if (type === 'push') state.tagNavList.push(router);
+        if (type === "push") state.tagNavList.push(router);
         else {
           if (router.name === homeName) state.tagNavList.unshift(router);
           else state.tagNavList.splice(1, 0, router);
@@ -83,23 +83,23 @@ export default {
         setTagNavListInLocalstorage([...state.tagNavList]);
       }
     },
-    setLocal (state, lang) {
-      localSave('local', lang);
+    setLocal(state, lang) {
+      localSave("local", lang);
       state.local = lang;
     },
-    addError (state, error) {
+    addError(state, error) {
       state.errorList.push(error);
     },
-    setHasReadErrorLoggerStatus (state, status = true) {
+    setHasReadErrorLoggerStatus(state, status = true) {
       state.hasReadErrorPage = status;
     }
   },
   actions: {
-    addErrorLog ({
+    addErrorLog({
       commit,
       rootState
     }, info) {
-      if (!window.location.href.includes('error_logger_page')) commit('setHasReadErrorLoggerStatus', false);
+      if (!window.location.href.includes("error_logger_page")) commit("setHasReadErrorLoggerStatus", false);
       const {
         user: {
           token,
@@ -115,7 +115,7 @@ export default {
         userName
       };
       saveErrorLogger(info).then(() => {
-        commit('addError', data);
+        commit("addError", data);
       });
     }
   }

@@ -46,7 +46,7 @@ export const hasOneOf = (targetarr, arr) => {
  * @param {String|Number} value 要验证的字符串或数值
  * @param {*} validList 用来验证的列表
  */
-export function oneOf (value, validList) {
+export function oneOf(value, validList) {
   for (let i = 0; i < validList.length; i++) {
     if (value === validList[i]) {
       return true;
@@ -79,7 +79,7 @@ const isEarly = (timeStamp, currentTime) => {
  * @description 如果传入的数值小于10，即位数只有1位，则在前面补充0
  */
 const getHandledValue = num => {
-  return num < 10 ? '0' + num : num;
+  return num < 10 ? "0" + num : num;
 };
 
 /**
@@ -94,9 +94,9 @@ const getDate = (timeStamp, startType) => {
   const hours = getHandledValue(d.getHours());
   const minutes = getHandledValue(d.getMinutes());
   const second = getHandledValue(d.getSeconds());
-  let resStr = '';
-  if (startType === 'year') resStr = year + '-' + month + '-' + date + ' ' + hours + ':' + minutes + ':' + second;
-  else resStr = month + '-' + date + ' ' + hours + ':' + minutes;
+  let resStr = "";
+  if (startType === "year") resStr = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + second;
+  else resStr = month + "-" + date + " " + hours + ":" + minutes;
   return resStr;
 };
 
@@ -119,19 +119,19 @@ export const getRelativeTime = timeStamp => {
   let diff = currentTime - timeStamp;
   // 如果IS_EARLY为false则差值取反
   if (!IS_EARLY) diff = -diff;
-  let resStr = '';
-  const dirStr = IS_EARLY ? '前' : '后';
+  let resStr = "";
+  const dirStr = IS_EARLY ? "前" : "后";
   // 少于等于59秒
-  if (diff <= 59) resStr = diff + '秒' + dirStr;
+  if (diff <= 59) resStr = diff + "秒" + dirStr;
   // 多于59秒，少于等于59分钟59秒
-  else if (diff > 59 && diff <= 3599) resStr = Math.floor(diff / 60) + '分钟' + dirStr;
+  else if (diff > 59 && diff <= 3599) resStr = Math.floor(diff / 60) + "分钟" + dirStr;
   // 多于59分钟59秒，少于等于23小时59分钟59秒
-  else if (diff > 3599 && diff <= 86399) resStr = Math.floor(diff / 3600) + '小时' + dirStr;
+  else if (diff > 3599 && diff <= 86399) resStr = Math.floor(diff / 3600) + "小时" + dirStr;
   // 多于23小时59分钟59秒，少于等于29天59分钟59秒
-  else if (diff > 86399 && diff <= 2623859) resStr = Math.floor(diff / 86400) + '天' + dirStr;
+  else if (diff > 86399 && diff <= 2623859) resStr = Math.floor(diff / 86400) + "天" + dirStr;
   // 多于29天59分钟59秒，少于364天23小时59分钟59秒，且传入的时间戳早于当前
   else if (diff > 2623859 && diff <= 31567859 && IS_EARLY) resStr = getDate(timeStamp);
-  else resStr = getDate(timeStamp, 'year');
+  else resStr = getDate(timeStamp, "year");
   return resStr;
 };
 
@@ -143,11 +143,11 @@ export const getExplorer = () => {
   const isExplorer = (exp) => {
     return ua.indexOf(exp) > -1;
   };
-  if (isExplorer('MSIE')) return 'IE';
-  else if (isExplorer('Firefox')) return 'Firefox';
-  else if (isExplorer('Chrome')) return 'Chrome';
-  else if (isExplorer('Opera')) return 'Opera';
-  else if (isExplorer('Safari')) return 'Safari';
+  if (isExplorer("MSIE")) return "IE";
+  else if (isExplorer("Firefox")) return "Firefox";
+  else if (isExplorer("Chrome")) return "Chrome";
+  else if (isExplorer("Opera")) return "Opera";
+  else if (isExplorer("Safari")) return "Safari";
 };
 
 /**
@@ -163,7 +163,7 @@ export const on = (function () {
   } else {
     return function (element, event, handler) {
       if (element && event && handler) {
-        element.attachEvent('on' + event, handler);
+        element.attachEvent("on" + event, handler);
       }
     };
   }
@@ -182,7 +182,7 @@ export const off = (function () {
   } else {
     return function (element, event, handler) {
       if (element && event) {
-        element.detachEvent('on' + event, handler);
+        element.detachEvent("on" + event, handler);
       }
     };
   }

@@ -1,4 +1,4 @@
-export function params (_this, key) {
+export function params(_this, key) {
   if (_this.$route.params[key]) {
     localStorage.setItem(key, _this.$route.params[key]);
     const pageParam = _this.$route.params[key];
@@ -9,6 +9,6 @@ export function params (_this, key) {
   }
 }
 
-export function clearParam (key) {
+export function clearParam(key) {
   localStorage.removeItem(key);
 }

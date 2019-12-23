@@ -19,27 +19,27 @@
 </template>
 
 <script>
-import { on, off } from '@/libs/tools'
+import { on, off } from "@/libs/tools";
 const menuList = [
   {
-    key: 'edit',
-    label: '编辑部门'
+    key: "edit",
+    label: "编辑部门"
   },
   {
-    key: 'detail',
-    label: '查看部门'
+    key: "detail",
+    label: "查看部门"
   },
   {
-    key: 'new',
-    label: '新增子部门'
+    key: "new",
+    label: "新增子部门"
   },
   {
-    key: 'delete',
-    label: '删除部门'
+    key: "delete",
+    label: "删除部门"
   }
-]
+];
 export default {
-  name: 'OrgView',
+  name: "OrgView",
   props: {
     zoomHandled: {
       type: Number,
@@ -49,7 +49,7 @@ export default {
   },
   data () {
     return {
-      currentContextMenuId: '',
+      currentContextMenuId: "",
       orgTreeOffsetLeft: 0,
       orgTreeOffsetTop: 0,
       initPageX: 0,
@@ -57,7 +57,7 @@ export default {
       oldMarginLeft: 0,
       oldMarginTop: 0,
       canMove: false
-    }
+    };
   },
   computed: {
     orgTreeStyle () {
@@ -67,29 +67,29 @@ export default {
         })`,
         marginLeft: `${this.orgTreeOffsetLeft}px`,
         marginTop: `${this.orgTreeOffsetTop}px`
-      }
+      };
     }
   },
   methods: {
     handleNodeClick (e, data, expand) {
-      expand()
+      expand();
     },
     closeMenu () {
-      this.currentContextMenuId = ''
+      this.currentContextMenuId = "";
     },
     getBgColor (data) {
       return this.currentContextMenuId === data.id
         ? data.isRoot
-          ? '#0d7fe8'
-          : '#5d6c7b'
-        : ''
+          ? "#0d7fe8"
+          : "#5d6c7b"
+        : "";
     },
     nodeRender (h, data) {
       return (
         <div
           class={[
-            'custom-org-node',
-            data.children && data.children.length ? 'has-children-label' : ''
+            "custom-org-node",
+            data.children && data.children.length ? "has-children-label" : ""
           ]}
           on-mousedown={event => event.stopPropagation()}
           on-contextmenu={this.contextmenu.bind(this, data)}
@@ -111,61 +111,61 @@ export default {
               {menuList.map(item => {
                 return (
                   <dropdown-item name={item.key}>{item.label}</dropdown-item>
-                )
+                );
               })}
             </dropdown-menu>
           </dropdown>
         </div>
-      )
+      );
     },
     contextmenu (data, $event) {
-      let event = $event || window.event
+      let event = $event || window.event;
       event.preventDefault
         ? event.preventDefault()
-        : (event.returnValue = false)
-      this.currentContextMenuId = data.id
+        : (event.returnValue = false);
+      this.currentContextMenuId = data.id;
     },
     setDepartmentData (data) {
-      data.isRoot = true
-      this.departmentData = data
+      data.isRoot = true;
+      this.departmentData = data;
     },
     mousedownView (event) {
-      this.canMove = true
-      this.initPageX = event.pageX
-      this.initPageY = event.pageY
-      this.oldMarginLeft = this.orgTreeOffsetLeft
-      this.oldMarginTop = this.orgTreeOffsetTop
-      on(document, 'mousemove', this.mousemoveView)
-      on(document, 'mouseup', this.mouseupView)
+      this.canMove = true;
+      this.initPageX = event.pageX;
+      this.initPageY = event.pageY;
+      this.oldMarginLeft = this.orgTreeOffsetLeft;
+      this.oldMarginTop = this.orgTreeOffsetTop;
+      on(document, "mousemove", this.mousemoveView);
+      on(document, "mouseup", this.mouseupView);
     },
     mousemoveView (event) {
-      if (!this.canMove) return
-      const { pageX, pageY } = event
-      this.orgTreeOffsetLeft = this.oldMarginLeft + pageX - this.initPageX
-      this.orgTreeOffsetTop = this.oldMarginTop + pageY - this.initPageY
+      if (!this.canMove) return;
+      const { pageX, pageY } = event;
+      this.orgTreeOffsetLeft = this.oldMarginLeft + pageX - this.initPageX;
+      this.orgTreeOffsetTop = this.oldMarginTop + pageY - this.initPageY;
     },
     mouseupView () {
-      this.canMove = false
-      off(document, 'mousemove', this.mousemoveView)
-      off(document, 'mouseup', this.mouseupView)
+      this.canMove = false;
+      off(document, "mousemove", this.mousemoveView);
+      off(document, "mouseup", this.mouseupView);
     },
     handleDropdownClick (event) {
-      event.stopPropagation()
+      event.stopPropagation();
     },
     handleDocumentContextmenu () {
-      this.canMove = false
+      this.canMove = false;
     },
     handleContextMenuClick (data, key) {
-      this.$emit('on-menu-click', { data, key })
+      this.$emit("on-menu-click", { data, key });
     }
   },
   mounted () {
-    on(document, 'contextmenu', this.handleDocumentContextmenu)
+    on(document, "contextmenu", this.handleDocumentContextmenu);
   },
   beforeDestroy () {
-    off(document, 'contextmenu', this.handleDocumentContextmenu)
+    off(document, "contextmenu", this.handleDocumentContextmenu);
   }
-}
+};
 </script>
 
 <style>

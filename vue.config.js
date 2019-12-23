@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require("path");
 
 const resolve = dir => {
   return path.join(__dirname, dir);
@@ -12,9 +12,8 @@ const resolve = dir => {
 // 例如：https://www.foobar.com/my-app/
 // 需要将它改为'/my-app/'
 // iview-admin线上演示打包路径： https://file.iviewui.com/admin-dist/
-const BASE_URL = process.env.NODE_ENV === 'production'
-  ? '/vue-iview-admin-simon'
-  : '/';
+const BASE_URL =
+  process.env.NODE_ENV === "production" ? "/vue-iview-admin-simon" : "/";
 
 module.exports = {
   // Project deployment base
@@ -31,13 +30,23 @@ module.exports = {
   lintOnSave: true,
   chainWebpack: config => {
     config.resolve.alias
-      .set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
-      .set('_c', resolve('src/components'));
+      .set("@", resolve("src")) // key,value自行定义，比如.set('@@', resolve('src/components'))
+      .set("_c", resolve("src/components"));
   },
   // 打包时不生成.map文件
-  productionSourceMap: false
+  productionSourceMap: false,
   // 这里写你调用接口的基础路径，来解决跨域，如果设置了代理，那你本地开发环境的axios的baseUrl要写为 '' ，即空字符串
-  // devServer: {
-  //   proxy: 'localhost:3000'
-  // }
+  devServer: {
+    // proxy: 'localhost:3000'
+    proxy: {
+      "/api": {
+        target: "http://192.168.200.99/api",
+        // target: 'http://192.168.111.82:5000/api',
+        changeOrigin: true,
+        pathRewrite: {
+          "^/api": ""
+        }
+      }
+    }
+  }
 };

@@ -21,9 +21,9 @@
 </template>
 
 <script>
-import CommonIcon from '_c/common-icon';
+import CommonIcon from "_c/common-icon";
 export default {
-  name: 'InforCard',
+  name: "InforCard",
   components: {
     CommonIcon
   },
@@ -34,11 +34,11 @@ export default {
     },
     color: {
       type: String,
-      default: '#2d8cf0'
+      default: "#2d8cf0"
     },
     icon: {
       type: String,
-      default: ''
+      default: ""
     },
     iconSize: {
       type: Number,
@@ -50,10 +50,10 @@ export default {
     }
   },
   computed: {
-    leftWidth () {
+    leftWidth() {
       return `${this.left}%`;
     },
-    rightWidth () {
+    rightWidth() {
       return `${100 - this.left}%`;
     }
   }

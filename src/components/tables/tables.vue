@@ -73,11 +73,11 @@
 </template>
 
 <script>
-import TablesEdit from './edit.vue';
-import handleBtns from './handle-btns';
-import './index.less';
+import TablesEdit from "./edit.vue";
+import handleBtns from "./handle-btns";
+import "./index.less";
 export default {
-  name: 'Tables',
+  name: "Tables",
   props: {
     value: {
       type: Array,
@@ -117,7 +117,7 @@ export default {
     rowClassName: {
       type: Function,
       default () {
-        return '';
+        return "";
       }
     },
     context: {
@@ -155,7 +155,7 @@ export default {
      */
     searchPlace: {
       type: String,
-      default: 'top'
+      default: "top"
     }
   },
   /**
@@ -168,10 +168,10 @@ export default {
     return {
       insideColumns: [],
       insideTableData: [],
-      edittingCellId: '',
-      edittingText: '',
-      searchValue: '',
-      searchKey: ''
+      edittingCellId: "",
+      edittingText: "",
+      searchValue: "",
+      searchKey: ""
     };
   },
   methods: {
@@ -188,13 +188,13 @@ export default {
             input: val => {
               this.edittingText = val;
             },
-            'on-start-edit': params => {
+            "on-start-edit": params => {
               this.edittingCellId = `editting-${params.index}-${params.column.key}`;
-              this.$emit('on-start-edit', params);
+              this.$emit("on-start-edit", params);
             },
-            'on-cancel-edit': params => {
-              this.edittingCellId = '';
-              this.$emit('on-cancel-edit', params);
+            "on-cancel-edit": params => {
+              this.edittingCellId = "";
+              this.$emit("on-cancel-edit", params);
             },
             /* eslint-disable */
             "on-save-edit": params => {

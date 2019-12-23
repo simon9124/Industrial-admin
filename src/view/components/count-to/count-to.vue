@@ -140,33 +140,33 @@
 </template>
 
 <script>
-import CountTo from '_c/count-to'
+import CountTo from "_c/count-to";
 export default {
-  name: 'count_to_page',
+  name: "count_to_page",
   components: {
     CountTo
   },
   data () {
     return {
       end: 0,
-      unit: [[3, '千多'], [4, '万多'], [5, '十万多']],
-      unit2: [[1, '十多'], [2, '百多'], [3, '千多'], [4, '万多'], [5, '十万多'], [6, '百万多'], [7, '千万多'], [8, '亿多']],
+      unit: [[3, "千多"], [4, "万多"], [5, "十万多"]],
+      unit2: [[1, "十多"], [2, "百多"], [3, "千多"], [4, "万多"], [5, "十万多"], [6, "百万多"], [7, "千万多"], [8, "亿多"]],
       asynEndVal: 487,
       integratedEndVal: 3
-    }
+    };
   },
   methods: {
     init () {
       setInterval(() => {
-        this.asynEndVal += parseInt(Math.random() * 20)
-        this.integratedEndVal += parseInt(Math.random() * 30)
-      }, 2000)
+        this.asynEndVal += parseInt(Math.random() * 20);
+        this.integratedEndVal += parseInt(Math.random() * 30);
+      }, 2000);
     }
   },
   mounted () {
-    this.init()
+    this.init();
   }
-}
+};
 </script>
 
 <style lang="less">

@@ -38,57 +38,57 @@
 </template>
 <script>
 export default {
-  name: 'InspectForm',
+  name: "InspectForm",
   props: {
     userNameRules: {
       type: Array,
       default: () => {
-        return [{ required: true, message: '账号不能为空', trigger: 'blur' }];
+        return [{ required: true, message: "账号不能为空", trigger: "blur" }];
       }
     },
     passwordRules: {
       type: Array,
       default: () => {
-        return [{ required: true, message: '密码不能为空', trigger: 'blur' }];
+        return [{ required: true, message: "密码不能为空", trigger: "blur" }];
       }
     },
     selectlineRules: {
       type: Array,
       default: () => {
-        return [{ required: true, message: '请选择流水线', trigger: 'blur' }];
+        return [{ required: true, message: "请选择流水线", trigger: "blur" }];
       }
     }
   },
-  data () {
+  data() {
     return {
       // 生产线
       beltline: [
         {
-          value: '1#线',
-          label: '1#线'
+          value: "1#线",
+          label: "1#线"
         },
         {
-          value: '2#线',
-          label: '2#线'
+          value: "2#线",
+          label: "2#线"
         },
         {
-          value: '22#线',
-          label: '22#线'
+          value: "22#线",
+          label: "22#线"
         },
         {
-          value: '其他',
-          label: '其他'
+          value: "其他",
+          label: "其他"
         }
       ],
       form: {
-        userName: 'admin',
-        password: '',
-        selectline: '1#线'
+        userName: "admin",
+        password: "",
+        selectline: "1#线"
       }
     };
   },
   computed: {
-    rules () {
+    rules() {
       return {
         userName: this.userNameRules,
         password: this.passwordRules,
@@ -97,10 +97,10 @@ export default {
     }
   },
   methods: {
-    handleSubmit () {
+    handleSubmit() {
       this.$refs.inspectForm.validate(valid => {
         if (valid) {
-          this.$emit('on-success-validInspect', {
+          this.$emit("on-success-validInspect", {
             userName: this.form.userName,
             password: this.form.password,
             selectline: this.form.selectline

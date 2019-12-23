@@ -1,2 +1,2 @@
-import DragDrawer from './drag-drawer.vue'
-export default DragDrawer
+import DragDrawer from "./drag-drawer.vue";
+export default DragDrawer;

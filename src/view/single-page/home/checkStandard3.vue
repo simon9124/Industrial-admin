@@ -6,10 +6,10 @@
 </template>
 
 <script>
-import echarts from 'echarts';
-import { on, off } from '@/libs/tools';
+import echarts from "echarts";
+import { on, off } from "@/libs/tools";
 export default {
-  name: 'serviceRequests',
+  name: "serviceRequests",
   data () {
     return {
       dom: null
@@ -25,7 +25,7 @@ export default {
 
     var listdata = [];
     var links = [];
-    var legendes = ['手机IMSI', '检测标准', '车牌号码', '检测标准'];
+    var legendes = ["手机IMSI", "检测标准", "车牌号码", "检测标准"];
     var texts = [];
 
     // var phoneNum = {
@@ -50,11 +50,11 @@ export default {
       // '车牌号码:豫AG6822': '豫AG6822',
       // '车牌号码:豫CJ9685': '豫AJ9685',
       // '车牌号码:豫AD5123': '豫AG5123'
-      '高压接地:220V': '高压接地:220V',
-      '声噪(DB):60DB': '声噪(DB):60DB',
-      '转速:40r/s': '转速:40r/s',
-      '电压:220V': '电压:220V',
-      '电流:350W': '电流:350W'
+      "高压接地:220V": "高压接地:220V",
+      "声噪(DB):60DB": "声噪(DB):60DB",
+      "转速:40r/s": "转速:40r/s",
+      "电压:220V": "电压:220V",
+      "电流:350W": "电流:350W"
     };
     const relationShipCar = [
       // '匹配车牌号码',
@@ -62,15 +62,15 @@ export default {
       // '匹配车牌号码',
       // '匹配车牌号码',
       // '匹配车牌号码'
-      '',
-      '',
-      '',
-      '',
-      ''
+      "",
+      "",
+      "",
+      "",
+      ""
     ];
 
     var mainRelationShip = {
-      检测标准: '检测标准'
+      检测标准: "检测标准"
     };
 
     function setDataPerson (json, n) {
@@ -82,10 +82,10 @@ export default {
           name: p,
           // showName: json[p],
           // symbol: 'image://' + '/asset/get/s/data-1561621393298-zQTG-TuDS.png',
-          symbol: require('@/assets/images/machine.png'),
+          symbol: require("@/assets/images/machine.png"),
           symbolSize: 30,
           category: n,
-          draggable: 'false',
+          draggable: "false",
           formatter: function (params) {
             return params.data.showName;
           }
@@ -130,15 +130,15 @@ export default {
           name: p,
           showName: json[p],
           // symbol: 'image://' + '/asset/get/s/data-1561621379686-rZHoryrBV.png',
-          symbol: require('@/assets/images/machine.png'),
+          symbol: require("@/assets/images/machine.png"),
           symbolSize: size,
           category: n,
-          draggable: 'false',
+          draggable: "false",
           formatter: function (params) {
             return params.data.showName;
           },
           label: {
-            position: 'bottom'
+            position: "bottom"
           }
         });
         // i++;
@@ -146,7 +146,7 @@ export default {
     }
 
     function setLinkData (json, relarr, title) {
-      if (relarr !== '') {
+      if (relarr !== "") {
         var i = 0;
         for (var p in json) {
           links.push({
@@ -156,7 +156,7 @@ export default {
             lineStyle: {
               normal: {
                 // text: relarr[i],
-                color: 'source'
+                color: "source"
               }
             }
           });
@@ -167,10 +167,10 @@ export default {
           links.push({
             source: p2,
             target: title,
-            value: '',
+            value: "",
             lineStyle: {
               normal: {
-                color: 'source'
+                color: "source"
               }
             }
           });
@@ -193,14 +193,14 @@ export default {
 
     const option = {
       title: {
-        text: '检测标准',
-        x: 'center',
+        text: "检测标准",
+        x: "center",
         textStyle: {
-          color: '#516b91'
+          color: "#516b91"
         }
       },
       tooltip: {
-        formatter: '{b}'
+        formatter: "{b}"
       },
 
       // backgroundColor: '#f7f7f7',
@@ -219,12 +219,12 @@ export default {
       //   itemHeight: 10
       // },
       animationDuration: 1000,
-      animationEasingUpdate: 'quinticInOut',
+      animationEasingUpdate: "quinticInOut",
       series: [
         {
-          type: 'graph',
+          type: "graph",
           // center: ['30%', '90%'],
-          layout: 'force',
+          layout: "force",
           force: {
             repulsion: 150,
             gravity: 0,
@@ -247,11 +247,11 @@ export default {
           label: {
             normal: {
               show: true,
-              position: 'inside',
+              position: "inside",
               textStyle: {
-                color: '#000000',
-                fontWeight: 'normal',
-                fontSize: '12' // 字体大小
+                color: "#000000",
+                fontWeight: "normal",
+                fontSize: "12" // 字体大小
               },
               formatter: function (params) {
                 return params.data.showName;
@@ -266,14 +266,14 @@ export default {
               textStyle: {
                 fontSize: 12
               },
-              formatter: '{c}'
+              formatter: "{c}"
             }
           }
         }
       ],
       color: [
-        '#e8b842',
-        '#41b1ef'
+        "#e8b842",
+        "#41b1ef"
         // '#667aed',
         // '#347fbb',
         // '#772cdc',
@@ -287,11 +287,11 @@ export default {
     this.$nextTick(() => {
       this.dom = echarts.init(this.$refs.dom);
       this.dom.setOption(option);
-      on(window, 'resize', this.resize);
+      on(window, "resize", this.resize);
     });
   },
   beforeDestroy () {
-    off(window, 'resize', this.resize);
+    off(window, "resize", this.resize);
   }
 };
 </script>

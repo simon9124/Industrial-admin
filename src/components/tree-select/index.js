@@ -1,1 +1,1 @@
-export { default } from './tree-select.vue'
+export { default } from "./tree-select.vue";

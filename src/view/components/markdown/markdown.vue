@@ -5,18 +5,18 @@
 </template>
 
 <script>
-import MarkdownEditor from '_c/markdown'
+import MarkdownEditor from "_c/markdown";
 export default {
-  name: 'markdown_page',
+  name: "markdown_page",
   components: {
     MarkdownEditor
   },
   data () {
     return {
-      content: ''
-    }
+      content: ""
+    };
   }
-}
+};
 </script>
 
 <style>

@@ -1,2 +1,2 @@
-import CommonIcon from './common-icon.vue';
+import CommonIcon from "./common-icon.vue";
 export default CommonIcon;

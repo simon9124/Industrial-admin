@@ -112,11 +112,11 @@
 </template>
 
 <script>
-import server from './mockData/server';
+import server from "./mockData/server";
 
 export default {
-  name: 'inspector',
-  data () {
+  name: "inspector",
+  data() {
     return {
       server: server
     };

@@ -1,2 +1,2 @@
-import Tables from './tables.vue';
+import Tables from "./tables.vue";
 export default Tables;

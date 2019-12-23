@@ -68,42 +68,42 @@
 
 <script>
 export default {
-  name: 'directive_page',
+  name: "directive_page",
   data () {
     return {
       modalVisible: false,
       options: {
-        trigger: '.ivu-modal-body',
-        body: '.ivu-modal',
+        trigger: ".ivu-modal-body",
+        body: ".ivu-modal",
         recover: true
       },
       buttonOptions: {
-        trigger: '.draggable-btn',
-        body: '.draggable-btn'
+        trigger: ".draggable-btn",
+        body: ".draggable-btn"
       },
       statu: 1,
-      inputValue: '这是输入的内容'
-    }
+      inputValue: "这是输入的内容"
+    };
   },
   computed: {
     clipOptions () {
       return {
         value: this.inputValue,
         success: (e) => {
-          this.$Message.success('复制成功')
+          this.$Message.success("复制成功");
         },
         error: () => {
-          this.$Message.error('复制失败')
+          this.$Message.error("复制失败");
         }
-      }
+      };
     }
   },
   methods: {
     showModal () {
-      this.modalVisible = true
+      this.modalVisible = true;
     }
   }
-}
+};
 </script>
 
 <style>

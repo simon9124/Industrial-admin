@@ -12,11 +12,11 @@
   </div>
 </template>
 <script>
-import siderTrigger from './sider-trigger';
-import customBreadCrumb from './custom-bread-crumb';
-import './header-bar.less';
+import siderTrigger from "./sider-trigger";
+import customBreadCrumb from "./custom-bread-crumb";
+import "./header-bar.less";
 export default {
-  name: 'HeaderBar',
+  name: "HeaderBar",
   components: {
     siderTrigger,
     customBreadCrumb
@@ -25,13 +25,19 @@ export default {
     collapsed: Boolean
   },
   computed: {
-    breadCrumbList () {
+    breadCrumbList() {
       return this.$store.state.app.breadCrumbList;
     }
   },
+  created() {
+    // 如果是移动端小屏，则初始化时收起菜单
+    if (document.body.clientWidth <= 900) {
+      this.handleCollpasedChange(true);
+    }
+  },
   methods: {
-    handleCollpasedChange (state) {
-      this.$emit('on-coll-change', state);
+    handleCollpasedChange(state) {
+      this.$emit("on-coll-change", state);
     }
   }
 };

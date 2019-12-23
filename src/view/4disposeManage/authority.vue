@@ -78,7 +78,7 @@
 
 <script>
 export default {
-  name: 'authority',
+  name: "authority",
   computed: {
     access () {
       return this.$store.state.user.access;

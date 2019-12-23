@@ -6,18 +6,18 @@
            :xs="24">
       <Card>
         <p slot="title">
-          <Checkbox @on-change="toggleSelectAll"></Checkbox>
+          <!-- <Checkbox @on-change="toggleSelectAll"></Checkbox> -->
           <Icon type="md-people" />
           &nbsp;用户组
         </p>
 
         <!-- buttons -->
-        <Button slot="extra"
+        <!-- <Button slot="extra"
                 type="error"
                 icon="md-trash"
                 size="small"
                 style="margin-right:5px"
-                @click="batcthDelete">批量删除</Button>
+                @click="batcthDelete">批量删除</Button> -->
         <Button slot="extra"
                 type="success"
                 icon="md-add"
@@ -28,8 +28,8 @@
         <div v-for="(item,index) in userGroup"
              :key="index"
              class="group-item">
-          <Checkbox v-model="item.check"></Checkbox>
-          <span>{{item.groupName}}</span>
+          <!-- <Checkbox v-model="item.check"></Checkbox> -->
+          <span>{{item.group_name}}</span>
           <div class="group-item-buttons">
             <Button type="primary"
                     icon="ios-create-outline"
@@ -57,11 +57,12 @@
           <Form ref="formModalData"
                 :model="modalData"
                 :rules="formModalRule"
-                :label-width="80">
+                :label-width="80"
+                @submit.native.prevent>
             <FormItem label="名称："
-                      prop="groupName">
+                      prop="group_name">
               <Input type="text"
-                     v-model="modalData.groupName"></Input>
+                     v-model="modalData.group_name"></Input>
             </FormItem>
             <FormItem>
               <Button type="primary"
@@ -80,22 +81,30 @@
 </template>
 
 <script>
-import userGroup from './mockData/userGroup';
+import {
+  getUseGroupList,
+  // getUserGroupData,
+  insertUseGroup,
+  updateUseGroup,
+  deleteUseGroup
+} from "@/api/userGroup/index";
+// import userGroup from './mockData/userGroup';
 
 export default {
-  name: 'inspector',
-  data () {
+  name: "inspector",
+  data() {
     return {
       // 用户组数据
-      userGroup: userGroup,
+      // userGroup: userGroup,
+      userGroup: [],
       // modal弹框 - 是否显示
       modalShow: false,
       // modal弹框 - 数据
       modalData: {},
       // modal弹框 - form规则
       formModalRule: {
-        groupName: [
-          { required: true, message: '请输入用户组名称', trigger: 'blur' }
+        group_name: [
+          { required: true, message: "请输入用户组名称", trigger: "blur" }
         ]
       },
       // 新增 or 编辑
@@ -104,67 +113,101 @@ export default {
       toggleSelect: false
     };
   },
+  created() {
+    this.getData();
+  },
   methods: {
+    // 获取数据
+    async getData() {
+      this.userGroup = (await getUseGroupList()).data.data;
+    },
+    // 点击按钮 - 新增
+    insert() {
+      this.modalData = {};
+      this.isEdit = false;
+      this.modalShow = true;
+    },
     // 点击按钮 - 详情
-    edit (item) {
+    async edit(item) {
       this.modalShow = true;
       this.isEdit = true;
-      this.modalData = item;
+      this.modalData = JSON.parse(JSON.stringify(item));
     },
     // 点击表单按钮 - 确定
-    handleSubmit () {
-      if (this.isEdit) {
-        this.$refs.formModalData.validate(valid => {
-          if (valid) {
-            this.$Message.success('修改成功！');
-            this.modalShow = false;
+    handleSubmit() {
+      this.$refs.formModalData.validate(async valid => {
+        if (valid) {
+          switch (this.isEdit) {
+            case true:
+              if (!this.isMock) {
+                // 非mock时
+                await updateUseGroup(this.modalData);
+                this.getData();
+              } else {
+                this.$Message.success("修改成功！");
+                this.modalShow = false;
+              }
+              break;
+            case false:
+              if (!this.isMock) {
+                // 非mock时
+                await insertUseGroup(this.modalData);
+                this.getData();
+              } else {
+                // mock时
+                this.$Message.success("新增成功！");
+                this.userGroup.push({
+                  group_name: this.modalData.group_name,
+                  check: false
+                });
+                this.modalShow = false;
+              }
+              break;
           }
-        });
-      } else {
-        this.$refs.formModalData.validate(valid => {
-          if (valid) {
-            this.$Message.success('新增成功！');
-            this.userGroup.push({
-              groupName: this.modalData.groupName,
-              check: false
-            });
-            this.modalShow = false;
-          }
-        });
-      }
+        }
+        this.modalShow = false;
+      });
     },
     // 点击表单按钮 - 取消
-    handleReset () {
-      if (this.isEdit) {
-        this.$refs.formModalData.validate(valid => {
-          if (valid) {
-            this.modalShow = false;
-          } else {
-            this.$Message.error('有未填写的内容！');
-          }
-        });
-      } else {
-        this.modalShow = false;
-      }
+    handleReset() {
+      // if (this.isEdit) {
+      //   this.$refs.formModalData.validate(valid => {
+      //     if (valid) {
+      this.modalShow = false;
+      this.modalData = {};
+      //     } else {
+      //       this.$Message.error('有未填写的内容！');
+      //     }
+      //   });
+      // } else {
+      //   this.modalShow = false;
+      // }
     },
     // 点击按钮 - 删除
-    deleteGroup (item) {
+    deleteGroup(item) {
       this.$Modal.confirm({
-        title: '确定删除该用户组？',
-        onOk: () => {
-          this.userGroup.forEach(group => {
-            if (item.groupName === group.groupName) {
-              const index = this.userGroup.indexOf(group);
-              this.userGroup.splice(index, 1);
-            }
-          });
-          this.$Message.success('删除成功');
+        title: "确定删除该用户组？",
+        onOk: async () => {
+          if (!this.isMock) {
+            // 非mock时
+            await deleteUseGroup(item.group_id);
+            this.getData();
+          } else {
+            // mock时
+            this.userGroup.forEach(group => {
+              if (item.group_name === group.group_name) {
+                const index = this.userGroup.indexOf(group);
+                this.userGroup.splice(index, 1);
+              }
+            });
+            this.$Message.success("删除成功");
+          }
         },
         closable: true
       });
     },
     // 点击按钮 - 批量删除
-    batcthDelete () {
+    batcthDelete() {
       const multipleSelection = [];
       this.userGroup.forEach(group => {
         if (group.check === true) {
@@ -172,10 +215,10 @@ export default {
         }
       });
       if (multipleSelection.length === 0) {
-        this.$Message.warning('未选择数据');
+        this.$Message.warning("未选择数据");
       } else {
         this.$Modal.confirm({
-          title: '确定删除该用户组？',
+          title: "确定删除该用户组？",
           onOk: () => {
             multipleSelection.forEach(group => {
               if (group.check === true) {
@@ -184,20 +227,13 @@ export default {
               }
             });
             this.toggleSelect = false;
-            this.$Message.success('删除成功');
           },
           closable: true
         });
       }
     },
-    // 点击按钮 - 新增
-    insert () {
-      this.$refs.formModalData.resetFields();
-      this.isEdit = false;
-      this.modalShow = true;
-    },
     // 顶部全选
-    toggleSelectAll () {
+    toggleSelectAll() {
       this.userGroup.forEach(group => {
         group.check = !this.toggleSelect;
       });

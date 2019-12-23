@@ -16,10 +16,10 @@
 </template>
 
 <script>
-import SplitPane from '_c/split-pane'
-import Icons from '_c/icons'
+import SplitPane from "_c/split-pane";
+import Icons from "_c/icons";
 export default {
-  name: 'split_pane_page',
+  name: "split_pane_page",
   components: {
     SplitPane,
     Icons
@@ -27,15 +27,15 @@ export default {
   data () {
     return {
       offset: 0.6,
-      offsetVertical: '250px'
-    }
+      offsetVertical: "250px"
+    };
   },
   methods: {
     handleMoving (e) {
-      console.log(e.atMin, e.atMax)
+      console.log(e.atMin, e.atMax);
     }
   }
-}
+};
 </script>
 
 <style lang="less">

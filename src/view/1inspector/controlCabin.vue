@@ -72,11 +72,11 @@
 
 <script>
 // components
-import AssemblyLineNumber from './assemblyLineNumber.vue';
-import AssemblyLinePass from './assemblyLinePass.vue';
-import QualificationRateToday from './qualificationRateToday.vue';
-import QualificationRateAll from './qualificationRateAll.vue';
-import CheckCount from './checkCount.vue';
+import AssemblyLineNumber from "./assemblyLineNumber.vue";
+import AssemblyLinePass from "./assemblyLinePass.vue";
+import QualificationRateToday from "./qualificationRateToday.vue";
+import QualificationRateAll from "./qualificationRateAll.vue";
+import CheckCount from "./checkCount.vue";
 
 export default {
   components: {

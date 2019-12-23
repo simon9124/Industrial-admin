@@ -7,11 +7,11 @@
 </template>
 
 <script>
-import Mixin from './mixin'
+import Mixin from "./mixin";
 export default {
-  name: 'DragDrawerTrigger',
+  name: "DragDrawerTrigger",
   mixins: [Mixin]
-}
+};
 </script>
 
 <style>

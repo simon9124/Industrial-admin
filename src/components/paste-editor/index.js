@@ -1,2 +1,2 @@
-import PasteEditor from './paste-editor.vue'
-export default PasteEditor
+import PasteEditor from "./paste-editor.vue";
+export default PasteEditor;

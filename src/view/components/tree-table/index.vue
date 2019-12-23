@@ -15,79 +15,79 @@
 
 <script>
 export default {
-  name: 'tree_table_page',
+  name: "tree_table_page",
   data () {
     return {
       columns: [
         {
-          title: 'name',
-          key: 'name',
-          width: '400px'
+          title: "name",
+          key: "name",
+          width: "400px"
         },
         {
-          title: 'sex',
-          key: 'sex',
-          minWidth: '50px'
+          title: "sex",
+          key: "sex",
+          minWidth: "50px"
         },
         {
-          title: 'score',
-          key: 'score'
+          title: "score",
+          key: "score"
         },
         {
-          title: 'likes',
-          key: 'likes',
-          minWidth: '200px',
-          type: 'template',
-          template: 'likes'
+          title: "likes",
+          key: "likes",
+          minWidth: "200px",
+          type: "template",
+          template: "likes"
         }
       ],
       data: [
         {
-          name: 'Jack',
-          sex: 'male',
-          likes: ['football', 'basketball'],
+          name: "Jack",
+          sex: "male",
+          likes: ["football", "basketball"],
           score: 10,
           children: [
             {
-              name: 'Ashley',
-              sex: 'female',
-              likes: ['football', 'basketball'],
+              name: "Ashley",
+              sex: "female",
+              likes: ["football", "basketball"],
               score: 20,
               children: [
                 {
-                  name: 'Ashley',
-                  sex: 'female',
-                  likes: ['football', 'basketball'],
+                  name: "Ashley",
+                  sex: "female",
+                  likes: ["football", "basketball"],
                   score: 20
                 },
                 {
-                  name: 'Taki',
-                  sex: 'male',
-                  likes: ['football', 'basketball'],
+                  name: "Taki",
+                  sex: "male",
+                  likes: ["football", "basketball"],
                   score: 10,
                   children: [
                     {
-                      name: 'Ashley',
-                      sex: 'female',
-                      likes: ['football', 'basketball'],
+                      name: "Ashley",
+                      sex: "female",
+                      likes: ["football", "basketball"],
                       score: 20
                     },
                     {
-                      name: 'Taki',
-                      sex: 'male',
-                      likes: ['football', 'basketball'],
+                      name: "Taki",
+                      sex: "male",
+                      likes: ["football", "basketball"],
                       score: 10,
                       children: [
                         {
-                          name: 'Ashley',
-                          sex: 'female',
-                          likes: ['football', 'basketball'],
+                          name: "Ashley",
+                          sex: "female",
+                          likes: ["football", "basketball"],
                           score: 20
                         },
                         {
-                          name: 'Taki',
-                          sex: 'male',
-                          likes: ['football', 'basketball'],
+                          name: "Taki",
+                          sex: "male",
+                          likes: ["football", "basketball"],
                           score: 10
                         }
                       ]
@@ -97,55 +97,55 @@ export default {
               ]
             },
             {
-              name: 'Taki',
-              sex: 'male',
-              likes: ['football', 'basketball'],
+              name: "Taki",
+              sex: "male",
+              likes: ["football", "basketball"],
               score: 10
             }
           ]
         },
         {
-          name: 'Tom',
-          sex: 'male',
-          likes: ['football', 'basketball'],
+          name: "Tom",
+          sex: "male",
+          likes: ["football", "basketball"],
           score: 20,
           children: [
             {
-              name: 'Ashley',
-              sex: 'female',
-              likes: ['football', 'basketball'],
+              name: "Ashley",
+              sex: "female",
+              likes: ["football", "basketball"],
               score: 20,
               children: [
                 {
-                  name: 'Ashley',
-                  sex: 'female',
-                  likes: ['football', 'basketball'],
+                  name: "Ashley",
+                  sex: "female",
+                  likes: ["football", "basketball"],
                   score: 20
                 },
                 {
-                  name: 'Taki',
-                  sex: 'male',
-                  likes: ['football', 'basketball'],
+                  name: "Taki",
+                  sex: "male",
+                  likes: ["football", "basketball"],
                   score: 10
                 }
               ]
             },
             {
-              name: 'Taki',
-              sex: 'male',
-              likes: ['football', 'basketball'],
+              name: "Taki",
+              sex: "male",
+              likes: ["football", "basketball"],
               score: 10,
               children: [
                 {
-                  name: 'Ashley',
-                  sex: 'female',
-                  likes: ['football', 'basketball'],
+                  name: "Ashley",
+                  sex: "female",
+                  likes: ["football", "basketball"],
                   score: 20
                 },
                 {
-                  name: 'Taki',
-                  sex: 'male',
-                  likes: ['football', 'basketball'],
+                  name: "Taki",
+                  sex: "male",
+                  likes: ["football", "basketball"],
                   score: 10
                 }
               ]
@@ -153,40 +153,40 @@ export default {
           ]
         },
         {
-          name: 'Tom',
-          sex: 'male',
-          likes: ['football', 'basketball'],
+          name: "Tom",
+          sex: "male",
+          likes: ["football", "basketball"],
           score: 20
         },
         {
-          name: 'Tom',
-          sex: 'male',
-          likes: ['football', 'basketball'],
+          name: "Tom",
+          sex: "male",
+          likes: ["football", "basketball"],
           score: 20,
           children: [
             {
-              name: 'Ashley',
-              sex: 'female',
-              likes: ['football', 'basketball'],
+              name: "Ashley",
+              sex: "female",
+              likes: ["football", "basketball"],
               score: 20
             },
             {
-              name: 'Taki',
-              sex: 'male',
-              likes: ['football', 'basketball'],
+              name: "Taki",
+              sex: "male",
+              likes: ["football", "basketball"],
               score: 10
             }
           ]
         }
       ]
-    }
+    };
   },
   methods: {
     handle (scope) {
-      console.log(scope)
+      console.log(scope);
     }
   }
-}
+};
 </script>
 
 <style>

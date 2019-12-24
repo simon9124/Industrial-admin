@@ -189,46 +189,46 @@ export default [
   },
 
   // 查看SOP
-  {
-    path: "/sop",
-    name: "sopMessage",
-    meta: {
-      hideInBread: true
-    },
-    component: Main,
-    children: [
-      {
-        path: "message",
-        name: "message",
-        meta: {
-          title: "查看SOP",
-          icon: "md-document"
-        },
-        component: () => import("@/view/8taskManage/sopMessage.vue")
-      }
-    ]
-  },
+  // {
+  //   path: "/sop",
+  //   name: "sopMessage",
+  //   meta: {
+  //     hideInBread: true
+  //   },
+  //   component: Main,
+  //   children: [
+  //     {
+  //       path: "message",
+  //       name: "message",
+  //       meta: {
+  //         title: "查看SOP",
+  //         icon: "md-document"
+  //       },
+  //       component: () => import("@/view/8taskManage/sopMessage.vue")
+  //     }
+  //   ]
+  // },
 
   // 查看报表
-  {
-    path: "/iframe",
-    name: "iframe",
-    meta: {
-      hideInBread: true
-    },
-    component: Main,
-    children: [
-      {
-        path: "chart",
-        name: "chart",
-        meta: {
-          title: "查看报表",
-          icon: "md-document"
-        },
-        component: () => import("@/view/8taskManage/iframe.vue")
-      }
-    ]
-  },
+  // {
+  //   path: "/iframe",
+  //   name: "iframe",
+  //   meta: {
+  //     hideInBread: true
+  //   },
+  //   component: Main,
+  //   children: [
+  //     {
+  //       path: "chart",
+  //       name: "chart",
+  //       meta: {
+  //         title: "查看报表",
+  //         icon: "md-document"
+  //       },
+  //       component: () => import("@/view/8taskManage/iframe.vue")
+  //     }
+  //   ]
+  // },
 
   // 标签打印
   {
@@ -254,25 +254,25 @@ export default [
   },
 
   // 实时监控
-  {
-    path: "/mqtt",
-    name: "mqtt",
-    meta: {
-      hideInBread: true
-    },
-    component: Main,
-    children: [
-      {
-        path: "data",
-        name: "data",
-        meta: {
-          icon: "md-analytics",
-          title: "实时监控"
-        },
-        component: () => import("@/view/2systemManage/mqtt.vue")
-      }
-    ]
-  },
+  // {
+  //   path: "/mqtt",
+  //   name: "mqtt",
+  //   meta: {
+  //     hideInBread: true
+  //   },
+  //   component: Main,
+  //   children: [
+  //     {
+  //       path: "data",
+  //       name: "data",
+  //       meta: {
+  //         icon: "md-analytics",
+  //         title: "实时监控"
+  //       },
+  //       component: () => import("@/view/2systemManage/mqtt.vue")
+  //     }
+  //   ]
+  // },
 
   // 检测列表
   {

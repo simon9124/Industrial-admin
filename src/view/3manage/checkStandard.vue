@@ -1,12 +1,11 @@
 <template>
   <div class="dooya-container">
     <Card>
-      <Tabs :value="tabList[0].value"
-            @on-click="tabSelect">
+      <Tabs @on-click="tabSelect">
         <TabPane v-for="tab in tabList"
-                 :key="tab.value"
-                 :label="tab.label"
-                 :name="tab.value">
+                 :key="tab.id"
+                 :label="tab.typeName"
+                 :name="tab.id">
 
           <!-- 操作 -->
           <div style="margin: 10px 0">
@@ -118,14 +117,17 @@ import {
   editStandardValues, // 更新标准
   removeTag // 删除标准
 } from "@/api/standard";
-import { getSopByQcIndex } from "@/api/process"; // 获取sop下拉框 - select选择
+import {
+  getAllEquipmentFunctype, // 获取顶部标签列表
+  getSopByQcIndex
+} from "@/api/process"; // 获取sop下拉框 - select选择
 
 export default {
   name: "check-standard",
   data() {
     return {
       /* 全局 */
-      tabList: tabList, // 顶部tab列表
+      tabList: [], // 顶部tab列表
       tabSelected: 1, // 顶部tab切换
       qc1List: [], // sop1下拉框
       qc2List: [], // sop2下拉框
@@ -365,11 +367,18 @@ export default {
     };
   },
   async created() {
-    // 初始化级联选择器
+    /* 1.顶部标签列表 */
+    this.tabList = !this.isMock
+      ? (await getAllEquipmentFunctype()).data.data
+      : tabList;
+    this.tabList.forEach(tab => {
+      this.$set(tab, "id", tab.id.toString());
+    });
+    /* 2.初始化级联选择器 */
     await this.initCascader();
-    // 根据级联选择初始化表格
+    /* 3.根据级联选择初始化表格 */
     this.getData();
-    // sop1和sop2列表
+    /* 4.渲染sop1和sop2列表 */
     this.qc1List = !this.isMock
       ? (await getSopByQcIndex("1")).data.data
       : sopList["1"];
@@ -380,7 +389,7 @@ export default {
   methods: {
     // 顶部tab被选择
     async tabSelect(name) {
-      this.tabSelected = name === "qc1" ? 1 : 2;
+      this.tabSelected = name;
       await this.initCascader();
       this.getData();
     },

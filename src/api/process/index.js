@@ -46,6 +46,14 @@ export const removeTask = id => {
   });
 };
 
+// 获取顶部标签列表（除产线管理）
+export const getAllEquipmentFunctype = () => {
+  return axios.request({
+    url: "/api/equipment/getAllEquipmentFunctype",
+    method: "get"
+  });
+};
+
 /* SOP管理 */
 
 // 分页获取SOP列表
@@ -104,9 +112,9 @@ export const editItemParam = data => {
 /* 过程数据管理 */
 
 // 1.查询sop列表
-export const findSopByKey = (qcIndex, sop) => {
+export const findSopByKey = funcTypeId => {
   return axios.request({
-    url: `/api/testprocess/findSopByKey?qcIndex=${qcIndex}&sop=${sop}`,
+    url: `/api/testprocess/findSopByKey?funcTypeId=${funcTypeId}`,
     method: "get"
   });
 };

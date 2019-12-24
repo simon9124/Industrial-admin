@@ -1,25 +1,32 @@
-# smart-ui-shao
+###### cec_qcs_ui
+###### 介绍
+质量追溯系统WEBUI  
+基于iview-admin
 
-> A Vue.js project
+###### 软件架构
+nodejs+vue+iview+echart
 
-## Build Setup
+###### 安装教程
+cd ~  
+git clone https://gitee.com/ipcun/cec_qcs_ui.git
 
-```bash
-# install dependencies
-npm install
+cd cec_qcs_ui  
+npm install  
+npm run dev  
 
-# serve with hot reload at localhost:8080
-npm run dev
+修改vue.config.js  
+npm run build  
 
-# build for production with minification
-npm run build
+###### 使用说明
 
-# run unit tests
-npm run unit
+sed -i "s/deb.debian.org/mirrors.aliyun.com/g" /etc/apt/sources.list
+sed -i "s/security.debian.org/mirrors.aliyun.com/g" /etc/apt/sources.list
+apt-get update
+apt-get install -y vim tmux nginx  git
 
-# run e2e tests
-npm run e2e
+cp dooya.conf /etc/nginx/conf.d/dooya.conf  
+/etc/init.d/nginx start
 
-# run all tests
-npm test
-```
+###### 参与贡献
+从邀请链接进入  
+加入仓储

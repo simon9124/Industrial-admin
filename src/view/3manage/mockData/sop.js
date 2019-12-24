@@ -1,17 +1,13 @@
 // 顶部tab列表
 const tabList = [
   {
-    label: "综合检测",
-    value: "qc1"
+    id: 1,
+    typeName: "综合检测"
   },
   {
-    label: "静音检测",
-    value: "qc2"
+    id: 2,
+    typeName: "静音检测"
   }
-  // {
-  //   label: "外观检测",
-  //   value: "qc3"
-  // }
 ];
 
 // sop列表

@@ -1,12 +1,11 @@
 <template>
   <div class="dooya-container">
     <Card>
-      <Tabs :value="tabList[0].value"
-            @on-click="tabSelect">
+      <Tabs @on-click="tabSelect">
         <TabPane v-for="tab in tabList"
-                 :key="tab.value"
-                 :label="tab.label"
-                 :name="tab.value">
+                 :key="tab.id"
+                 :label="tab.workStationName"
+                 :name="JSON.stringify(tab)">
 
           <!-- 操作 -->
           <div style="margin: 10px 0">
@@ -58,6 +57,7 @@
         <FormItem label="产线编号："
                   prop="lineNo">
           <Input type="number"
+                 disabled
                  v-model.trim="modalData.lineNo"
                  placeholder="请输入编号"></Input>
         </FormItem>
@@ -123,20 +123,22 @@
         </FormItem>
         <FormItem label="关联设备"
                   prop="equipmentId">
-          <Select v-if="tabSelected===1"
-                  v-model="modalData.equipmentId"
-                  placeholder="请选择">
-            <Option v-for="(item,i) in equipmentListQc1"
-                    :value="item.id"
-                    :key="i">{{ item.equipmentName }}</Option>
-          </Select>
-          <Select v-else
-                  v-model="modalData.equipmentId"
-                  placeholder="请选择">
-            <Option v-for="(item,i) in equipmentListQc2"
-                    :value="item.id"
-                    :key="i">{{ item.equipmentName }}</Option>
-          </Select>
+          <div v-if="tabList.length>0">
+            <Select v-if="tabSelected===tabList[0].id"
+                    v-model="modalData.equipmentId"
+                    placeholder="请选择">
+              <Option v-for="(item,i) in equipmentListQc1"
+                      :value="item.id"
+                      :key="i">{{ item.equipmentName }}</Option>
+            </Select>
+            <Select v-if="tabSelected===tabList[1].id"
+                    v-model="modalData.equipmentId"
+                    placeholder="请选择">
+              <Option v-for="(item,i) in equipmentListQc2"
+                      :value="item.id"
+                      :key="i">{{ item.equipmentName }}</Option>
+            </Select>
+          </div>
         </FormItem>
 
         <FormItem>
@@ -154,8 +156,10 @@
 
 <script>
 // mockData
-import { tabList } from "./mockData/sop"; // 顶部tab列表
-import { proLineList } from "./mockData/proLine"; // 产线列表
+import {
+  tabList, // 顶部tab列表
+  proLineList // 产线列表
+} from "./mockData/proLine";
 import { equipmentList } from "./mockData/equipment"; // 设备列表
 // function
 import {
@@ -166,8 +170,9 @@ import {
 import { isPositiveInteger, validateIP } from "@/libs/validate";
 // api
 import {
+  getWorkStationsByLineNo, // 查询产线工位
   findProLineByPage, // 分页查询产线
-  findAllEquipment, // 查询步骤对应的设备
+  findByFunctionType, // 根据设备功能查询设备
   addLine, // 新增产线
   editLine, // 更新产线
   removeLine // 删除产线
@@ -177,8 +182,9 @@ export default {
   data() {
     return {
       /* 全局 */
-      tabList: tabList, // 顶部tab列表
-      tabSelected: 1, // 顶部tab切换
+      tabList: [], // 顶部tab列表
+      tabSelected: "", // 顶部tab切换 - 接口
+      tabSelectedMock: 1, // 顶部tab切换 - mock
       equipmentListQc1: [], // qc1设备列表
       equipmentListQc2: [], // qc2设备列表
       /* 每页 */
@@ -475,35 +481,50 @@ export default {
     };
   },
   async created() {
-    this.getData();
-    if (!this.isMock) {
-      // 接口数据
-      this.equipmentListQc1 = (await findAllEquipment("1")).data.data;
-      this.equipmentListQc2 = (await findAllEquipment("2")).data.data;
-    } else {
-      // mock数据
-      this.equipmentListQc1 = [];
-      this.equipmentListQc2 = [];
-      equipmentList.forEach(equipment => {
-        if (
-          equipment.items.length !== 0 &&
-          equipment.items.some(sop => sop.qc === 1)
-        ) {
-          this.equipmentListQc1.push(equipment);
-        }
-        if (
-          equipment.items.length !== 0 &&
-          equipment.items.some(sop => sop.qc === 2)
-        ) {
-          this.equipmentListQc2.push(equipment);
-        }
-      });
+    // 接口数据
+    const lineNo = localStorage.getItem("loginLineNo");
+    /* 1.顶部标签列表 */
+    this.tabList = !this.isMock
+      ? (await getWorkStationsByLineNo(lineNo)).data.data
+      : tabList;
+    if (this.tabList.length !== 0) {
+      /* 2.自动选择第一个标签 */
+      this.tabSelected = this.tabList[0].id;
+      /* 3.产线列表 */
+      this.getData();
+      /* 4.根据工位，渲染设备列表 */
+      if (!this.isMock) {
+        this.equipmentListQc1 = (await findByFunctionType(
+          this.tabList[0].funcTypeId
+        )).data.data;
+        this.equipmentListQc2 = (await findByFunctionType(
+          this.tabList[1].funcTypeId
+        )).data.data;
+      } else {
+        this.equipmentListQc1 = [];
+        this.equipmentListQc2 = [];
+        equipmentList.forEach(equipment => {
+          if (
+            equipment.items.length !== 0 &&
+            equipment.items.some(sop => sop.qc === 1)
+          ) {
+            this.equipmentListQc1.push(equipment);
+          }
+          if (
+            equipment.items.length !== 0 &&
+            equipment.items.some(sop => sop.qc === 2)
+          ) {
+            this.equipmentListQc2.push(equipment);
+          }
+        });
+      }
     }
   },
   methods: {
     // 顶部tab被选择
-    tabSelect(name) {
-      this.tabSelected = name === "qc1" ? 1 : name === "qc2" ? 2 : 3;
+    tabSelect(tab) {
+      this.tabSelected = JSON.parse(tab).id;
+      this.tabSelectedMock = JSON.parse(tab).funcTypeId;
       this.pageNum = 1;
       this.getData();
     },
@@ -528,7 +549,7 @@ export default {
         this.tableLoading = false;
       } else {
         // mock数据
-        this.tableDataOrg = proLineList[this.tabSelected];
+        this.tableDataOrg = proLineList[this.tabSelectedMock];
         this.refreshData();
       }
     },
@@ -562,6 +583,7 @@ export default {
     insert() {
       this.modalDataType = "insert";
       this.$refs.formModalData.resetFields();
+      this.modalData.lineNo = localStorage.getItem("loginLineNo");
       this.modalShow = true;
     },
     // 点击按钮 - 详情

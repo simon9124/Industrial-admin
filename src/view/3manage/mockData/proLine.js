@@ -1,3 +1,21 @@
+// 顶部tab列表
+const tabList = [
+  {
+    workStationName: "QC1",
+    lineNo: 22,
+    sort: 1,
+    funcTypeId: 1,
+    id: "99BA5433-DF5F-A898-C8E0-78B8BA55F251"
+  },
+  {
+    workStationName: "QC2fun",
+    lineNo: 22,
+    sort: 2,
+    funcTypeId: 2,
+    id: "3DB6B2A9-D4E5-B9D4-363F-0E83736C93C8"
+  }
+];
+
 // 设备列表
 const proLineList = {
   1: [
@@ -91,4 +109,4 @@ const proLineList = {
   ]
 };
 
-export { proLineList };
+export { tabList, proLineList };

@@ -1,22 +1,30 @@
 import axios from "@/libs/api.request";
 
-// 1.分页查询产线
-export const findProLineByPage = (pageIndex, pageSize, qc) => {
+// 1.查询产线工位
+export const getWorkStationsByLineNo = lineno => {
   return axios.request({
-    url: `/api/line/findWithPage?pageIndex=${pageIndex}&pageSize=${pageSize}&qc=${qc}`,
+    url: `/api/line/getWorkStationsByLineNo?lineno=${lineno}`,
     method: "get"
   });
 };
 
-// 2.查询sop-支持参数工序或Sop名
-export const findAllEquipment = qcIndex => {
+// 2.分页查询产线
+export const findProLineByPage = (pageIndex, pageSize, workStationId) => {
   return axios.request({
-    url: `/api/equipment/findall?qcIndex=${qcIndex}`,
+    url: `/api/line/findWithPage?pageIndex=${pageIndex}&pageSize=${pageSize}&workStationId=${workStationId}`,
     method: "get"
   });
 };
 
-// 3.新增产线
+// 3.根据设备功能查询设备
+export const findByFunctionType = functype => {
+  return axios.request({
+    url: `/api/equipment/findByFunctionType?functype=${functype}`,
+    method: "get"
+  });
+};
+
+// 4.新增产线
 export const addLine = data => {
   return axios.request({
     url: "/api/line/add",
@@ -25,7 +33,7 @@ export const addLine = data => {
   });
 };
 
-// 4.更新产线
+// 5.更新产线
 export const editLine = data => {
   return axios.request({
     url: "/api/line/edit",
@@ -34,7 +42,7 @@ export const editLine = data => {
   });
 };
 
-// 5.删除产线
+// 6.删除产线
 export const removeLine = id => {
   return axios.request({
     url: `/api/line/remove?id=${id}`,

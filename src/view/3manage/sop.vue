@@ -1,12 +1,11 @@
 <template>
   <div class="dooya-container">
     <Card>
-      <Tabs :value="tabList[0].value"
-            @on-click="tabSelect">
+      <Tabs @on-click="tabSelect">
         <TabPane v-for="tab in tabList"
-                 :key="tab.value"
-                 :label="tab.label"
-                 :name="tab.value">
+                 :key="tab.id"
+                 :label="tab.typeName"
+                 :name="tab.id">
 
           <!-- 操作 -->
           <div style="margin: 10px 0">
@@ -146,13 +145,19 @@ import {
   resultCallback // 根据请求的status执行回调函数
 } from "@/libs/dataHanding";
 // api
-import { findSopByPage, addSop, editSop, removeSop } from "@/api/process";
+import {
+  getAllEquipmentFunctype,
+  findSopByPage,
+  addSop,
+  editSop,
+  removeSop
+} from "@/api/process";
 
 export default {
   data() {
     return {
       /* 全局 */
-      tabList: tabList, // 顶部tab列表
+      tabList: [], // 顶部tab列表
       tabSelected: 1, // 顶部tab切换
       /* 每页 */
       tableDataOrg: [], // tabel数据 - 全部
@@ -374,12 +379,24 @@ export default {
     };
   },
   async created() {
-    this.getData();
+    /* 1.顶部标签列表 */
+    this.tabList = !this.isMock
+      ? (await getAllEquipmentFunctype()).data.data
+      : tabList;
+    this.tabList.forEach(tab => {
+      this.$set(tab, "id", tab.id.toString());
+    });
+    if (this.tabList.length !== 0) {
+      /* 2.自动选择第一个标签 */
+      this.tabSelected = this.tabList[0].id;
+      /* 3.SOP列表 */
+      this.getData();
+    }
   },
   methods: {
     // 顶部tab被选择
     tabSelect(name) {
-      this.tabSelected = name === "qc1" ? 1 : name === "qc2" ? 2 : 3;
+      this.tabSelected = name;
       this.pageNum = 1;
       this.getData();
     },

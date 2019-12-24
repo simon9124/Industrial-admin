@@ -2,12 +2,12 @@
   <div class="dooya-container">
     <Card>
 
-      <Tabs value="qc1"
-            @on-click="tabSelect">
+      <Tabs @on-click="tabSelect">
 
-        <!-- 综合检测 -->
-        <TabPane label="综合检测"
-                 name="qc1">
+        <TabPane v-for="tab in tabList"
+                 :key="tab.id"
+                 :label="tab.typeName"
+                 :name="tab.id">
 
           <!-- 操作 -->
           <div style="margin: 10px 0">
@@ -24,34 +24,6 @@
           </div>
 
           <!-- 表格 -->
-          <Table border
-                 disabled-hover
-                 :loading="tableLoading"
-                 :data="tableData"
-                 :columns="tableColumns"
-                 no-data-text="请选择SOP，或配置该SOP的相关工序"
-                 stripe>
-          </Table>
-
-        </TabPane>
-
-        <!-- 静音检测 -->
-        <TabPane label="静音检测"
-                 name="qc2">
-
-          <div style="margin: 10px 0">
-            <Select v-model="sopSelected"
-                    filterable
-                    transfer
-                    placeholder="请选择sop"
-                    style="width:200px"
-                    @on-change="sopSearch">
-              <Option v-for="item in sopSelectList"
-                      :value="item.id"
-                      :key="item.id">{{ item.sop }}</Option>
-            </Select>
-          </div>
-
           <Table border
                  disabled-hover
                  :loading="tableLoading"
@@ -216,11 +188,13 @@
 // mockData
 import {
   processList, // 工序列表
-  // sopSelectList, // sop下拉列表
   processSelectList, // 工序参数列表
   valueSelectList // 过程值下拉列表
 } from "./mockData/process";
-import { sopList } from "./mockData/sop"; // sop列表 - select下拉
+import {
+  tabList, // 顶部tab列表
+  sopList // sop列表 - select下拉
+} from "./mockData/sop";
 // function
 import {
   getValueByKey, // 根据对象数组某个key的value，查询另一个key的value
@@ -228,6 +202,7 @@ import {
 } from "@/libs/dataHanding";
 // api
 import {
+  getAllEquipmentFunctype, // 获取顶部标签列表
   findAllItemParam, // 根据步骤，查询参数列表
   findSopByKey, // 根据步骤，查询sop列表（下拉框）
   findSopItemBySop, // 根据sopid，查询其工序列表
@@ -242,6 +217,7 @@ export default {
   data() {
     return {
       /* 全局 */
+      tabList: [], // 顶部tab列表
       tabSelected: 1, // 顶部tab切换
       rowId: "", // 当前行的id
       /* 每页 */
@@ -349,41 +325,39 @@ export default {
     };
   },
   async created() {
-    this.tabSelect("qc1");
+    /* 1.顶部标签列表 */
+    this.tabList = !this.isMock
+      ? (await getAllEquipmentFunctype()).data.data
+      : tabList;
+    this.tabList.forEach(tab => {
+      this.$set(tab, "id", tab.id.toString());
+    });
+    if (this.tabList.length !== 0) {
+      /* 2.自动选择第一个标签 */
+      this.tabSelected = this.tabList[0].id;
+      this.tabSelect(this.tabSelected);
+    }
   },
   methods: {
     // 顶部tab被选择
     async tabSelect(name) {
-      this.tabSelected = name === "qc1" ? 1 : 2;
-      if (!this.isMock) {
-        // 清空表格
-        this.tableData = [];
-        // sop下拉框
-        this.sopSelectList = (await findSopByKey(
-          this.tabSelected,
-          ""
-        )).data.data;
-        // 如果sop列表不为空 -> 默认选择第一个
-        if (this.sopSelectList.length !== 0) {
-          this.sopSearch(this.sopSelectList[0].id);
-        } else {
-          this.sopSelected = "";
-          this.tableLoading = false;
-        }
-        // 工序参数列表
-        this.processSelectList = (await findAllItemParam(
-          this.tabSelected
-        )).data.data;
+      this.tabSelected = name;
+      this.tableLoading = true;
+      // sop下拉框
+      this.sopSelectList = !this.isMock
+        ? (await findSopByKey(this.tabSelected)).data.data
+        : sopList[this.tabSelected];
+      // 默认选择第一个下拉框
+      if (this.sopSelectList.length !== 0) {
+        this.sopSearch(this.sopSelectList[0].id);
       } else {
-        // 获取sop下拉框
-        this.sopSelectList = sopList[this.tabSelected];
-        // 如果sop列表不为空 -> 默认选择第一个
-        if (this.sopSelectList.length !== 0) {
-          this.sopSearch(this.sopSelectList[0].id);
-        }
-        // 工序参数列表
-        this.processSelectList = processSelectList[this.tabSelected];
+        this.sopSelected = "";
+        this.tableLoading = false;
       }
+      // 工序参数列表
+      this.processSelectList = !this.isMock
+        ? (await findAllItemParam(this.tabSelected)).data.data
+        : processSelectList[this.tabSelected];
     },
     // sop被选择
     sopSearch(value) {
@@ -392,7 +366,6 @@ export default {
     },
     // 获取首页数据
     async getData() {
-      this.tableLoading = true;
       if (!this.isMock) {
         // 非mock时
         this.tableData = (await findSopItemBySop(this.sopSelected)).data.data;

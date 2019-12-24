@@ -1,15 +1,26 @@
-###### cec_qcs_ui
+## Industrial-admin
 
-###### 介绍
+**平台介绍：**
 
-质量追溯系统 WEBUI
-基于 iview-admin
+基于 view-admin 和 工业互联网 4.0 的质量追溯平台
+平台用途：智能检测生产产品，严格制定标准、极大提高效率
+适用场所：工厂、车间等
 
-###### 软件架构
+与实际生产中的真实业务逻辑相符，暂未连数据库，数据为前端mock
 
-nodejs+vue+iview+echart
+**平台架构：**
 
-###### 安装教程
+nodejs + vuejs + iview + echart
+
+**账户密码：**
+
+factor：工程师
+workshop_manager：车间主管
+proline_leader：产线线长
+
+密码均为123456
+
+**安装教程：**
 
 cd ~
 
@@ -18,18 +29,3 @@ npm run dev
 
 修改 vue.config.js
 npm run build
-
-###### 使用说明
-
-sed -i "s/deb.debian.org/mirrors.aliyun.com/g" /etc/apt/sources.list
-sed -i "s/security.debian.org/mirrors.aliyun.com/g" /etc/apt/sources.list
-apt-get update
-apt-get install -y vim tmux nginx git
-
-cp dooya.conf /etc/nginx/conf.d/dooya.conf
-/etc/init.d/nginx start
-
-###### 参与贡献
-
-从邀请链接进入
-加入仓储

@@ -19,9 +19,6 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    // dev: 'http://192.168.200.99',
-    // dev: ' https://www.easy-mock.com/mock/5d5e559ed064102521b410b2',
-    // pro: 'http://192.168.200.168:8001'
     dev: "",
     pro: ""
   },

@@ -616,7 +616,7 @@ export default {
 .dooya-container /deep/ {
   .ivu-card-body {
     .ivu-table {
-      max-height: calc(100vh - 260px);
+      max-height: calc(100vh - 300px);
       overflow-x: auto;
       overflow-y: auto;
       overflow: overlay;

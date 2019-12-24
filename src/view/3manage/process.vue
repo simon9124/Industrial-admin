@@ -619,7 +619,7 @@ export default {
     overflow: hidden;
   }
   .ivu-table {
-    max-height: calc(100vh - 260px);
+    max-height: calc(100vh - 300px);
     overflow-y: auto;
     overflow: overlay;
     th {

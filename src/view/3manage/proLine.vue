@@ -604,6 +604,7 @@ export default {
           this.modalData.qcIndex = this.tabSelected;
           switch (this.modalDataType) {
             case "insert":
+              this.modalData.workStationId = this.tabSelected;
               if (!this.isMock) {
                 // 接口数据
                 const result = (await addLine(this.modalData)).data.status;

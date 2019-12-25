@@ -9,9 +9,9 @@ export const findEquipmentByPage = (pageIndex, pageSize, qc) => {
 };
 
 // 2.查询sop-支持参数工序或Sop名
-export const findSopByKey = () => {
+export const findSopByKey = funcTypeId => {
   return axios.request({
-    url: "/api/testprocess/findSopByKey",
+    url: `/api/testprocess/findSopByKey?funcTypeId=${funcTypeId}`,
     method: "get"
   });
 };

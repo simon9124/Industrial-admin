@@ -1,46 +1,45 @@
 <template>
   <div class="dooya-container">
     <Card>
-      <!-- <Tabs :value="tabList[0].value"
-            @on-click="tabSelect">
+      <Tabs @on-click="tabSelect">
         <TabPane v-for="tab in tabList"
-                 :key="tab.value"
-                 :label="tab.label"
-                 :name="tab.value"> -->
+                 :key="tab.id"
+                 :label="tab.typeName"
+                 :name="tab.id">
 
-      <!-- 操作 -->
-      <div style="margin: 10px 0">
-        <Button type="success"
-                icon="md-add"
-                style="margin-right: 10px"
-                @click="insert">新增设备</Button>
-      </div>
+          <!-- 操作 -->
+          <div style="margin: 10px 0">
+            <Button type="success"
+                    icon="md-add"
+                    style="margin-right: 10px"
+                    @click="insert">新增设备</Button>
+          </div>
 
-      <!-- 表格 -->
-      <Table border
-             disabled-hover
-             :loading="tableLoading"
-             :data="tableData"
-             :columns="tableColumns"
-             stripe>
-      </Table>
+          <!-- 表格 -->
+          <Table border
+                 disabled-hover
+                 :loading="tableLoading"
+                 :data="tableData"
+                 :columns="tableColumns"
+                 stripe>
+          </Table>
 
-      <!-- 分页 -->
-      <div v-if="tableData.length>0"
-           style="margin: 10px;overflow: hidden">
-        <div style="float: right;">
-          <Page show-sizer
-                :total="total"
-                :current="1"
-                :page-size-opts="[10, 20, 50, 100]"
-                :page-size="pageSize"
-                @on-change="changePage"
-                @on-page-size-change="changePageSize"></Page>
-        </div>
-      </div>
+          <!-- 分页 -->
+          <div v-if="tableData.length>0"
+               style="margin: 10px;overflow: hidden">
+            <div style="float: right;">
+              <Page show-sizer
+                    :total="total"
+                    :current="1"
+                    :page-size-opts="[10, 20, 50, 100]"
+                    :page-size="pageSize"
+                    @on-change="changePage"
+                    @on-page-size-change="changePageSize"></Page>
+            </div>
+          </div>
 
-      <!-- </TabPane>
-      </Tabs> -->
+        </TabPane>
+      </Tabs>
     </Card>
 
     <!-- Modal -->
@@ -61,18 +60,18 @@
                  v-model.trim="modalData.equipmentName"
                  placeholder="请输入名称"></Input>
         </FormItem>
-        <FormItem label="类型："
-                  prop="equipmentType">
-          <Input type="number"
-                 v-model.trim="modalData.equipmentType"
-                 placeholder="请输入设备类型（0-9999正整数）"></Input>
-        </FormItem>
         <FormItem label="hmi屏幕："
                   prop="readFlag">
           <Select v-model="modalData.readFlag">
             <Option :value="1">有</Option>
             <Option :value="0">无</Option>
           </Select>
+        </FormItem>
+        <FormItem label="详情："
+                  prop="equipmentMark">
+          <Input type="text"
+                 v-model.trim="modalData.equipmentMark"
+                 placeholder="请输入详情，100字以内"></Input>
         </FormItem>
         <FormItem label="关联SOP："
                   prop="list">
@@ -113,7 +112,7 @@
           <Button type="primary"
                   @click="handleSubmit('formModalData')"
                   :loading="buttonLoading">确定</Button>
-          <Button @click="modalShow=false"
+          <Button @click="modalShow=false;sopSelectedId=[]"
                   style="margin-left: 8px">取消</Button>
         </FormItem>
       </Form>
@@ -136,6 +135,7 @@ import {
   getValueByKey // 根据对象数组某个key的value，查询另一个key的value
 } from "@/libs/dataHanding";
 // api
+import { getAllEquipmentFunctype } from "@/api/process"; // 获取顶部标签
 import {
   findEquipmentByPage, // 分页查询设备信息
   findSopByKey, // 查询所有SOP
@@ -148,7 +148,7 @@ export default {
   data() {
     return {
       /* 全局 */
-      tabList: tabList, // 顶部tab列表
+      tabList: [], // 顶部tab列表
       tabSelected: 1, // 顶部tab切换
       sopList: [], // 全部SOP列表 - select用
       /* 每页 */
@@ -168,12 +168,6 @@ export default {
           render: (h, params) => {
             return h("div", params.row.readFlag === 1 ? "有" : "无");
           },
-          minWidth: 100
-        },
-        {
-          title: "设备类型",
-          key: "equipmentType",
-          align: "center",
           minWidth: 100
         },
         {
@@ -271,7 +265,7 @@ export default {
       modalShow: false, // 是否显示
       modalData: {
         equipmentName: "",
-        equipmentType: "",
+        equipmentMark: "",
         readFlag: 1
       }, // 数据 - 获取或提交
       modalDataOrg: {}, // 数据 - 行内原始
@@ -287,18 +281,11 @@ export default {
           },
           { type: "string", max: 15, message: "名称过长", trigger: "change" }
         ],
-        equipmentType: [
+        equipmentMark: [
           {
-            required: true,
-            validator: function(rule, value, callback) {
-              if (value === "" || value === undefined) {
-                callback(new Error("请输入设备类型（正整数）"));
-              } else if (value > 9999 || value < 0 || value.indexOf(".") > -1) {
-                callback(new Error("设备类型只能是0-9999的正整数"));
-              } else {
-                callback();
-              }
-            },
+            type: "string",
+            max: 100,
+            message: "详情不得超过100字",
             trigger: "change"
           }
         ]
@@ -307,15 +294,24 @@ export default {
     };
   },
   async created() {
-    this.getData();
-    this.sopList = !this.isMock
-      ? (await findSopByKey()).data.data
-      : sopList["1"].concat(sopList["2"]);
+    /* 1.顶部标签列表 */
+    this.tabList = !this.isMock
+      ? (await getAllEquipmentFunctype()).data.data
+      : tabList;
+    this.tabList.forEach(tab => {
+      this.$set(tab, "id", tab.id.toString());
+    });
+    if (this.tabList.length !== 0) {
+      /* 2.自动选择第一个标签 */
+      this.tabSelected = this.tabList[0].id;
+      /* 3.渲染数据 */
+      this.getData();
+    }
   },
   methods: {
     // 顶部tab被选择
     tabSelect(name) {
-      this.tabSelected = name === "qc1" ? 1 : name === "qc2" ? 2 : 3;
+      this.tabSelected = name;
       this.pageNum = 1;
       this.getData();
     },
@@ -324,10 +320,11 @@ export default {
       if (!this.isMock) {
         // 接口数据
         this.tableLoading = true;
+        /* 表格数据 */
         const dataResult = (await findEquipmentByPage(
           this.pageNum,
           this.pageSize,
-          "0"
+          this.tabSelected
         )).data.data;
         if (dataResult !== null) {
           // 如果是在删除之后获取的数据 -> 若删掉的是某一页的最后项且页码不是1，则自动获取前一页的数据
@@ -341,11 +338,17 @@ export default {
           this.tableData = [];
           this.total = 0;
         }
+        // this.sopList = !this.isMock
+        //   ? (await findSopByKey()).data.data
+        //   : sopList["1"].concat(sopList["2"]);
+        /* SOP下拉框数据 - 按工序 */
+        this.sopList = (await findSopByKey(this.tabSelected)).data.data;
         this.buttonLoading = false;
         this.tableLoading = false;
       } else {
         // mock数据
-        this.tableDataOrg = equipmentList;
+        this.tableDataOrg = equipmentList[this.tabSelected];
+        this.sopList = sopList[this.tabSelected];
         this.refreshData();
       }
     },
@@ -424,6 +427,7 @@ export default {
           this.sopSelectList.forEach(item => {
             this.modalData.list.push(item.sopId);
           });
+          this.modalData.equipmentFuncTypeId = this.tabSelected;
           this.buttonLoading = true;
           switch (this.modalDataType) {
             case "insert":

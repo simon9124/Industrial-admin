@@ -189,25 +189,25 @@ export default [
   },
 
   // 查看SOP
-  // {
-  //   path: "/sop",
-  //   name: "sopMessage",
-  //   meta: {
-  //     hideInBread: true
-  //   },
-  //   component: Main,
-  //   children: [
-  //     {
-  //       path: "message",
-  //       name: "message",
-  //       meta: {
-  //         title: "查看SOP",
-  //         icon: "md-document"
-  //       },
-  //       component: () => import("@/view/8taskManage/sopMessage.vue")
-  //     }
-  //   ]
-  // },
+  {
+    path: "/sop",
+    name: "sopMessage",
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+      {
+        path: "message",
+        name: "message",
+        meta: {
+          title: "查看SOP",
+          icon: "md-document"
+        },
+        component: () => import("@/view/8taskManage/sopMessage.vue")
+      }
+    ]
+  },
 
   // 查看报表
   // {
@@ -355,6 +355,15 @@ export default [
     component: Main,
     children: [
       {
+        path: "account",
+        name: "account",
+        meta: {
+          title: "账号管理",
+          icon: "md-settings"
+        },
+        component: () => import("@/view/3manage/account.vue")
+      },
+      {
         path: "sop",
         name: "sop",
         meta: {
@@ -367,28 +376,10 @@ export default [
         path: "process",
         name: "process",
         meta: {
-          title: "过程数据管理",
+          title: "SOP过程管理",
           access: ["factor"]
         },
         component: () => import("@/view/3manage/process.vue")
-      },
-      {
-        path: "checkStandard",
-        name: "checkStandard",
-        meta: {
-          title: "标准管理",
-          access: ["factor"]
-        },
-        component: () => import("@/view/3manage/checkStandard.vue")
-      },
-      {
-        path: "snCode",
-        name: "snCode",
-        meta: {
-          title: "SOP组合",
-          access: ["factor"]
-        },
-        component: () => import("@/view/3manage/snCode.vue")
       },
       {
         path: "equipment",
@@ -409,22 +400,31 @@ export default [
         component: () => import("@/view/3manage/proLine.vue")
       },
       {
+        path: "checkStandard",
+        name: "checkStandard",
+        meta: {
+          title: "标准管理",
+          access: ["factor"]
+        },
+        component: () => import("@/view/3manage/checkStandard.vue")
+      },
+      {
+        path: "snCode",
+        name: "snCode",
+        meta: {
+          title: "标准组合",
+          access: ["factor"]
+        },
+        component: () => import("@/view/3manage/snCode.vue")
+      },
+      {
         path: "reject",
         name: "reject",
         meta: {
-          title: "不良品管理",
+          title: "不良品原因",
           access: ["proline_leader", "factor"]
         },
         component: () => import("@/view/3manage/reject.vue")
-      },
-      {
-        path: "account",
-        name: "account",
-        meta: {
-          title: "账号管理",
-          icon: "md-settings"
-        },
-        component: () => import("@/view/3manage/account.vue")
       }
     ]
   },

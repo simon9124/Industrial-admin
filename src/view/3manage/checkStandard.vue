@@ -360,7 +360,7 @@ export default {
         ],
         tag: [
           { required: true, message: "请输入配方说明", trigger: "change" },
-          { type: "string", max: 30, message: "说明过长", trigger: "change" }
+          { type: "string", max: 100, message: "说明过长", trigger: "change" }
         ],
         sopId: [{ required: true, message: "请选择SOP", trigger: "change" }]
       } // 表单规则
@@ -616,7 +616,7 @@ export default {
 .dooya-container /deep/ {
   .ivu-card-body {
     .ivu-table {
-      max-height: calc(100vh - 300px);
+      max-height: calc(100vh - 260px);
       overflow-x: auto;
       overflow-y: auto;
       overflow: overlay;

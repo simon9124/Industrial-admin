@@ -178,4 +178,20 @@ const qc3ListMock = [
   }
 ];
 
-export { qc1ListMock, qc2ListMock, qc3ListMock };
+// 顶部tab列表
+const tabList = [
+  {
+    id: 1,
+    typeName: "综合检测"
+  },
+  {
+    id: 2,
+    typeName: "静音检测"
+  },
+  {
+    id: 3,
+    typeName: "外观检测"
+  }
+];
+
+export { qc1ListMock, qc2ListMock, qc3ListMock, tabList };

@@ -52,7 +52,7 @@
       <Form ref="formModalData"
             :model="modalData"
             :rules="formModalRule"
-            :label-width="80"
+            :label-width="100"
             @submit.native.prevent>
         <FormItem label="名称："
                   prop="equipmentName">
@@ -338,9 +338,6 @@ export default {
           this.tableData = [];
           this.total = 0;
         }
-        // this.sopList = !this.isMock
-        //   ? (await findSopByKey()).data.data
-        //   : sopList["1"].concat(sopList["2"]);
         /* SOP下拉框数据 - 按工序 */
         this.sopList = (await findSopByKey(this.tabSelected)).data.data;
         this.buttonLoading = false;
@@ -423,101 +420,109 @@ export default {
       // console.log(this.modalData);
       this.$refs.formModalData.validate(async valid => {
         if (valid) {
-          this.modalData.list = [];
-          this.sopSelectList.forEach(item => {
-            this.modalData.list.push(item.sopId);
-          });
-          this.modalData.equipmentFuncTypeId = this.tabSelected;
-          this.buttonLoading = true;
-          switch (this.modalDataType) {
-            case "insert":
-              if (!this.isMock) {
-                // 接口数据
-                const result = (await addEquipment(this.modalData)).data.status;
-                resultCallback(
-                  result,
-                  "添加成功！",
-                  () => {
-                    this.modalShow = false;
-                    this.getData();
-                  },
-                  () => {
-                    this.buttonLoading = false;
-                  }
-                );
-              } else {
-                // mock数据
-                // 按"sop"升序
-                this.sopSelectList.sort(arraySort("sop", "asc"));
-                this.modalData.items = this.sopSelectList;
-                // 随机生成equipment的id
-                this.modalData.id = Math.random()
-                  .toString(36)
-                  .substr(-10);
-                if (
-                  this.tableDataOrg.some(
-                    item => item.equipmentName === this.modalData.equipmentName
-                  )
-                ) {
-                  this.$Message.error("此设备已存在！");
-                  this.buttonLoading = false;
-                } else {
-                  this.tableDataOrg.push(
-                    JSON.parse(JSON.stringify(this.modalData))
+          if (this.sopSelectList.length === 0) {
+            this.$Message.error("请至少绑定一个SOP");
+          } else {
+            this.modalData.list = [];
+            this.sopSelectList.forEach(item => {
+              this.modalData.list.push(item.sopId);
+            });
+            this.modalData.equipmentFuncTypeId = this.tabSelected;
+            this.buttonLoading = true;
+            switch (this.modalDataType) {
+              case "insert":
+                if (!this.isMock) {
+                  // 接口数据
+                  const result = (await addEquipment(this.modalData)).data
+                    .status;
+                  resultCallback(
+                    result,
+                    "添加成功！",
+                    () => {
+                      this.modalShow = false;
+                      this.getData();
+                    },
+                    () => {
+                      this.buttonLoading = false;
+                    }
                   );
-                  resultCallback(200, "添加成功！", () => {
-                    this.refreshData();
-                    this.buttonLoading = false;
-                    this.modalShow = false;
-                  });
-                }
-              }
-              break;
-            case "edit":
-              if (!this.isMock) {
-                // 接口数据
-                const result = (await editEquipment(this.modalData)).data
-                  .status;
-                resultCallback(
-                  result,
-                  "修改成功！",
-                  () => {
-                    this.modalShow = false;
-                    this.getData();
-                  },
-                  () => {
-                    this.buttonLoading = false;
-                  }
-                );
-              } else {
-                // mock数据
-                // 按"sop"升序
-                this.sopSelectList.sort(arraySort("sop", "asc"));
-                this.modalData.items = this.sopSelectList;
-                // 判断重复
-                if (
-                  this.tableDataOrg.some(
-                    item => item.equipmentName === this.modalData.equipmentName
-                  ) &&
-                  this.modalData.equipmentName !==
-                    this.modalDataOrg.equipmentName
-                ) {
-                  this.$Message.error("此Sop已存在！");
-                  this.buttonLoading = false;
                 } else {
-                  this.$set(
-                    this.tableDataOrg,
-                    (this.pageNum - 1) * this.pageSize + this.modalData._index,
-                    JSON.parse(JSON.stringify(this.modalData))
-                  );
-                  resultCallback(200, "修改成功！", () => {
-                    this.refreshData();
+                  // mock数据
+                  // 按"sop"升序
+                  this.sopSelectList.sort(arraySort("sop", "asc"));
+                  this.modalData.items = this.sopSelectList;
+                  // 随机生成equipment的id
+                  this.modalData.id = Math.random()
+                    .toString(36)
+                    .substr(-10);
+                  if (
+                    this.tableDataOrg.some(
+                      item =>
+                        item.equipmentName === this.modalData.equipmentName
+                    )
+                  ) {
+                    this.$Message.error("此设备已存在！");
                     this.buttonLoading = false;
-                    this.modalShow = false;
-                  });
+                  } else {
+                    this.tableDataOrg.push(
+                      JSON.parse(JSON.stringify(this.modalData))
+                    );
+                    resultCallback(200, "添加成功！", () => {
+                      this.refreshData();
+                      this.buttonLoading = false;
+                      this.modalShow = false;
+                    });
+                  }
                 }
-              }
-              break;
+                break;
+              case "edit":
+                if (!this.isMock) {
+                  // 接口数据
+                  const result = (await editEquipment(this.modalData)).data
+                    .status;
+                  resultCallback(
+                    result,
+                    "修改成功！",
+                    () => {
+                      this.modalShow = false;
+                      this.getData();
+                    },
+                    () => {
+                      this.buttonLoading = false;
+                    }
+                  );
+                } else {
+                  // mock数据
+                  // 按"sop"升序
+                  this.sopSelectList.sort(arraySort("sop", "asc"));
+                  this.modalData.items = this.sopSelectList;
+                  // 判断重复
+                  if (
+                    this.tableDataOrg.some(
+                      item =>
+                        item.equipmentName === this.modalData.equipmentName
+                    ) &&
+                    this.modalData.equipmentName !==
+                      this.modalDataOrg.equipmentName
+                  ) {
+                    this.$Message.error("此Sop已存在！");
+                    this.buttonLoading = false;
+                  } else {
+                    this.$set(
+                      this.tableDataOrg,
+                      (this.pageNum - 1) * this.pageSize +
+                        this.modalData._index,
+                      JSON.parse(JSON.stringify(this.modalData))
+                    );
+                    resultCallback(200, "修改成功！", () => {
+                      this.refreshData();
+                      this.buttonLoading = false;
+                      this.modalShow = false;
+                    });
+                  }
+                }
+                break;
+            }
           }
         }
       });

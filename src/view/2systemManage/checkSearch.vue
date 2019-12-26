@@ -122,9 +122,9 @@
                 <!-- dataInner -->
                 <div slot="content"
                      v-if="dataInner[i].item_group_value!==null"
-                     style="padding:10px;height:180px">
+                     style="padding:10px;height:140px">
 
-                  <div :style="{display:'inline-block',minWidth:'150px',height:'160px',
+                  <div :style="{display:'inline-block',minWidth:'150px',height:'120px',
                                 borderRight:'1px solid #e8eaec',borderLeft:'1px solid #e8eaec'}">
                     <div style="height:40px;border-bottom:1px solid #e8eaec;border-top:1px solid #e8eaec;text-align:center;line-height:40px">
                       项目
@@ -135,34 +135,34 @@
                     <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:40px">
                       标准范围
                     </div>
-                    <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:36px">
+                    <!-- <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:36px">
                       结果
-                    </div>
+                    </div> -->
 
                   </div>
 
                   <div v-for="(column,i) in dataInner[i].item_group_value"
                        :key="i"
-                       :style="{display:'inline-block',minWidth:'150px',height:'160px',
+                       :style="{display:'inline-block',minWidth:'150px',height:'120px',
                                 borderRight:'1px solid #e8eaec'}">
 
                     <div style="height:40px;border-bottom:1px solid #e8eaec;border-top:1px solid #e8eaec;text-align:center;line-height:40px">
                       {{column.test_item_name}}
                     </div>
-                    <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:40px">
+                    <div :style="{height:'40px',borderBottom:'1px solid #e8eaec',textAlign:'center',lineHeight:'40px',color:column.result===2?'#ff9900':'#515a6e'}">
                       {{column.curr_value!==null?column.curr_value:''}}
                     </div>
                     <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:40px">
                       {{column.down_value!==null?column.down_value+'-'+column.up_value:''}}
                     </div>
-                    <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:36px">
+                    <!-- <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:36px">
                       <Tag style="margin:0"
                            v-if="column.result!==null"
                            :color="column.result===1?'success':
                                   column.result===2?'error':'default'">
                         {{column.result===1?'合格':column.result===2?"不合格":'未检测'}}
                       </Tag>
-                    </div>
+                    </div> -->
 
                   </div>
 
@@ -248,9 +248,9 @@
                 <!-- dataInner -->
                 <div slot="content"
                      v-if="dataInner[i].item_group_value!==null"
-                     style="padding:10px;height:180px">
+                     style="padding:10px;height:140px">
 
-                  <div :style="{display:'inline-block',minWidth:'150px',height:'160px',
+                  <div :style="{display:'inline-block',minWidth:'150px',height:'120px',
                                 borderRight:'1px solid #e8eaec',borderLeft:'1px solid #e8eaec'}">
                     <div style="height:40px;border-bottom:1px solid #e8eaec;border-top:1px solid #e8eaec;text-align:center;line-height:40px">
                       项目
@@ -261,34 +261,34 @@
                     <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:40px">
                       标准范围
                     </div>
-                    <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:36px">
+                    <!-- <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:36px">
                       结果
-                    </div>
+                    </div> -->
 
                   </div>
 
                   <div v-for="(column,i) in dataInner[i].item_group_value"
                        :key="i"
-                       :style="{display:'inline-block',minWidth:'150px',height:'160px',
+                       :style="{display:'inline-block',minWidth:'150px',height:'120px',
                                 borderRight:'1px solid #e8eaec'}">
 
                     <div style="height:40px;border-bottom:1px solid #e8eaec;border-top:1px solid #e8eaec;text-align:center;line-height:40px">
                       {{column.test_item_name}}
                     </div>
-                    <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:40px">
+                    <div :style="{height:'40px',borderBottom:'1px solid #e8eaec',textAlign:'center',lineHeight:'40px',color:column.result===2?'#ff9900':'#515a6e'}">
                       {{column.curr_value!==null?column.curr_value:''}}
                     </div>
                     <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:40px">
                       {{column.down_value!==null?column.down_value+'-'+column.up_value:''}}
                     </div>
-                    <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:36px">
+                    <!-- <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:36px">
                       <Tag style="margin:0"
                            v-if="column.result!==null"
                            :color="column.result===1?'success':
                                   column.result===2?'error':'default'">
                         {{column.result===1?'合格':column.result===2?"不合格":'未检测'}}
                       </Tag>
-                    </div>
+                    </div> -->
 
                   </div>
 

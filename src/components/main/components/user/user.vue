@@ -35,6 +35,7 @@
         <FormItem label="账号："
                   prop="userName">
           <Input type="text"
+                 disabled
                  v-model="modalData.userName"></Input>
         </FormItem>
         <FormItem label="原密码："
@@ -61,7 +62,7 @@
 
 <script>
 import "./user.less";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 // api
 import { editUserPassword } from "@/api/login";
 // import userAvator from '@/assets/images/userAvatar.jpg';
@@ -71,11 +72,9 @@ export default {
   data() {
     return {
       // userAvator
-      // modal弹框 - 是否显示
-      modalShow: false,
-      // modal弹框 - 数据
-      modalData: {},
-      // modal弹框 - form规则
+      /* modal弹框 */
+      modalShow: false, // 是否显示
+      modalData: {}, // 数据
       formModalRule: {
         userName: [
           { required: true, message: "请填写用户名", trigger: "blur" }
@@ -86,7 +85,7 @@ export default {
         newPassword: [
           { required: true, message: "请填写新密码", trigger: "blur" }
         ]
-      }
+      } // form规则
     };
   },
   props: {
@@ -98,6 +97,9 @@ export default {
       type: Number,
       default: 0
     }
+  },
+  computed: {
+    ...mapGetters(["userName"])
   },
   methods: {
     ...mapActions(["handleLogOut"]),
@@ -121,6 +123,7 @@ export default {
       switch (name) {
         case "editUserPassword":
           this.modalData = {};
+          this.modalData.userName = this.userName;
           this.modalShow = true;
           break;
         case "logout":

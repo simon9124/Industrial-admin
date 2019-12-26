@@ -71,6 +71,7 @@ export default {
     messageReadedCount: state => state.messageReadedList.length,
     messageTrashCount: state => state.messageTrashList.length,
     userAccess: state => state.access,
+    userName: state => state.userName,
     token: state => state.token
   },
   actions: {

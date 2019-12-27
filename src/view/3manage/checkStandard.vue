@@ -12,6 +12,7 @@
             <Cascader :data="mNumberList"
                       v-model="mNumberSelect"
                       trigger="hover"
+                      transfer
                       :clearable="false"
                       style="width:180px;margin-right: 10px;display:inline-block"
                       @on-change="selectOnChange">
@@ -65,20 +66,22 @@
           </FormItem>
           <FormItem label="所属SOP"
                     prop="sopId">
-            <Select v-if="tabSelected===1"
-                    v-model="standardForm.sopId"
-                    placeholder="请选择">
-              <Option v-for="(item,i) in qc1List"
-                      :value="item.id.toString()"
-                      :key="i">{{ item.sop }}</Option>
-            </Select>
-            <Select v-else
-                    v-model="standardForm.sopId"
-                    placeholder="请选择">
-              <Option v-for="(item,i) in qc2List"
-                      :value="item.id.toString()"
-                      :key="i">{{ item.sop }}</Option>
-            </Select>
+            <div v-if="tabList.length>0">
+              <Select v-if="tabSelected===tabList[0].id"
+                      v-model="standardForm.sopId"
+                      placeholder="请选择">
+                <Option v-for="(item,i) in qc1List"
+                        :value="item.id.toString()"
+                        :key="i">{{ item.sop }}</Option>
+              </Select>
+              <Select v-if="tabSelected===tabList[1].id"
+                      v-model="standardForm.sopId"
+                      placeholder="请选择">
+                <Option v-for="(item,i) in qc2List"
+                        :value="item.id.toString()"
+                        :key="i">{{ item.sop }}</Option>
+              </Select>
+            </div>
           </FormItem>
           <FormItem>
             <Button type="primary"
@@ -374,6 +377,8 @@ export default {
     this.tabList.forEach(tab => {
       this.$set(tab, "id", tab.id.toString());
     });
+    // 自动选择第一项
+    if (this.tabList.length > 0) this.tabSelected = this.tabList[0].id;
     /* 2.初始化级联选择器 */
     await this.initCascader();
     /* 3.根据级联选择初始化表格 */

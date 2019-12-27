@@ -408,7 +408,7 @@ export default [
         path: "process",
         name: "process",
         meta: {
-          title: "过程配置",
+          title: "数据配置",
           access: ["factor"]
         },
         component: () => import("@/view/3manage/process.vue")

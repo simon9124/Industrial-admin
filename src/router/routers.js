@@ -343,13 +343,13 @@ export default [
     ]
   },
 
-  // 系统管理
+  // 管理中心
   {
     path: "/manage",
     name: "manage",
     meta: {
       hideInBread: true,
-      title: "系统管理",
+      title: "管理中心",
       icon: "md-settings"
     },
     component: Main,
@@ -364,55 +364,10 @@ export default [
         component: () => import("@/view/3manage/account.vue")
       },
       {
-        path: "sop",
-        name: "sop",
-        meta: {
-          title: "SOP管理",
-          access: ["factor"]
-        },
-        component: () => import("@/view/3manage/sop.vue")
-      },
-      {
-        path: "process",
-        name: "process",
-        meta: {
-          title: "SOP过程管理",
-          access: ["factor"]
-        },
-        component: () => import("@/view/3manage/process.vue")
-      },
-      {
-        path: "equipment",
-        name: "equipment",
-        meta: {
-          title: "设备管理",
-          access: ["factor"]
-        },
-        component: () => import("@/view/3manage/equipment.vue")
-      },
-      {
-        path: "proLine",
-        name: "proLine",
-        meta: {
-          title: "产线管理",
-          access: ["factor"]
-        },
-        component: () => import("@/view/3manage/proLine.vue")
-      },
-      {
-        path: "checkStandard",
-        name: "checkStandard",
-        meta: {
-          title: "标准管理",
-          access: ["factor"]
-        },
-        component: () => import("@/view/3manage/checkStandard.vue")
-      },
-      {
         path: "snCode",
         name: "snCode",
         meta: {
-          title: "标准组合",
+          title: "组合管理",
           access: ["factor"]
         },
         component: () => import("@/view/3manage/snCode.vue")
@@ -421,10 +376,69 @@ export default [
         path: "reject",
         name: "reject",
         meta: {
-          title: "不良品原因",
+          title: "异常原因",
           access: ["proline_leader", "factor"]
         },
         component: () => import("@/view/3manage/reject.vue")
+      }
+    ]
+  },
+
+  // 配置中心
+  {
+    path: "/dispose",
+    name: "dispose",
+    meta: {
+      hideInBread: true,
+      title: "配置中心",
+      icon: "md-build"
+    },
+    component: Main,
+    children: [
+      {
+        path: "sop",
+        name: "sop",
+        meta: {
+          title: "SOP配置",
+          access: ["factor"]
+        },
+        component: () => import("@/view/3manage/sop.vue")
+      },
+      {
+        path: "process",
+        name: "process",
+        meta: {
+          title: "过程配置",
+          access: ["factor"]
+        },
+        component: () => import("@/view/3manage/process.vue")
+      },
+      {
+        path: "checkStandard",
+        name: "checkStandard",
+        meta: {
+          title: "配方配置",
+          access: ["factor"]
+        },
+        component: () => import("@/view/3manage/checkStandard.vue")
+      },
+      {
+        path: "equipment",
+        name: "equipment",
+        meta: {
+          title: "设备配置",
+          access: ["factor"]
+        },
+        component: () => import("@/view/3manage/equipment.vue")
+      },
+      {
+        path: "proLine",
+        name: "proLine",
+        meta: {
+          title: "产线配置",
+          access: ["factor"]
+        },
+        component: () => import("@/view/3manage/proLine.vue")
       }
     ]
   },

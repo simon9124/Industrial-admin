@@ -166,23 +166,22 @@
 // mockData
 import { qc1ListMock, qc2ListMock } from "./mockData";
 // function
-import { formatDate } from "@/libs/getDate";
-import { params } from "@/libs/params";
+import { formatDate } from "@/libs/getDate"; // 格式化时间
+import { params } from "@/libs/params"; // 获取localStorage里的数据
 // api
 import {
-  getSopTagFilteByEquipment,
-  setProductLineSnBySop,
-  getLineSn,
-  removeTask
+  getSopTagFilteByEquipment, // 获取可使用的SOP级联选择
+  setProductLineSnBySop, // 任务派发
+  getLineSn, // 获取任务信息
+  removeTask // 删除任务
 } from "@/api/process";
-// import { findSopTagsByQcIndex } from "@/api/standard";
 
 export default {
   data() {
     return {
       // 级联选择器：qc1、qc2
-      qc1List: [],
-      qc2List: [],
+      qc1List: [], // 级联选择器：qc1、qc2
+      qc2List: [], // 级联选择器：qc1、qc2
       // 级联选择器：多个同时存在时，正在被选择的index
       qcIndex: "1",
       // SOP组合list
@@ -233,18 +232,13 @@ export default {
   },
   async created() {
     this.getData();
-    /* 分别获取3个下拉框 */
-    if (!this.isMock) {
-      // 接口数据
-      this.qc1List =
-        (await getSopTagFilteByEquipment("", "", "1")).data.data || [];
-      this.qc2List =
-        (await getSopTagFilteByEquipment("", "", "2")).data.data || [];
-    } else {
-      // mock数据
-      this.qc1List = qc1ListMock;
-      this.qc2List = qc2ListMock;
-    }
+    // 分别获取qc1、qc2的级联选择
+    this.qc1List = !this.isMock
+      ? (await getSopTagFilteByEquipment("", "", "1")).data.data || []
+      : qc1ListMock;
+    this.qc2List = !this.isMock
+      ? (await getSopTagFilteByEquipment("", "", "2")).data.data || []
+      : qc2ListMock;
   },
   methods: {
     async getData() {

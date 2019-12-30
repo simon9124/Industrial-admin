@@ -200,7 +200,7 @@ export default {
       isResolved: "",
 
       // 产线号
-      lineNo: "22",
+      lineNo: "",
       // 原始数据
       tableDataOrg: [],
       // 筛选后的所有数据
@@ -292,28 +292,28 @@ export default {
                   }
                 },
                 "错误原因"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small",
-                    disabled:
-                      this.tabSelected === "1"
-                        ? params.row.mark_reason_qc1 === null
-                        : this.tabSelected === "2"
-                        ? params.row.mark_reason_qc2 === null
-                        : params.row.mark_reason_qc3 === null
-                  },
-                  on: {
-                    click: () => {
-                      this.print(params.row);
-                    }
-                  }
-                },
-                "打印"
               )
+              // h(
+              //   "Button",
+              //   {
+              //     props: {
+              //       type: "primary",
+              //       size: "small",
+              //       disabled:
+              //         this.tabSelected === "1"
+              //           ? params.row.mark_reason_qc1 === null
+              //           : this.tabSelected === "2"
+              //           ? params.row.mark_reason_qc2 === null
+              //           : params.row.mark_reason_qc3 === null
+              //     },
+              //     on: {
+              //       click: () => {
+              //         this.print(params.row);
+              //       }
+              //     }
+              //   },
+              //   "打印"
+              // )
             ]);
           }
         }
@@ -402,28 +402,28 @@ export default {
                   }
                 },
                 "错误原因"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small",
-                    disabled:
-                      this.tabSelected === "1"
-                        ? params.row.mark_reason_qc1 === null
-                        : this.tabSelected === "2"
-                        ? params.row.mark_reason_qc2 === null
-                        : params.row.mark_reason_qc3 === null
-                  },
-                  on: {
-                    click: () => {
-                      this.print(params.row);
-                    }
-                  }
-                },
-                "打印"
               )
+              // h(
+              //   "Button",
+              //   {
+              //     props: {
+              //       type: "primary",
+              //       size: "small",
+              //       disabled:
+              //         this.tabSelected === "1"
+              //           ? params.row.mark_reason_qc1 === null
+              //           : this.tabSelected === "2"
+              //           ? params.row.mark_reason_qc2 === null
+              //           : params.row.mark_reason_qc3 === null
+              //     },
+              //     on: {
+              //       click: () => {
+              //         this.print(params.row);
+              //       }
+              //     }
+              //   },
+              //   "打印"
+              // )
             ]);
           }
         }
@@ -512,28 +512,28 @@ export default {
                   }
                 },
                 "错误原因"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small",
-                    disabled:
-                      this.tabSelected === "1"
-                        ? params.row.mark_reason_qc1 === null
-                        : this.tabSelected === "2"
-                        ? params.row.mark_reason_qc2 === null
-                        : params.row.mark_reason_qc3 === null
-                  },
-                  on: {
-                    click: () => {
-                      this.print(params.row);
-                    }
-                  }
-                },
-                "打印"
               )
+              // h(
+              //   "Button",
+              //   {
+              //     props: {
+              //       type: "primary",
+              //       size: "small",
+              //       disabled:
+              //         this.tabSelected === "1"
+              //           ? params.row.mark_reason_qc1 === null
+              //           : this.tabSelected === "2"
+              //           ? params.row.mark_reason_qc2 === null
+              //           : params.row.mark_reason_qc3 === null
+              //     },
+              //     on: {
+              //       click: () => {
+              //         this.print(params.row);
+              //       }
+              //     }
+              //   },
+              //   "打印"
+              // )
             ]);
           }
         }
@@ -562,6 +562,7 @@ export default {
     };
   },
   async created() {
+    this.lineNo = localStorage.getItem("loginLineNo") || "22";
     this.getData();
   },
   methods: {
@@ -620,7 +621,7 @@ export default {
       selection.forEach(row => {
         this.selectionChange.push(row.barcode);
       });
-      console.log(this.selectionChange);
+      // console.log(this.selectionChange);
     },
     // 点击按钮 - 编辑
     edit(row) {

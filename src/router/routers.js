@@ -391,7 +391,8 @@ export default [
     meta: {
       hideInBread: true,
       title: "配置中心",
-      icon: "md-build"
+      icon: "md-build",
+      access: ["factor"]
     },
     component: Main,
     children: [

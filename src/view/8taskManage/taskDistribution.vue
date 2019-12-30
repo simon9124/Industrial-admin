@@ -179,16 +179,11 @@ import {
 export default {
   data() {
     return {
-      // 级联选择器：qc1、qc2
+      /* 页面全局 */
       qc1List: [], // 级联选择器：qc1、qc2
       qc2List: [], // 级联选择器：qc1、qc2
-      // 级联选择器：多个同时存在时，正在被选择的index
-      qcIndex: "1",
-      // SOP组合list
-      snCodeList: [],
-      // 今日任务 - 分时列表
-      todayTask: [],
-      // 派发表单数据
+      snCodeList: [], // SOP组合list
+      /* 今日任务 */
       formData: {
         workTime: [],
         workTimeStorage: [],
@@ -201,8 +196,9 @@ export default {
         qc2SopId: "",
         qc2SopTagId: "",
         rest: []
-      },
-      // 派发表单规则
+      }, // 左侧 - 派发表单
+      formCopy: {}, // 中部 - 派发成功显示的内容
+      todayTask: [], // 右侧 - 分时列表
       formRule: {
         workTime: [
           { required: true, message: "请选择工作时间", trigger: "change" }
@@ -219,15 +215,11 @@ export default {
           { required: true, message: "请选择SOP1", trigger: "change" }
         ],
         qc2SopId: [{ required: true, message: "请选择SOP2", trigger: "change" }]
-      },
-      // 派发成功显示的内容
-      formCopy: {},
-      // 是否已派发过任务
-      distributed: false,
-      // loading
-      spinShow: false,
-      // 已派发任务的id
-      processId: ""
+      }, // 派发表单规则
+      distributed: false, // 是否已派发任务
+      processId: "", // 已派发任务的id
+      /* loading */
+      spinShow: false
     };
   },
   async created() {
@@ -443,23 +435,29 @@ export default {
     },
     // 按钮 - 删除
     async sopRemove() {
-      if (!this.isMock) {
-        // 接口数据
-        this.spinShow = true;
-        const result = await removeTask(this.processId);
-        if (result.data.status === 200) {
-          this.$Message.success("删除成功");
-          this.getData();
-        } else {
-          this.spinShow = false;
-        }
-      } else {
-        // mock数据
-        this.$Message.success("删除成功");
-        this.distributed = false;
-        localStorage.setItem("distributed", this.distributed);
-        // this.getData();
-      }
+      this.$Modal.confirm({
+        title: "确定删除该任务？",
+        onOk: async () => {
+          if (!this.isMock) {
+            // 接口数据
+            this.spinShow = true;
+            const result = await removeTask(this.processId);
+            if (result.data.status === 200) {
+              this.$Message.success("删除成功");
+              this.getData();
+            } else {
+              this.spinShow = false;
+            }
+          } else {
+            // mock数据
+            this.$Message.success("删除成功");
+            this.distributed = false;
+            localStorage.setItem("distributed", this.distributed);
+            // this.getData();
+          }
+        },
+        closable: true
+      });
     }
   }
 };

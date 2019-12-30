@@ -98,6 +98,7 @@ export default [
       icon: "md-laptop",
       title: "驾驶舱",
       hideInBread: true,
+      // hideInMenu: true,
       access: ["workshop_manager"]
     },
     component: () => import("@/view/6inspector/controlCabin.vue")
@@ -111,6 +112,7 @@ export default [
       icon: "md-laptop",
       title: "驾驶舱",
       hideInBread: true,
+      // hideInMenu: true,
       access: ["proline_leader", "factor"]
     },
     component: () => import("@/view/6inspector/controlCabinLine.vue")

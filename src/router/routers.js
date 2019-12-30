@@ -130,7 +130,7 @@ export default [
     component: () => import("@/view/6inspector/controlCabinLine.vue")
   },
 
-  // 人员登录
+  // 检测员
   {
     path: "/inspect",
     name: "inspect",
@@ -145,7 +145,7 @@ export default [
         name: "inspector",
         meta: {
           icon: "md-person",
-          title: "人员登录",
+          title: "检测员",
           access: ["proline_leader", "factor"]
         },
         component: () => import("@/view/1inspector/inspector.vue")
@@ -230,7 +230,7 @@ export default [
   //   ]
   // },
 
-  // 标签打印
+  // 条码打印
   {
     path: "/number",
     name: "number",
@@ -245,7 +245,7 @@ export default [
         name: "print",
         meta: {
           icon: "md-print",
-          title: "标签打印",
+          title: "条码打印",
           access: ["examine", "factor"]
         },
         component: () => import("@/view/3manage/number.vue")

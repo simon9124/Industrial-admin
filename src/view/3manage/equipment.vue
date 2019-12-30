@@ -279,7 +279,7 @@ export default {
             message: "请输入设备名称",
             trigger: "change"
           },
-          { type: "string", max: 15, message: "名称过长", trigger: "change" }
+          { type: "string", max: 64, message: "名称过长", trigger: "change" }
         ],
         equipmentMark: [
           {

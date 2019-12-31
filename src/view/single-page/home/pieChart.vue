@@ -95,9 +95,9 @@ export default {
               }
             }
           }
-        ],
+        ]
         // 关闭切换数据时重新渲染的动画
-        animation: false
+        // animation: false
       };
       this.$nextTick(() => {
         this.dom = echarts.init(this.$refs.dom);

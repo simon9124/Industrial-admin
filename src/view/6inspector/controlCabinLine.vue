@@ -352,19 +352,19 @@ export default {
             }
           ];
           // 不合格原因
-          if (msg.Qc1UnqualifiedReason !== null) {
+          if (msg.Qc1UnqualifiedReason.length !== 0) {
             msg.Qc1UnqualifiedReason.forEach(row => {
               this.$set(row, "value", row.Value);
               this.$set(row, "name", row.Key || "未知");
             });
           }
-          if (msg.Qc2UnqualifiedReason !== null) {
+          if (msg.Qc2UnqualifiedReason.length !== 0) {
             msg.Qc2UnqualifiedReason.forEach(row => {
               this.$set(row, "value", row.Value);
               this.$set(row, "name", row.Key || "未知");
             });
           }
-          if (msg.Qc3UnqualifiedReason !== null) {
+          if (msg.Qc3UnqualifiedReason.length !== 0) {
             msg.Qc3UnqualifiedReason.forEach(row => {
               this.$set(row, "value", row.Value);
               this.$set(row, "name", row.Key || "未知");
@@ -382,7 +382,7 @@ export default {
           const Qc1QualifiedData = { xAxisData: [], seriesData: [] };
           const Qc2QualifiedData = { xAxisData: [], seriesData: [] };
           const Qc3QualifiedData = { xAxisData: [], seriesData: [] };
-          if (msg.LineRateDetail !== null) {
+          if (msg.LineRateDetail.length !== 0) {
             msg.LineRateDetail.forEach(row => {
               // 达成
               Qc1CompleteData.xAxisData.push(

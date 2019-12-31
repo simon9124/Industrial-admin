@@ -1,5 +1,13 @@
 import axios from "@/libs/api.request";
 
+// 首页概览 - 根据异常原因分组统计当日各个工序的异常报表
+export const unqualifiedReasonWithProductClass = () => {
+  return axios.request({
+    url: "/api/report/unqualifiedReasonWithProductClass",
+    method: "get"
+  });
+};
+
 // 获取电机检测列表
 export const findTotalByDate = (StartTime, EndTime, groupType) => {
   return axios.request({

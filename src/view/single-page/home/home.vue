@@ -84,12 +84,12 @@
       <i-col :md="24"
              :lg="8">
         <Card shadow
-              v-if="pieUnqalifiedReason.qc2.length!==0">
+              v-if="pieUnqalifiedReason.qc3.length!==0">
           <div class="col-block-title"
                style="text-align:center;color:#516b91;font-weight:bold;font-size:18px">
             不合格原因：外观检测
           </div>
-          <pieChart :chartData="pieUnqalifiedReason.qc2"
+          <pieChart :chartData="pieUnqalifiedReason.qc3"
                     style="height: 300px;" />
         </Card>
       </i-col>

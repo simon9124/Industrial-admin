@@ -61,36 +61,30 @@
              :lg="8">
         <Card shadow
               v-if="pieUnqalifiedReason.qc1.length!==0">
-          <div class="col-block-title"
-               style="text-align:center;color:#516b91;font-weight:bold;font-size:18px">
-            不合格原因：综合检测
-          </div>
-          <pieChart :chartData="pieUnqalifiedReason.qc1"
-                    style="height: 300px;" />
+          <pieChart title="不合格原因：综合检测"
+                    :chartData="pieUnqalifiedReason.qc1"
+                    :legendData="pieUnqalifiedReason.qc1LegendData"
+                    style="height: 320px;" />
         </Card>
       </i-col>
       <i-col :md="24"
              :lg="8">
         <Card shadow
               v-if="pieUnqalifiedReason.qc2.length!==0">
-          <div class="col-block-title"
-               style="text-align:center;color:#516b91;font-weight:bold;font-size:18px">
-            不合格原因：静音检测
-          </div>
-          <pieChart :chartData="pieUnqalifiedReason.qc2"
-                    style="height: 300px;" />
+          <pieChart title="不合格原因：静音检测"
+                    :chartData="pieUnqalifiedReason.qc2"
+                    :legendData="pieUnqalifiedReason.qc2LegendData"
+                    style="height: 320px;" />
         </Card>
       </i-col>
       <i-col :md="24"
              :lg="8">
         <Card shadow
               v-if="pieUnqalifiedReason.qc3.length!==0">
-          <div class="col-block-title"
-               style="text-align:center;color:#516b91;font-weight:bold;font-size:18px">
-            不合格原因：外观检测
-          </div>
-          <pieChart :chartData="pieUnqalifiedReason.qc3"
-                    style="height: 300px;" />
+          <pieChart title="不合格原因：外观检测"
+                    :chartData="pieUnqalifiedReason.qc3"
+                    :legendData="pieUnqalifiedReason.qc3LegendData"
+                    style="height: 320px;" />
         </Card>
       </i-col>
 
@@ -108,16 +102,16 @@ import QualificationRateToday from "./qualificationRateToday.vue";
 import QualificationRateMonth from "./qualificationRateMonth.vue";
 import Example from "./example.vue";
 import ElectricSearch from "@/view/2systemManage/electricSearch";
+import pieChart from "./pieChart.vue";
 // functions
 import { params } from "@/libs/params";
 // mockData
 import { pieUnqalifiedReason } from "./mockData";
-// components
-import pieChart from "@/view/6inspector/pieChart.vue";
 // api
-import { getCurrentLineReport } from "@/api/contrlCabin";
-// mqtt
-import { mqtt, MQTT_SERVICE, options } from "@/libs/sysconstant.js";
+import {
+  getCurrentLineReport,
+  unqualifiedReasonWithProductClass
+} from "@/api/contrlCabin";
 
 export default {
   name: "home",
@@ -166,7 +160,10 @@ export default {
       pieUnqalifiedReason: {
         qc1: [],
         qc2: [],
-        qc3: []
+        qc3: [],
+        qc1LegendData: [],
+        qc2LegendData: [],
+        qc3LegendData: []
       } //  不合格原因
     };
   },
@@ -199,60 +196,32 @@ export default {
     async getData() {
       if (!this.isMock) {
         /* 非mock数据 */
-        this.client = mqtt.connect(MQTT_SERVICE, options);
-
-        // mqtt连接
-        this.client.on("connect", e => {
-          // 连接成功
-          this.client.subscribe(
-            `${this.lineNo}-ProductLine`,
-            { qos: 1 },
-            error => {
-              if (!error) {
-                // 订阅成功
-              } else {
-                // 订阅失败
-              }
-            }
-          );
-        });
-        // 接收消息处理
-        this.client.on("message", (topic, message) => {
-          const msg = JSON.parse(message.toString());
-          console.log(msg);
-          // 不合格原因
-          if (msg.Qc1UnqualifiedReason !== null) {
-            msg.Qc1UnqualifiedReason.forEach(row => {
-              this.$set(row, "value", row.Value);
-              this.$set(row, "name", row.Key || "未知");
-            });
-          }
-          if (msg.Qc2UnqualifiedReason !== null) {
-            msg.Qc2UnqualifiedReason.forEach(row => {
-              this.$set(row, "value", row.Value);
-              this.$set(row, "name", row.Key || "未知");
-            });
-          }
-          if (msg.Qc3UnqualifiedReason !== null) {
-            msg.Qc3UnqualifiedReason.forEach(row => {
-              this.$set(row, "value", row.Value);
-              this.$set(row, "name", row.Key || "未知");
-            });
-          }
-          this.pieUnqalifiedReason = {
-            qc1: msg.Qc1UnqualifiedReason || [],
-            qc2: msg.Qc2UnqualifiedReason || [],
-            qc3: msg.Qc3UnqualifiedReason || []
-          };
-        });
-        // 断开发起重连
-        // this.client.on("reconnect", error => {
-        //   console.log("正在重连:", error);
-        // });
-        // 链接异常处理
-        // this.client.on("error", error => {
-        //   console.log("连接失败:", error);
-        // });
+        const result = (await unqualifiedReasonWithProductClass()).data.data;
+        if (result.qc1UnqualifiedReason.length !== 0) {
+          result.qc1UnqualifiedReason.forEach(row => {
+            this.$set(row, "value", row.value);
+            this.$set(row, "name", row.key || "未处理");
+            this.pieUnqalifiedReason.qc1LegendData.push(row.key || "未处理");
+          });
+        }
+        if (result.qc2UnqualifiedReason.length !== 0) {
+          result.qc2UnqualifiedReason.forEach(row => {
+            this.$set(row, "value", row.value);
+            this.$set(row, "name", row.key || "未处理");
+            this.pieUnqalifiedReason.qc2LegendData.push(row.key || "未处理");
+          });
+        }
+        if (result.qc3UnqualifiedReason.length !== 0) {
+          result.qc3UnqualifiedReason.forEach(row => {
+            this.$set(row, "value", row.value);
+            this.$set(row, "name", row.key || "未处理");
+            this.pieUnqalifiedReason.qc3LegendData.push(row.key || "未处理");
+          });
+        }
+        this.pieUnqalifiedReason.qc1 = result.qc1UnqualifiedReason || [];
+        this.pieUnqalifiedReason.qc2 = result.qc2UnqualifiedReason || [];
+        this.pieUnqalifiedReason.qc3 = result.qc3UnqualifiedReason || [];
+        // console.log(this.pieUnqalifiedReason);
       } else {
         /* mock数据 */
         this.pieUnqalifiedReason = pieUnqalifiedReason;

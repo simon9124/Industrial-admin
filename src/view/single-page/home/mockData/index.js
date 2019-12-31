@@ -151,4 +151,22 @@ const monthData = {
   ]
 };
 
-export { monthData };
+// 不合格原因
+const pieUnqalifiedReason = {
+  qc1: [
+    { value: 22, name: "刹车打滑" },
+    { value: 28, name: "砝码拉不动" },
+    { value: 32, name: "未检测" }
+  ],
+  qc2: [
+    { value: 14, name: "低电压不吸合" },
+    { value: 18, name: "热保护不到4分钟" },
+    { value: 22, name: "未检测" }
+  ],
+  qc3: [
+    { value: 6, name: "外管不良" },
+    { value: 2, name: "未检测" }
+  ]
+};
+
+export { monthData, pieUnqalifiedReason };

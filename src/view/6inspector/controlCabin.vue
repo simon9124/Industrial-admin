@@ -443,9 +443,14 @@ export default {
         this.todayAssign = todayAssign;
       }
     },
-    // 车间主管可以返回首页 / 其他角色不可以
+    // 车间主管 -> 返回检测列表 / 管理员 -> 返回首页
     backRouter() {
       if (this.userAccess.indexOf("workshop_manager") !== -1) {
+        this.$router.push({
+          path: "/electric/electricSearch",
+          name: "electricSearch"
+        });
+      } else if (this.userAccess.indexOf("admin") !== -1) {
         this.$router.push({
           name: this.$config.homeName
         });

@@ -39,7 +39,7 @@
                    @on-keypress="taskCountOnPress"
                    @on-keyup="taskCountOnUp"></Input>
           </FormItem>
-          <FormItem label="SOP1"
+          <FormItem label="综合检测"
                     prop="qc1SopId">
             <Cascader v-model="formData.qc1Select"
                       :data="qc1List"
@@ -50,7 +50,7 @@
                       @on-change="selectOnChangeQC1">
             </Cascader>
           </FormItem>
-          <FormItem label="SOP2"
+          <FormItem label="静音检测"
                     prop="qc2SopId">
             <Cascader v-model="formData.qc2Select"
                       :data="qc2List"

@@ -23,12 +23,12 @@
                     icon="md-add"
                     style="margin-right: 10px"
                     :disabled="buttonDisabled"
-                    @click="insert">新增标准</Button>
+                    @click="insert">新增配方</Button>
             <Button type="error"
                     icon="md-close"
                     style="margin-right: 10px"
                     :disabled="buttonDisabled"
-                    @click="removeStandard">删除标准</Button>
+                    @click="removeStandard">删除配方</Button>
           </div>
 
           <!-- 表格 -->
@@ -140,13 +140,13 @@ export default {
       tableData: [], // 表格数据
       tableColumns: [
         {
-          title: "描述",
+          title: "工序",
           key: "itemName",
           align: "center",
           minWidth: 120
         },
         {
-          title: "项目",
+          title: "参数",
           key: "paramName",
           align: "center",
           minWidth: 120

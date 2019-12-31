@@ -226,13 +226,13 @@ export default {
       tableData: [], // table数据
       tableColumns: [
         {
-          title: "名称",
+          title: "工序",
           key: "description",
           // align: "center",
           minWidth: 100
         },
         {
-          title: "过程值",
+          title: "地址",
           key: "plcResultAdd",
           // align: "center",
           minWidth: 120
@@ -619,7 +619,7 @@ export default {
     overflow: hidden;
   }
   .ivu-table {
-    max-height: calc(100vh - 300px);
+    max-height: calc(100vh - 260px);
     overflow-y: auto;
     overflow: overlay;
     th {

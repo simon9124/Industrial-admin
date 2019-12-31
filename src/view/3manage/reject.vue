@@ -418,7 +418,7 @@ export default {
     // 获取首页数据
     async getData() {
       if (!this.isMock) {
-        this.tableDataOrg = (await getUnqualifiedList()).data.data;
+        this.tableDataOrg = (await getUnqualifiedList()).data.data || [];
       }
       this.refreshData();
     },

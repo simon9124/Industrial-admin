@@ -67,8 +67,8 @@
             <!-- :max-tag-count="3" -->
             <Option value="admin"
                     :disabled="userAccess[0]!=='admin'">管理员</Option>
-            <Option value="factor"
-                    :disabled="userAccess[0]!=='admin'&&userAccess[0]!=='factor'">工程师</Option>
+            <Option value="cestc"
+                    :disabled="userAccess[0]!=='admin'&&userAccess[0]!=='cestc'">工程师</Option>
             <Option value="workshop_manager"
                     :disabled="userAccess[0]==='proline_leader'||userAccess[0]==='examine'">车间主管</Option>
             <Option value="proline_leader"
@@ -140,17 +140,18 @@ export default {
           key: "userAccess",
           align: "center",
           render: (h, params) => {
+            /* eslint-disable */
             return h(
               "div",
               params.row.userAccess === "admin"
                 ? "管理员"
-                : params.row.userAccess === "factor"
-                  ? "工程师"
-                  : params.row.userAccess === "workshop_manager"
-                    ? "车间主管"
-                    : params.row.userAccess === "proline_leader"
-                      ? "产线线长"
-                      : "检测员"
+                : params.row.userAccess === "cestc"
+                ? "工程师"
+                : params.row.userAccess === "workshop_manager"
+                ? "车间主管"
+                : params.row.userAccess === "proline_leader"
+                ? "产线线长"
+                : "检测员"
             );
           },
           minWidth: 120

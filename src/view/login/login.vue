@@ -87,6 +87,18 @@ export default {
               path: "/control-leader-shop",
               name: "control-leader-shop"
             });
+          } else if (res.data.userAccess === "examine") {
+            // 检测员 -> 直接进入追溯查询
+            this.$router.push({
+              path: "/check/checkSearch",
+              name: "checkSearch"
+            });
+          } else if (res.data.userAccess === "cestc") {
+            // 工程师 -> 直接进入SOP配置
+            this.$router.push({
+              path: "/dispose/sop",
+              name: "sop"
+            });
           } else {
             // 其他角色 -> 进入首页
             this.$router.push({

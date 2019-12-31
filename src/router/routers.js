@@ -38,7 +38,8 @@ export default [
     component: Main,
     meta: {
       // hideInMenu: true,
-      notCache: true
+      notCache: true,
+      access: ["admin", "proline_leader"]
     },
     children: [
       {
@@ -48,7 +49,8 @@ export default [
           // hideInMenu: true,
           title: "首页概览",
           notCache: true,
-          icon: "md-home"
+          icon: "md-home",
+          access: ["admin", "proline_leader"]
         },
         component: () => import("@/view/single-page/home")
       }
@@ -85,7 +87,7 @@ export default [
       title: "驾驶舱",
       hideInBread: true,
       hideInMenu: true,
-      access: ["factor"]
+      access: ["admin"]
     },
     component: () => import("@/view/6inspector/controlCabin.vue")
   },
@@ -113,7 +115,7 @@ export default [
       title: "驾驶舱",
       hideInBread: true,
       // hideInMenu: true,
-      access: ["proline_leader", "factor"]
+      access: ["admin", "proline_leader"]
     },
     component: () => import("@/view/6inspector/controlCabinLine.vue")
   },
@@ -138,7 +140,7 @@ export default [
     name: "inspect",
     meta: {
       hideInBread: true,
-      access: ["proline_leader", "factor"]
+      access: ["admin", "proline_leader", "examine"]
     },
     component: Main,
     children: [
@@ -148,7 +150,7 @@ export default [
         meta: {
           icon: "md-person",
           title: "检测员",
-          access: ["proline_leader", "factor"]
+          access: ["admin", "proline_leader", "examine"]
         },
         component: () => import("@/view/1inspector/inspector.vue")
       }
@@ -173,7 +175,7 @@ export default [
     name: "task",
     meta: {
       hideInBread: true,
-      access: ["proline_leader", "factor"]
+      access: ["admin", "proline_leader"]
     },
     component: Main,
     children: [
@@ -183,7 +185,7 @@ export default [
         meta: {
           title: "任务派发",
           icon: "md-shuffle",
-          access: ["proline_leader", "factor"]
+          access: ["admin", "proline_leader"]
         },
         component: () => import("@/view/8taskManage/taskDistribution.vue")
       }
@@ -195,7 +197,8 @@ export default [
     path: "/sop",
     name: "sopMessage",
     meta: {
-      hideInBread: true
+      hideInBread: true,
+      access: ["admin", "proline_leader", "examine"]
     },
     component: Main,
     children: [
@@ -204,7 +207,8 @@ export default [
         name: "message",
         meta: {
           title: "查看SOP",
-          icon: "md-document"
+          icon: "md-document",
+          access: ["admin", "proline_leader", "examine"]
         },
         component: () => import("@/view/8taskManage/sopMessage.vue")
       }
@@ -238,7 +242,7 @@ export default [
     name: "number",
     meta: {
       hideInBread: true,
-      access: ["examine", "factor"]
+      access: ["admin", "proline_leader", "examine"]
     },
     component: Main,
     children: [
@@ -248,7 +252,7 @@ export default [
         meta: {
           icon: "md-print",
           title: "条码打印",
-          access: ["examine", "factor"]
+          access: ["admin", "proline_leader", "examine"]
         },
         component: () => import("@/view/3manage/number.vue")
       }
@@ -282,7 +286,7 @@ export default [
     name: "electric",
     meta: {
       hideInBread: true,
-      access: ["workshop_manager", "proline_leader", "factor"]
+      access: ["admin", "workshop_manager", "proline_leader"]
     },
     component: Main,
     children: [
@@ -292,7 +296,7 @@ export default [
         meta: {
           icon: "md-options",
           title: "检测列表",
-          access: ["workshop_manager", "proline_leader", "factor"]
+          access: ["admin", "workshop_manager", "proline_leader"]
         },
         component: () => import("@/view/2systemManage/electricSearch.vue")
       }
@@ -305,7 +309,7 @@ export default [
     name: "check",
     meta: {
       hideInBread: true,
-      access: ["workshop_manager", "proline_leader", "examine", "factor"]
+      access: ["admin", "workshop_manager", "proline_leader", "examine"]
     },
     component: Main,
     children: [
@@ -315,7 +319,7 @@ export default [
         meta: {
           icon: "md-git-pull-request",
           title: "追溯查询",
-          access: ["workshop_manager", "proline_leader", "examine", "factor"]
+          access: ["admin", "workshop_manager", "proline_leader", "examine"]
         },
         component: () => import("@/view/2systemManage/checkSearch.vue")
       }
@@ -329,7 +333,8 @@ export default [
     meta: {
       hideInBread: true,
       title: "异常确认",
-      icon: "md-options"
+      icon: "md-options",
+      access: ["admin", "proline_leader"]
     },
     component: Main,
     children: [
@@ -338,7 +343,8 @@ export default [
         name: "checkReason",
         meta: {
           icon: "md-bug",
-          title: "异常确认"
+          title: "异常确认",
+          access: ["admin", "proline_leader"]
         },
         component: () => import("@/view/2systemManage/checkReason.vue")
       }
@@ -352,7 +358,8 @@ export default [
     meta: {
       hideInBread: true,
       title: "管理中心",
-      icon: "md-settings"
+      icon: "md-settings",
+      access: ["admin", "cestc", "workshop_manager", "proline_leader"]
     },
     component: Main,
     children: [
@@ -361,7 +368,8 @@ export default [
         name: "account",
         meta: {
           title: "账号管理",
-          icon: "md-settings"
+          icon: "md-settings",
+          access: ["admin", "cestc", "workshop_manager"]
         },
         component: () => import("@/view/3manage/account.vue")
       },
@@ -370,7 +378,8 @@ export default [
         name: "snCode",
         meta: {
           title: "组合管理",
-          access: ["factor"]
+          icon: "md-settings",
+          access: ["admin", "cestc", "workshop_manager"]
         },
         component: () => import("@/view/3manage/snCode.vue")
       },
@@ -379,7 +388,8 @@ export default [
         name: "reject",
         meta: {
           title: "异常原因",
-          access: ["proline_leader", "factor"]
+          icon: "md-settings",
+          access: ["admin", "cestc", "workshop_manager", "proline_leader"]
         },
         component: () => import("@/view/3manage/reject.vue")
       }
@@ -394,7 +404,7 @@ export default [
       hideInBread: true,
       title: "配置中心",
       icon: "md-build",
-      access: ["factor"]
+      access: ["admin", "cestc"]
     },
     component: Main,
     children: [
@@ -403,7 +413,7 @@ export default [
         name: "sop",
         meta: {
           title: "SOP配置",
-          access: ["factor"]
+          access: ["admin", "cestc"]
         },
         component: () => import("@/view/3manage/sop.vue")
       },
@@ -412,7 +422,7 @@ export default [
         name: "process",
         meta: {
           title: "数据配置",
-          access: ["factor"]
+          access: ["admin", "cestc"]
         },
         component: () => import("@/view/3manage/process.vue")
       },
@@ -421,7 +431,7 @@ export default [
         name: "checkStandard",
         meta: {
           title: "配方配置",
-          access: ["factor"]
+          access: ["admin", "cestc"]
         },
         component: () => import("@/view/3manage/checkStandard.vue")
       },
@@ -430,7 +440,7 @@ export default [
         name: "equipment",
         meta: {
           title: "设备配置",
-          access: ["factor"]
+          access: ["admin", "cestc"]
         },
         component: () => import("@/view/3manage/equipment.vue")
       },
@@ -439,7 +449,7 @@ export default [
         name: "proLine",
         meta: {
           title: "产线配置",
-          access: ["factor"]
+          access: ["admin", "cestc"]
         },
         component: () => import("@/view/3manage/proLine.vue")
       }

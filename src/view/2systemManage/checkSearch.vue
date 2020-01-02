@@ -456,7 +456,7 @@ export default {
         this.dataInner.forEach(data => {
           arr.push(data.test_group_name.length);
         });
-        this.processWidth = (Math.max(...arr) + 1) * 12 + "px";
+        this.processWidth = (Math.max(...arr) + 2) * 12 + "px";
         this.spinShow = false;
       }
     },

@@ -107,7 +107,7 @@
                   <span style="width:50px;marginRight:5px;display:inline-block">
                     工序{{i+1}}：
                   </span>
-                  <span style="width:80px;marginRight:5px;display:inline-block">
+                  <span :style="{width:processWidth,marginRight:'5px',display:'inline-block'}">
                     {{row.test_group_name}}
                   </span>
                   <span style="width:60px;marginRight:5px;display:inline-block">
@@ -233,7 +233,7 @@
                   <span style="width:50px;marginRight:5px;display:inline-block">
                     工序{{i+1}}：
                   </span>
-                  <span style="width:80px;marginRight:5px;display:inline-block">
+                  <span :style="{width:processWidth,marginRight:'5px',display:'inline-block'}">
                     {{row.test_group_name}}
                   </span>
                   <span style="width:60px;marginRight:5px;display:inline-block">
@@ -403,6 +403,7 @@ export default {
       },
       // 展开后的内层数据
       dataInner: [],
+      processWidth: "80px", // 工序span的动态宽度
       // loading
       searchLoading: false,
       // qc3表单
@@ -450,6 +451,12 @@ export default {
           this.barcode,
           key
         )).data.data;
+        // 动态设置工序名称的span宽度
+        var arr = [];
+        this.dataInner.forEach(data => {
+          arr.push(data.test_group_name.length);
+        });
+        this.processWidth = (Math.max(...arr) + 1) * 12 + "px";
         this.spinShow = false;
       }
     },

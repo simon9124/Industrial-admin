@@ -395,7 +395,7 @@ export default {
           this.buttonLoading = true;
           switch (this.modalDataType) {
             case "insert":
-              // this.modalData.userAccess = this.modalData.user_access.join(",");
+              this.modalData.userAccess = this.modalData.user_access.join(",");
               if (!this.isMock) {
                 // 非mock时
                 this.modalData.user_avator = "";

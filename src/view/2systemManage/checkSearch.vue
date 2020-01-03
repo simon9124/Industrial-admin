@@ -153,7 +153,7 @@
                       {{column.curr_value!==null?column.curr_value:''}}
                     </div>
                     <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:40px">
-                      {{column.down_value!==null?column.down_value+'-'+column.up_value:''}}
+                      {{column.down_value!==null?column.down_value+'至'+column.up_value:''}}
                     </div>
                     <!-- <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:36px">
                       <Tag style="margin:0"
@@ -279,7 +279,7 @@
                       {{column.curr_value!==null?column.curr_value:''}}
                     </div>
                     <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:40px">
-                      {{column.down_value!==null?column.down_value+'-'+column.up_value:''}}
+                      {{column.down_value!==null?column.down_value+'至'+column.up_value:''}}
                     </div>
                     <!-- <div style="height:40px;border-bottom:1px solid #e8eaec;text-align:center;line-height:36px">
                       <Tag style="margin:0"

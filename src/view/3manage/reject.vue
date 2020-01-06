@@ -5,7 +5,7 @@
       <div style="margin: 10px 0">
         <Button type="success"
                 icon="md-add"
-                @click="insert">新增不良品</Button>
+                @click="insert">新增异常原因</Button>
       </div>
 
       <!-- 表格 -->

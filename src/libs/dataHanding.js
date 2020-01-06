@@ -98,6 +98,22 @@ export function getValueByKey(array, queryKey, queryValue, getKey) {
 }
 
 /**
+ * 封装数组[{},{},{}...]，根据条件求某个对象的key的和
+ * @param {Array} array 数组
+ * @param {String} key 要查询的key
+ * @param {Function} condition 要根据的条件
+ */
+export const addValueByKey = (array, key, condition = true) => {
+  var addValue = 0;
+  array.forEach(item => {
+    if (condition) {
+      addValue += Number(item[key]);
+    }
+  });
+  return addValue;
+};
+
+/**
  * 封装回调函数，根据resultStatus的值弹出$Message提示，执行相应的回调函数
  * @param {Number} resultStatus 请求返回的data.status
  * @param {String} message 请求成功时，$Message要弹出的字段

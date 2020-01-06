@@ -3,9 +3,9 @@
     <Card>
       <Row :gutter="20">
         <!-- 派发form -->
-        <Col :xl="8"
-             :sm="16"
-             :xs="16">
+        <Col :xl="7"
+             :sm="17"
+             :xs="17">
         <Form ref="formData"
               :model="formData"
               :rules="formRule"
@@ -19,7 +19,7 @@
                         :steps="[1, 30]"
                         placement="bottom-end"
                         placeholder="请选择"
-                        style="width:240px"
+                        style="width:100%"
                         @on-change="timeOnChange"
                         @on-clear="timeClear"></TimePicker>
           </FormItem>
@@ -45,7 +45,7 @@
                       :data="qc1List"
                       :disabled="distributed"
                       trigger="hover"
-                      style="width:240px"
+                      style="width:100%"
                       placeholder="综合测试的SOP"
                       @on-change="selectOnChangeQC1">
             </Cascader>
@@ -56,7 +56,7 @@
                       :data="qc2List"
                       :disabled="distributed"
                       trigger="hover"
-                      style="width:240px"
+                      style="width:100%"
                       placeholder="静音检测的SOP"
                       @on-change="selectOnChangeQC2">
             </Cascader>
@@ -74,9 +74,9 @@
         </Col>
 
         <!-- 派发结果 -->
-        <Col :xl="4"
-             :sm="8"
-             :xs="8">
+        <Col :xl="3"
+             :sm="7"
+             :xs="7">
         <div>
           <div class="result"
                v-if="distributed">
@@ -106,7 +106,7 @@
         </Col>
 
         <!-- 任务列表 -->
-        <Col :xl="12"
+        <Col :xl="14"
              :sm="24"
              :xs="24">
         <Row v-if="formData.workTime.length!==0 && todayTask.length!==0"
@@ -321,12 +321,12 @@ export default {
         // 1.开始时间转成数字：30分记为0.5
         const start1 = parseInt(this.formData.workTimeStorage[0]);
         const start2 =
-          this.formData.workTimeStorage[0].substring(5 - 2) === "00" ? 0 : 0.5;
+          this.formData.workTimeStorage[0].substring(3, 5) === "00" ? 0 : 0.5;
         const startTime = start1 + start2;
         // 2.结束时间转成数字：30分记为0.5
         const end1 = parseInt(this.formData.workTimeStorage[1]);
         const end2 =
-          this.formData.workTimeStorage[1].substring(5 - 2) === "00" ? 0 : 0.5;
+          this.formData.workTimeStorage[1].substring(3, 5) === "00" ? 0 : 0.5;
         const endTime = end1 + end2;
         // 3.界面右侧回显当天任务列表
         this.todayTask = [];

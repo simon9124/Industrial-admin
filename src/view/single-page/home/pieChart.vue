@@ -115,7 +115,9 @@ export default {
   watch: {
     chartData: {
       handler(newVal, oldVal) {
-        this.dom.clear();
+        if (this.dom !== null) {
+          this.dom.clear();
+        }
         this.drawChart();
       },
       deep: true

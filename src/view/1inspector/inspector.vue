@@ -41,7 +41,8 @@
                        type="password"
                        placeholder="请输入密码"></Input>
               </FormItem>
-              <FormItem label="QC1 工位："
+              <FormItem v-show="false"
+                        label="QC1 工位："
                         prop="qcid">
                 <Input v-model="formQC1_1.qcid"
                        type="number"
@@ -69,7 +70,8 @@
                        type="password"
                        placeholder="请输入密码"></Input>
               </FormItem>
-              <FormItem label="QC1 工位："
+              <FormItem v-show="false"
+                        label="QC1 工位："
                         prop="qcid">
                 <Input v-model="formQC1_1.qcid"
                        placeholder="请输入工位"></Input>
@@ -116,7 +118,8 @@
                        type="password"
                        placeholder="请输入密码"></Input>
               </FormItem>
-              <FormItem label="QC1 工位："
+              <FormItem v-show="false"
+                        label="QC1 工位："
                         prop="qcid">
                 <Input v-model="formQC1_2.qcid"
                        type="number"
@@ -130,8 +133,8 @@
             <Form slot="content"
                   v-if="formQC1Login_2"
                   ref="formQC1_2"
-                  :rules="formQC1Rule_1"
-                  :model="formQC1_1"
+                  :rules="formQC1Rule_2"
+                  :model="formQC1_2"
                   :label-width="100">
               <FormItem label="QC1 账号："
                         prop="username">
@@ -144,7 +147,8 @@
                        type="password"
                        placeholder="请输入密码"></Input>
               </FormItem>
-              <FormItem label="QC1 工位："
+              <FormItem v-show="false"
+                        label="QC1 工位："
                         prop="qcid">
                 <Input v-model="formQC1_2.qcid"
                        type="number"
@@ -192,7 +196,8 @@
                        type="password"
                        placeholder="请输入密码"></Input>
               </FormItem>
-              <FormItem label="QC2 工位："
+              <FormItem v-show="false"
+                        label="QC2 工位："
                         prop="qcid">
                 <Input v-model="formQC2.qcid"
                        type="number"
@@ -220,7 +225,8 @@
                        type="password"
                        placeholder="请输入密码"></Input>
               </FormItem>
-              <FormItem label="QC2 工位："
+              <FormItem v-show="false"
+                        label="QC2 工位："
                         prop="qcid">
                 <Input v-model="formQC2.qcid"
                        type="number"
@@ -268,7 +274,8 @@
                        type="password"
                        placeholder="请输入密码"></Input>
               </FormItem>
-              <FormItem label="QC3 工位："
+              <FormItem v-show="false"
+                        label="QC3 工位："
                         prop="qcid">
                 <Input v-model="formQC3.qcid"
                        type="number"
@@ -296,7 +303,8 @@
                        type="password"
                        placeholder="请输入密码"></Input>
               </FormItem>
-              <FormItem label="QC3 工位："
+              <FormItem v-show="false"
+                        label="QC3 工位："
                         prop="qcid">
                 <Input v-model="formQC3.qcid"
                        type="number"
@@ -333,8 +341,8 @@ export default {
     return {
       // QC1
       formQC1_1: {
-        username: "tuwenxuan",
-        password: "123456",
+        username: "",
+        password: "",
         lineNo: "22",
         qcid: "1"
       },
@@ -351,8 +359,8 @@ export default {
       },
       formQC1Login_1: false,
       formQC1_2: {
-        username: "zhangjiahui",
-        password: "123456",
+        username: "",
+        password: "",
         lineNo: "22",
         qcid: "2"
       },
@@ -370,8 +378,8 @@ export default {
       formQC1Login_2: false,
       // QC2
       formQC2: {
-        username: "liuchaofan",
-        password: "123456",
+        username: "",
+        password: "",
         lineNo: "22",
         qcid: "3"
       },
@@ -385,8 +393,8 @@ export default {
       formQC2Login: false,
       // QC3
       formQC3: {
-        username: "wangmingxue",
-        password: "123456",
+        username: "",
+        password: "",
         lineNo: "22",
         qcid: "4"
       },
@@ -412,23 +420,29 @@ export default {
   created() {
     // 产线号
     this.getUsers();
-    if (localStorage.getItem("formQC1_1") !== null) {
-      this.formQC1_1 = JSON.parse(params(this, "formQC1_1"));
-    }
-    if (localStorage.getItem("formQC1_2") !== null) {
-      this.formQC1_2 = JSON.parse(params(this, "formQC1_2"));
-    }
-    if (localStorage.getItem("formQC2") !== null) {
-      this.formQC2 = JSON.parse(params(this, "formQC2"));
-    }
-    if (localStorage.getItem("formQC3") !== null) {
-      this.formQC3 = JSON.parse(params(this, "formQC3"));
+    if (this.isMock) {
+      if (localStorage.getItem("formQC1_1") !== null) {
+        this.formQC1_1 = JSON.parse(params(this, "formQC1_1"));
+      }
+      if (localStorage.getItem("formQC1_2") !== null) {
+        this.formQC1_2 = JSON.parse(params(this, "formQC1_2"));
+      }
+      if (localStorage.getItem("formQC2") !== null) {
+        this.formQC2 = JSON.parse(params(this, "formQC2"));
+      }
+      if (localStorage.getItem("formQC3") !== null) {
+        this.formQC3 = JSON.parse(params(this, "formQC3"));
+      }
     }
   },
   methods: {
     // collapes展开/收起
     async collapseDataChange(key) {
       this.collapseKey = key.length !== 0 ? key[0] : "0";
+      this.$refs.formQC1_1.resetFields();
+      this.$refs.formQC1_2.resetFields();
+      this.$refs.formQC2.resetFields();
+      this.$refs.formQC3.resetFields();
     },
     // 获取登录信息
     async getUsers() {
@@ -459,11 +473,11 @@ export default {
     },
     // 登录
     formLogin(formName) {
-      this.spinShow = true;
       switch (formName) {
         case "QC1_1":
           this.$refs.formQC1_1.validate(async valid => {
             if (valid) {
+              this.spinShow = true;
               const result = await loginLineUser(this.formQC1_1);
               if (result.data.status === 200) {
                 this.$Message.success("登录成功！");
@@ -482,6 +496,7 @@ export default {
         case "QC1_2":
           this.$refs.formQC1_2.validate(async valid => {
             if (valid) {
+              this.spinShow = true;
               const result = await loginLineUser(this.formQC1_2);
               if (result.data.status === 200) {
                 this.$Message.success("登录成功！");
@@ -500,6 +515,7 @@ export default {
         case "QC2":
           this.$refs.formQC2.validate(async valid => {
             if (valid) {
+              this.spinShow = true;
               const result = await loginLineUser(this.formQC2);
               if (result.data.status === 200) {
                 this.$Message.success("登录成功！");
@@ -515,6 +531,7 @@ export default {
         case "QC3":
           this.$refs.formQC3.validate(async valid => {
             if (valid) {
+              this.spinShow = true;
               const result = await loginLineUser(this.formQC3);
               if (result.data.status === 200) {
                 this.$Message.success("登录成功！");

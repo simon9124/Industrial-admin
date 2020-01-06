@@ -265,7 +265,7 @@ export default {
       modalShow: false,
       // modal弹框 - 数据
       modalData: {
-        user_phone: null
+        user_phone: ""
       },
       // modal弹框 - form规则
       formModalRule: {
@@ -290,7 +290,7 @@ export default {
             required: true,
             trigger: "change",
             validator: function(rule, value, callback) {
-              if (!validateTel(value) && value !== "") {
+              if (!validateTel(value) && value !== undefined) {
                 callback(new Error("手机号格式不正确"));
               } else {
                 callback();
@@ -375,7 +375,6 @@ export default {
       this.modalData = {};
       this.modalData.user_access = ["examine"];
       // this.modalData.user_access = [];
-      this.modalData.user_phone = "";
       this.modalShow = true;
     },
     // 点击按钮 - 详情
@@ -413,6 +412,8 @@ export default {
               if (!this.isMock) {
                 // 非mock时
                 this.modalData.user_avator = "";
+                if (this.modalData.user_phone === undefined)
+                  this.modalData.user_phone = "";
                 const result = (await insertUser(this.modalData)).data.status;
                 if (result === 200) {
                   this.$refs.formModalData.resetFields();

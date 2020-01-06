@@ -254,15 +254,24 @@ const pieUnqalifiedReason = {
   qc1: [
     { value: 22, name: "刹车打滑" },
     { value: 28, name: "砝码拉不动" },
+    { value: 10, name: "减速不良" },
+    { value: 12, name: "对码不良" },
+    { value: 15, name: "蜗杆减不死" },
+    { value: 20, name: "蜗杆加不活" },
     { value: 32, name: "未检测" }
   ],
   qc2: [
     { value: 14, name: "低电压不吸合" },
     { value: 18, name: "热保护不到4分钟" },
+    { value: 17, name: "分贝超120" },
+    { value: 13, name: "分贝超80" },
+    { value: 11, name: "分贝超60" },
     { value: 22, name: "未检测" }
   ],
   qc3: [
     { value: 6, name: "外管不良" },
+    { value: 3, name: "管体有严重磕碰" },
+    { value: 3, name: "管体有严重磕碰2" },
     { value: 2, name: "未检测" }
   ]
 };

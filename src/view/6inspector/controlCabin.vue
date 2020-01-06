@@ -39,7 +39,7 @@
               <lineChart :style="{height:parseInt(colBlockMinHeight)-70+'px'}"
                          :chartData="item.chartData"
                          :standardValue="item.AverageCount||20"
-                         :yAxisMaxValue="item.AverageCount+5||30"
+                         :yAxisMaxValue="item.AverageCount*2||30"
                          unit="件" />
             </div>
           </li>
@@ -65,10 +65,14 @@
             <div v-for="(item,j) in todayList"
                  :key="j"
                  class="MainBlock"
-                 :style="{padding:screenHeight>1000?'20px 0':screenHeight>800?'10px 0':'0'}">
+                 :style="{padding:screenHeight>1000?'20px 0':screenHeight>800?'10px 0':'0',textAlign:'left'}">
 
-              <div class="MainBlock-title">{{item.ProductClass}}</div>
-
+              <!-- class="MainBlock-title" -->
+              <div style="width:30%;display:inline-block;text-align:right">
+                <div class="MainBlock-title">
+                  {{item.ProductClass}}
+                </div>
+              </div>
               <span class="MainBlock-title-block-small">目标</span>
               <span class="MainBlock-title-block-huge">{{item.TaskCount}}</span>
               <span class="MainBlock-title-block-small">台</span>
@@ -108,10 +112,16 @@
               生产任务
             </div>
             <div class="col-block-chart">
-              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+              <pieChart v-if="todayAssign.proAssign.length!==0"
+                        :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
                         :chartData="todayAssign.proAssign"
                         :legendData="todayAssign.legendDataAssign||['A型', 'B型', 'R型', 'SS型']"
                         :seriesCenter="['60%','50%']" />
+              <div v-else
+                   class="no-data"
+                   :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
+                <div class="content">当前未生产</div>
+              </div>
             </div>
 
           </div>
@@ -127,12 +137,18 @@
               产线概况
             </div>
             <div class="col-block-chart">
-              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+              <pieChart v-if="todayAssign.proLine.length!==0"
+                        :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
                         :chartData="todayAssign.proLine"
                         :color="['#32ce32','#fc8a53','#2db7f5']"
                         :legendData="['生产中', '预警', '未生产']"
                         :seriesCenter="['60%','50%']"
                         unit="台" />
+              <div v-else
+                   class="no-data"
+                   :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
+                <div class="content">当前未生产</div>
+              </div>
             </div>
 
           </div>
@@ -228,6 +244,11 @@
 
               </div>
               </Col>
+
+              <div v-if="todayPro.length===0"
+                   class="no-data">
+                <div class="content">当前未生产</div>
+              </div>
 
             </Row>
           </div>
@@ -403,7 +424,7 @@ export default {
               const seriesData = [];
               row.WorkInfo.forEach(work => {
                 xAxisData.push(
-                  work.StartTime.substring(0, work.StartTime.length - 3)
+                  work.EndTime.substring(0, work.EndTime.length - 3)
                 );
                 seriesData.push(work.CompleteCount);
               });
@@ -425,6 +446,18 @@ export default {
             ];
           }
           // 今日各产线
+          msg.LineOverviewReport.forEach(row => {
+            this.$set(
+              row,
+              "CompletedRate",
+              parseInt(row.CompletedRate * 10000) / 100
+            );
+            this.$set(
+              row,
+              "QualifiedRate",
+              parseInt(row.QualifiedRate * 10000) / 100
+            );
+          });
           this.todayPro = msg.LineOverviewReport;
         });
         // 断开发起重连

@@ -97,6 +97,16 @@
           margin: 5px 10px 0;
           background: rgb(11, 18, 46);
 
+          .no-data {
+            .content {
+              text-align: center;
+              font-size: 24px;
+              font-weight: bold;
+              line-height: 200px;
+              color: #2db7f5;
+            }
+          }
+
           // 检测总览：每一块
           .MainBlock {
             padding: 20px 0;
@@ -104,7 +114,8 @@
             position: relative;
 
             &-title {
-              vertical-align: super;
+              vertical-align: sub;
+              margin-bottom: -5px;
               display: inline-block;
               padding: 10px;
               color: #fff;
@@ -112,12 +123,18 @@
               border-radius: 5px;
               font-size: 1.5em;
               font-weight: bold;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
 
               &-block {
                 text-align: center;
                 display: inline-block;
 
                 &-huge {
+                  display: inline-block;
+                  // width: 9%;
+                  width: 80px;
                   font-size: 4em;
                   padding: 5px 0;
                   margin-left: 10px;
@@ -216,6 +233,9 @@
               width: 20%;
               display: inline-block;
               font-size: 0.7em;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
 
               &-num {
                 font-size: 2.2em;

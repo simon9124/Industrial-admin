@@ -33,9 +33,15 @@
               达成率：{{item.process}}
             </div>
             <div class="col-block-chart">
-              <lineChart :style="{height:parseInt(colBlockMinHeight)-70+'px'}"
+              <lineChart v-if="item.chartData.xAxisData.length!==0"
+                         :style="{height:parseInt(colBlockMinHeight)-70+'px'}"
                          :chartData="item.chartData"
                          :standardValue="item.standardValue||80" />
+              <div v-else
+                   class="no-data"
+                   :style="{height:parseInt(colBlockMinHeight)-70+'px'}">
+                <div class="content">当前未生产</div>
+              </div>
             </div>
           </li>
         </ul>
@@ -62,7 +68,8 @@
                  class="MainBlock"
                  :style="{padding:screenHeight>1000?'20px 0':screenHeight>800?'10px 0':'0'}">
 
-              <div class="MainBlock-title">{{item.process}}</div>
+              <div class="MainBlock-title"
+                   style="width:100px">{{item.process}}</div>
 
               <span class="MainBlock-title-block-small">检测数</span>
               <span class="MainBlock-title-block-huge">{{item.totalNum}}</span>
@@ -110,11 +117,17 @@
           <div class="col-block col-block-min col-block-min-mid"
                :style="{height:colBlockMidHeight}">
             <div class="col-block-title">
-              不合格原因：综合检测
+              今日异常：综合检测
             </div>
             <div class="col-block-chart">
-              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
-                        :chartData="pieUnqalifiedReason.qc1" />
+              <pieChart v-if="pieUnqalifiedReason.qc1.length!==0"
+                        :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+                        :chartData="qc1PieData" />
+              <div v-else
+                   class="no-data"
+                   :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
+                <div class="content">未检测异常</div>
+              </div>
             </div>
 
           </div>
@@ -127,11 +140,17 @@
           <div class="col-block col-block-min col-block-min-mid"
                :style="{height:colBlockMidHeight}">
             <div class="col-block-title">
-              不合格原因：静音检测
+              今日异常：静音检测
             </div>
             <div class="col-block-chart">
-              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
-                        :chartData="pieUnqalifiedReason.qc2" />
+              <pieChart v-if="pieUnqalifiedReason.qc2.length!==0"
+                        :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+                        :chartData="qc2PieData" />
+              <div v-else
+                   class="no-data"
+                   :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
+                <div class="content">未检测异常</div>
+              </div>
             </div>
 
           </div>
@@ -144,11 +163,17 @@
           <div class="col-block col-block-min col-block-min-mid"
                :style="{height:colBlockMidHeight}">
             <div class="col-block-title">
-              不合格原因：外观检测
+              今日异常：外观检测
             </div>
             <div class="col-block-chart">
-              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
-                        :chartData="pieUnqalifiedReason.qc3" />
+              <pieChart v-if="pieUnqalifiedReason.qc3.length!==0"
+                        :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+                        :chartData="qc3PieData" />
+              <div v-else
+                   class="no-data"
+                   :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
+                <div class="content">未检测异常</div>
+              </div>
             </div>
 
           </div>
@@ -171,9 +196,15 @@
               良品率：{{item.process}}
             </div>
             <div class="col-block-chart">
-              <lineChart :style="{height:parseInt(colBlockMinHeight)-70+'px'}"
+              <lineChart v-if="item.chartData.xAxisData.length!==0"
+                         :style="{height:parseInt(colBlockMinHeight)-70+'px'}"
                          :chartData="item.chartData"
                          :standardValue="item.standardValue||80" />
+              <div v-else
+                   class="no-data"
+                   :style="{height:parseInt(colBlockMinHeight)-70+'px'}">
+                <div class="content">当前未生产</div>
+              </div>
             </div>
           </li>
         </ul>
@@ -188,6 +219,7 @@
 <script>
 // functions
 import { params } from "@/libs/params";
+import { arraySort, addValueByKey, getValueByKey } from "@/libs/dataHanding";
 // components
 import lineChart from "./lineChart.vue";
 import pieChart from "./pieChart.vue";
@@ -244,8 +276,15 @@ export default {
           chartData: { xAxisData: [], seriesData: [] }
         }
       ], // 右 - 良品率
-      pieUnqalifiedReason: {}, // 中 - 不合格原因
+      pieUnqalifiedReason: {
+        qc1: [],
+        qc2: [],
+        qc3: []
+      }, // 中 - 不合格原因
       lineProcessData: [], // 中 - 检测总览,
+      qc1PieData: [], // qc1要呈现在饼图的数据
+      qc2PieData: [], // qc2要呈现在饼图的数据
+      qc3PieData: [], // qc3要呈现在饼图的数据
       // mqtt服务
       client: null
     };
@@ -355,19 +394,19 @@ export default {
           if (msg.Qc1UnqualifiedReason.length !== 0) {
             msg.Qc1UnqualifiedReason.forEach(row => {
               this.$set(row, "value", row.Value);
-              this.$set(row, "name", row.Key || "未知");
+              this.$set(row, "name", row.Key || "未归类");
             });
           }
           if (msg.Qc2UnqualifiedReason.length !== 0) {
             msg.Qc2UnqualifiedReason.forEach(row => {
               this.$set(row, "value", row.Value);
-              this.$set(row, "name", row.Key || "未知");
+              this.$set(row, "name", row.Key || "未归类");
             });
           }
           if (msg.Qc3UnqualifiedReason.length !== 0) {
             msg.Qc3UnqualifiedReason.forEach(row => {
               this.$set(row, "value", row.Value);
-              this.$set(row, "name", row.Key || "未知");
+              this.$set(row, "name", row.Key || "未归类");
             });
           }
           this.pieUnqalifiedReason = {
@@ -375,6 +414,40 @@ export default {
             qc2: msg.Qc2UnqualifiedReason || [],
             qc3: msg.Qc3UnqualifiedReason || []
           };
+          // 如果qc1或qc2或qc3的项数大于4
+          if (this.pieUnqalifiedReason.qc1.length > 4) {
+            this.pieUnqalifiedReason.qc1.sort(arraySort("value", "desc"));
+            const qc1Selected = [
+              this.pieUnqalifiedReason.qc1[0].name,
+              this.pieUnqalifiedReason.qc1[1].name,
+              this.pieUnqalifiedReason.qc1[2].name
+            ];
+            this.getPieData(qc1Selected, 1);
+          } else {
+            this.qc1PieData = this.pieUnqalifiedReason.qc1;
+          }
+          if (this.pieUnqalifiedReason.qc2.length > 4) {
+            this.pieUnqalifiedReason.qc2.sort(arraySort("value", "desc"));
+            const qc2Selected = [
+              this.pieUnqalifiedReason.qc2[0].name,
+              this.pieUnqalifiedReason.qc2[1].name,
+              this.pieUnqalifiedReason.qc2[2].name
+            ];
+            this.getPieData(qc2Selected, 2);
+          } else {
+            this.qc2PieData = this.pieUnqalifiedReason.qc2;
+          }
+          if (this.pieUnqalifiedReason.qc3.length > 4) {
+            this.pieUnqalifiedReason.qc3.sort(arraySort("value", "desc"));
+            const qc3Selected = [
+              this.pieUnqalifiedReason.qc3[0].name,
+              this.pieUnqalifiedReason.qc3[1].name,
+              this.pieUnqalifiedReason.qc3[2].name
+            ];
+            this.getPieData(qc3Selected, 3);
+          } else {
+            this.qc3PieData = this.pieUnqalifiedReason.qc3;
+          }
           // 达成率 & 良品率
           const Qc1CompleteData = { xAxisData: [], seriesData: [] };
           const Qc2CompleteData = { xAxisData: [], seriesData: [] };
@@ -386,26 +459,26 @@ export default {
             msg.LineRateDetail.forEach(row => {
               // 达成
               Qc1CompleteData.xAxisData.push(
-                row.StartTime.substring(0, row.StartTime.length - 3)
+                row.EndTime.substring(0, row.EndTime.length - 3)
               );
               Qc2CompleteData.xAxisData.push(
-                row.StartTime.substring(0, row.StartTime.length - 3)
+                row.EndTime.substring(0, row.EndTime.length - 3)
               );
               Qc3CompleteData.xAxisData.push(
-                row.StartTime.substring(0, row.StartTime.length - 3)
+                row.EndTime.substring(0, row.EndTime.length - 3)
               );
               Qc1CompleteData.seriesData.push(row.Qc1CompleteRate * 100);
               Qc2CompleteData.seriesData.push(row.Qc2CompleteRate * 100);
               Qc3CompleteData.seriesData.push(row.Qc3CompleteRate * 100);
               // 良品
               Qc1QualifiedData.xAxisData.push(
-                row.StartTime.substring(0, row.StartTime.length - 3)
+                row.EndTime.substring(0, row.EndTime.length - 3)
               );
               Qc2QualifiedData.xAxisData.push(
-                row.StartTime.substring(0, row.StartTime.length - 3)
+                row.EndTime.substring(0, row.EndTime.length - 3)
               );
               Qc3QualifiedData.xAxisData.push(
-                row.StartTime.substring(0, row.StartTime.length - 3)
+                row.EndTime.substring(0, row.EndTime.length - 3)
               );
               Qc1QualifiedData.seriesData.push(row.Qc1QualifiedRate * 100);
               Qc2QualifiedData.seriesData.push(row.Qc2QualifiedRate * 100);
@@ -463,6 +536,126 @@ export default {
         this.lineQualifiedRate = lineQualifiedRate;
         this.pieUnqalifiedReason = pieUnqalifiedReason;
         this.lineProcessData = lineProcessData;
+        // 如果qc1或qc2或qc3的项数大于4
+        if (this.pieUnqalifiedReason.qc1.length > 4) {
+          this.pieUnqalifiedReason.qc1.sort(arraySort("value", "desc"));
+          const qc1Selected = [
+            this.pieUnqalifiedReason.qc1[0].name,
+            this.pieUnqalifiedReason.qc1[1].name,
+            this.pieUnqalifiedReason.qc1[2].name
+          ];
+          this.getPieData(qc1Selected, 1);
+        } else {
+          this.qc1PieData = this.pieUnqalifiedReason.qc1;
+        }
+        if (this.pieUnqalifiedReason.qc2.length > 4) {
+          this.pieUnqalifiedReason.qc2.sort(arraySort("value", "desc"));
+          const qc2Selected = [
+            this.pieUnqalifiedReason.qc2[0].name,
+            this.pieUnqalifiedReason.qc2[1].name,
+            this.pieUnqalifiedReason.qc2[2].name
+          ];
+          this.getPieData(qc2Selected, 2);
+        } else {
+          this.qc2PieData = this.pieUnqalifiedReason.qc2;
+        }
+        if (this.pieUnqalifiedReason.qc3.length > 4) {
+          this.pieUnqalifiedReason.qc3.sort(arraySort("value", "desc"));
+          const qc3Selected = [
+            this.pieUnqalifiedReason.qc3[0].name,
+            this.pieUnqalifiedReason.qc3[1].name,
+            this.pieUnqalifiedReason.qc3[2].name
+          ];
+          this.getPieData(qc3Selected, 3);
+        } else {
+          this.qc3PieData = this.pieUnqalifiedReason.qc3;
+        }
+      }
+    },
+    // 封装：呈现给pieData的方法
+    getPieData(selectArray, pieIndex) {
+      switch (pieIndex) {
+        case 1:
+          this.qc1PieData = [];
+          var addValue1 = 0;
+          selectArray.forEach(select => {
+            this.qc1PieData.push({
+              value: getValueByKey(
+                this.pieUnqalifiedReason.qc1,
+                "name",
+                select,
+                "value"
+              ),
+              name: select
+            });
+            addValue1 += getValueByKey(
+              this.pieUnqalifiedReason.qc1,
+              "name",
+              select,
+              "value"
+            );
+          });
+          var otherValue1 =
+            addValueByKey(this.pieUnqalifiedReason.qc1, "value") - addValue1;
+          this.qc1PieData.push({
+            value: otherValue1,
+            name: "其他"
+          });
+          break;
+        case 2:
+          this.qc2PieData = [];
+          var addValue2 = 0;
+          selectArray.forEach(select => {
+            this.qc2PieData.push({
+              value: getValueByKey(
+                this.pieUnqalifiedReason.qc2,
+                "name",
+                select,
+                "value"
+              ),
+              name: select
+            });
+            addValue2 += getValueByKey(
+              this.pieUnqalifiedReason.qc2,
+              "name",
+              select,
+              "value"
+            );
+          });
+          var otherValue2 =
+            addValueByKey(this.pieUnqalifiedReason.qc2, "value") - addValue2;
+          this.qc2PieData.push({
+            value: otherValue2,
+            name: "其他"
+          });
+          break;
+        case 3:
+          this.qc3PieData = [];
+          var addValue3 = 0;
+          selectArray.forEach(select => {
+            this.qc3PieData.push({
+              value: getValueByKey(
+                this.pieUnqalifiedReason.qc3,
+                "name",
+                select,
+                "value"
+              ),
+              name: select
+            });
+            addValue3 += getValueByKey(
+              this.pieUnqalifiedReason.qc3,
+              "name",
+              select,
+              "value"
+            );
+          });
+          var otherValue3 =
+            addValueByKey(this.pieUnqalifiedReason.qc3, "value") - addValue3;
+          this.qc3PieData.push({
+            value: otherValue3,
+            name: "其他"
+          });
+          break;
       }
     },
     // 返回上一页

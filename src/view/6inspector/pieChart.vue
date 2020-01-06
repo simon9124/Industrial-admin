@@ -81,11 +81,12 @@ export default {
             label: {
               normal: {
                 position: "inner",
-                // formatter: '{c}%',
-                formatter: `{b}\n{c}${this.unit}`,
+                // formatter: "{c}",
+                // formatter: `{b}\n{c}${this.unit}`,
+                // show: false,
                 textStyle: {
                   color: "#fff",
-                  fontSize: 14
+                  fontSize: 12
                 }
               }
             }

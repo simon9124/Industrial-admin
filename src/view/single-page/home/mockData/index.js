@@ -156,6 +156,10 @@ const pieUnqalifiedReason = {
   qc1: [
     { value: 22, name: "刹车打滑" },
     { value: 28, name: "砝码拉不动" },
+    { value: 10, name: "减速不良" },
+    { value: 12, name: "对码不良" },
+    { value: 15, name: "蜗杆减不死" },
+    { value: 20, name: "蜗杆加不活" },
     { value: 32, name: "未检测" }
   ],
   qc2: [

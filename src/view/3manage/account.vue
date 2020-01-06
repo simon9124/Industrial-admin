@@ -39,7 +39,8 @@
         <FormItem label="账号："
                   prop="user_name">
           <Input type="text"
-                 v-model.trim="modalData.user_name"></Input>
+                 v-model.trim="modalData.user_name"
+                 :disabled="userAccess[0]==='workshop_manager' && modalData.userAccess==='workshop_manager'"></Input>
         </FormItem>
         <FormItem label="姓名："
                   prop="display_name">
@@ -322,7 +323,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["userAccess"])
+    ...mapGetters(["userAccess", "userName"])
   },
   async created() {
     this.getData();
@@ -334,6 +335,19 @@ export default {
     async getData() {
       this.tableLoading = true;
       this.tableDataOrg = (await getUserList()).data.data;
+      // 车间主管只能看检测员、产线线长和自己信息
+      if (this.userAccess[0] === "workshop_manager") {
+        for (let i = this.tableDataOrg.length - 1; i >= 0; i--) {
+          if (
+            this.tableDataOrg[i].userAccess === "admin" ||
+            this.tableDataOrg[i].userAccess === "cestc" ||
+            (this.tableDataOrg[i].userAccess === "workshop_manager" &&
+              this.tableDataOrg[i].user_name !== this.userName)
+          ) {
+            this.tableDataOrg.splice(i, 1);
+          }
+        }
+      }
       this.refreshData();
       this.buttonLoading = false;
       this.tableLoading = false;

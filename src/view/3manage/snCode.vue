@@ -7,7 +7,7 @@
         <Button type="success"
                 icon="md-add"
                 style="margin-right: 10px"
-                @click="insert">新增SOP组合</Button>
+                @click="insert">新增配方组合</Button>
       </div>
 
       <!-- 表格 -->
@@ -40,7 +40,7 @@
            :mask-closable="false"
            :closable="false"
            footer-hide
-           :title="modalDataType==='edit'?'编辑SOP组合':'新增SOP组合'"
+           :title="modalDataType==='edit'?'编辑配方组合':'新增配方组合'"
            @on-ok="handleSubmit">
       <Form ref="formModalData"
             :model="modalData"

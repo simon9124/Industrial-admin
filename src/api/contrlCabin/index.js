@@ -16,6 +16,18 @@ export const findTotalByDate = (StartTime, EndTime, groupType) => {
   });
 };
 
+// 获取电机检测列表（补齐日期）
+export const findTotalWithCurrentMonthByDate = (
+  StartTime,
+  EndTime,
+  groupType
+) => {
+  return axios.request({
+    url: `/api/qcResult/findTotalWithCurrentMonthByDate?StartTime=${StartTime}&EndTime=${EndTime}&groupType=${groupType}`,
+    method: "get"
+  });
+};
+
 // 获取每条产线的生产型号
 export const findActiveProductCalss = () => {
   return axios.request({

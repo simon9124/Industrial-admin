@@ -268,6 +268,12 @@ export default {
           minWidth: 100
         },
         {
+          title: "日期时间",
+          key: "record_time",
+          align: "center",
+          minWidth: 100
+        },
+        {
           title: "操作",
           key: "action",
           fixed: "right",
@@ -374,6 +380,12 @@ export default {
         {
           title: "错误原因",
           key: "mark_reason_qc2",
+          align: "center",
+          minWidth: 100
+        },
+        {
+          title: "日期时间",
+          key: "record_time",
           align: "center",
           minWidth: 100
         },
@@ -488,6 +500,12 @@ export default {
           minWidth: 100
         },
         {
+          title: "日期时间",
+          key: "record_time",
+          align: "center",
+          minWidth: 100
+        },
+        {
           title: "操作",
           key: "action",
           fixed: "right",
@@ -591,6 +609,7 @@ export default {
     // 顶部下拉框被选择
     resolveChange(value) {
       this.isResolved = value === 0 ? "" : value === 1 ? "true" : "false";
+      this.pageNum = 1;
       this.getData();
     },
     // 根据条件刷新数据

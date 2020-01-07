@@ -61,8 +61,11 @@
           <FormItem label="配方编码"
                     prop="tagCode">
             <Input v-model.trim="standardForm.tagCode"
-                   type="number"
-                   placeholder="0-9999的整数"></Input>
+                   placeholder="1-9999的整数"
+                   @on-blur="tagCodeOnBlur"
+                   @on-keydown='keydown($event)'>
+            <span slot="prepend">{{lineNo}}{{tabSelected}}</span>
+            </Input>
           </FormItem>
           <FormItem label="所属SOP"
                     prop="sopId">
@@ -134,6 +137,7 @@ export default {
       tabSelected: 1, // 顶部tab切换
       qc1List: [], // sop1下拉框
       qc2List: [], // sop2下拉框
+      lineNo: "",
       /* 每页 */
       mNumberList: [], // 级联选择 - 数据list
       mNumberSelect: [], // 级联选择 - 被选择的项
@@ -356,17 +360,40 @@ export default {
             validator: function(rule, value, callback) {
               if (value === "" || value === undefined) {
                 callback(new Error("请输入配方编码"));
-              } else if (value > 9999 || value < 0 || value.indexOf(".") > -1) {
-                callback(new Error("请输入0-9999的整数"));
+              } else if (value > 9999 || value < 1 || value.indexOf(".") > -1) {
+                callback(new Error("请输入1-9999的整数"));
               } else {
                 callback();
               }
             },
-            trigger: "change"
+            trigger: "blur,change"
           }
         ],
         sopId: [{ required: true, message: "请选择SOP", trigger: "change" }]
-      } // 表单规则
+      }, // 表单规则
+      tagKeyCodeList: [
+        8,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105
+      ] // 符合tagCode的键盘code
     };
   },
   async created() {
@@ -390,6 +417,8 @@ export default {
     this.qc2List = !this.isMock
       ? (await getSopByQcIndex("2")).data.data
       : sopList["2"];
+    /* 5.当前产线列表 */
+    this.lineNo = localStorage.getItem("loginLineNo") | "22";
   },
   methods: {
     // 顶部tab被选择
@@ -464,6 +493,22 @@ export default {
       this.modalVisible = true;
       this.$refs["standardForm"].resetFields();
     },
+    // 配方编码的input的keydown事件
+    keydown(event) {
+      if (this.tagKeyCodeList.indexOf(event.keyCode) === -1) {
+        event.preventDefault();
+      }
+    },
+    // 配方编码的input框失去焦点 -> 自动补为4位整数
+    tagCodeOnBlur() {
+      while (this.standardForm.tagCode.length < 4) {
+        this.standardForm.tagCode = "0" + this.standardForm.tagCode;
+      }
+      if (this.standardForm.tagCode.length > 4)
+        this.standardForm.tagCode = this.standardForm.tagCode.substr(
+          this.standardForm.tagCode.length - 4
+        );
+    },
     // 按钮 - 新增标准
     insertStandard() {
       // console.log(this.standardForm);
@@ -486,7 +531,7 @@ export default {
             if (!this.isMock) {
               // 接口数据
               this.standardForm.qcIndex = this.tabSelected;
-              this.standardForm.tagCode = parseInt(this.standardForm.tagCode);
+              // this.standardForm.tagCode = parseInt(this.standardForm.tagCode);
               const result = await addStandardValues(this.standardForm);
               resultCallback(result.data.status, "新增成功！", async () => {
                 // 重新获取电机型号list

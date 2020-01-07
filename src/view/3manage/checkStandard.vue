@@ -54,15 +54,15 @@
               :rules="standardRule"
               @submit.native.prevent>
           <FormItem label="配方名称"
+                    prop="tag">
+            <Input v-model.trim="standardForm.tag"
+                   placeholder="请输入"></Input>
+          </FormItem>
+          <FormItem label="配方编码"
                     prop="tagCode">
             <Input v-model.trim="standardForm.tagCode"
                    type="number"
                    placeholder="0-9999的整数"></Input>
-          </FormItem>
-          <FormItem label="配方说明"
-                    prop="tag">
-            <Input v-model.trim="standardForm.tag"
-                   placeholder="请输入"></Input>
           </FormItem>
           <FormItem label="所属SOP"
                     prop="sopId">
@@ -346,12 +346,16 @@ export default {
         sopId: ""
       }, // 表单数据
       standardRule: {
+        tag: [
+          { required: true, message: "请输入配方名称", trigger: "change" },
+          { type: "string", max: 100, message: "说明过长", trigger: "change" }
+        ],
         tagCode: [
           {
             required: true,
             validator: function(rule, value, callback) {
               if (value === "" || value === undefined) {
-                callback(new Error("请输入配方名称"));
+                callback(new Error("请输入配方编码"));
               } else if (value > 9999 || value < 0 || value.indexOf(".") > -1) {
                 callback(new Error("请输入0-9999的整数"));
               } else {
@@ -360,10 +364,6 @@ export default {
             },
             trigger: "change"
           }
-        ],
-        tag: [
-          { required: true, message: "请输入配方说明", trigger: "change" },
-          { type: "string", max: 100, message: "说明过长", trigger: "change" }
         ],
         sopId: [{ required: true, message: "请选择SOP", trigger: "change" }]
       } // 表单规则

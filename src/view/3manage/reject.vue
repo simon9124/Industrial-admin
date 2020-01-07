@@ -63,6 +63,9 @@
 </template>
 
 <script>
+// function
+import { resultCallback } from "@/libs/dataHanding"; // 根据请求的status执行回调函数
+// api
 import {
   getUnqualifiedList,
   updateUnqualified,
@@ -391,14 +394,17 @@ export default {
       // modal弹框 - 是否显示
       modalShow: false,
       // modal弹框 - 数据
-      modalData: {},
+      modalData: {
+        test_item_group_index: "",
+        unqualified_name: ""
+      },
       // modal弹框 - form规则
       formModalRule: {
         test_item_group_index: [
-          { required: true, message: "请选择所属步骤", trigger: "blur" }
+          { required: true, message: "请选择所属步骤", trigger: "change" }
         ],
         unqualified_name: [
-          { required: true, message: "请输入不良品项", trigger: "blur" },
+          { required: true, message: "请输入不良品项", trigger: "change" },
           {
             type: "string",
             max: 20,
@@ -443,7 +449,7 @@ export default {
     // 点击按钮 - 新增
     insert() {
       this.modalDataType = "insert";
-      this.modalData = {};
+      this.$refs.formModalData.resetFields();
       this.modalShow = true;
     },
     // 点击按钮 - 详情
@@ -583,8 +589,10 @@ export default {
         onOk: async () => {
           if (!this.isMock) {
             // 非mock时
-            await deleteUnqualified(row.id);
-            this.getData();
+            const result = (await deleteUnqualified(row.id)).data.status;
+            resultCallback(result, "删除成功！", () => {
+              this.getData();
+            });
           } else {
             // mock时
             this.tableDataOrg.forEach(list => {

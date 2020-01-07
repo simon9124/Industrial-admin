@@ -447,10 +447,8 @@ export default {
       }
       if (key[0] === "1" || key[0] === "2") {
         this.spinShow = true;
-        this.dataInner = (await findQcResultByBarcode(
-          this.barcode,
-          key
-        )).data.data;
+        this.dataInner =
+          (await findQcResultByBarcode(this.barcode, key)).data.data || [];
         // 动态设置工序名称的span宽度
         var arr = [];
         this.dataInner.forEach(data => {
@@ -601,6 +599,25 @@ export default {
       } else {
         // this.$Message.error("查无此号");
         this.searchLoading = false;
+        this.FormData = {
+          qc1_Result: {
+            qcItems: [],
+            qcStartTime: "",
+            qcEndTime: "",
+            qcStatus: 0
+          },
+          qc2_Result: {
+            qcItems: [],
+            qcStartTime: "",
+            qcEndTime: "",
+            qcStatus: 0
+          },
+          qc3_Result: {
+            qcStartTime: "",
+            qcEndTime: "",
+            qcStatus: 0
+          }
+        };
         this.$refs.autofocusInput.focus();
       }
     },

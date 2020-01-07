@@ -133,6 +133,7 @@
 
                 &-huge {
                   display: inline-block;
+                  text-align: center;
                   // width: 9%;
                   width: 80px;
                   font-size: 4em;
@@ -142,6 +143,7 @@
                 }
 
                 &-small {
+                  text-align: center;
                   font-size: 1.4em;
                   letter-spacing: 2px;
                   color: #fff;

@@ -48,7 +48,8 @@
                  v-model.trim="modalData.display_name"></Input>
         </FormItem>
         <FormItem label="手机号："
-                  prop="user_phone">
+                  prop="user_phone"
+                  class="phone">
           <Input type="text"
                  v-model.trim="modalData.user_phone"></Input>
         </FormItem>
@@ -523,4 +524,15 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+.v-transfer-dom /deep/ {
+  .ivu-modal {
+    .ivu-form {
+      .phone {
+        label::before {
+          content: "";
+        }
+      }
+    }
+  }
+}
 </style>

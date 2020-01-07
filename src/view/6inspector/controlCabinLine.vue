@@ -353,15 +353,15 @@ export default {
           // 产线总览
           const lineRateOverview = msg.LineRateOverview;
           this.lineProcessData = [
-            {
-              process: "检测结果",
-              totalNum: lineRateOverview.QcSum,
-              completeNum: lineRateOverview.QcQualified,
-              completeRate:
-                parseInt(lineRateOverview.QcCompleteRate * 10000) / 100,
-              qualifiedRate:
-                parseInt(lineRateOverview.QcQualifiedRate * 10000) / 100
-            },
+            // {
+            //   process: "检测结果",
+            //   totalNum: lineRateOverview.QcSum,
+            //   completeNum: lineRateOverview.QcQualified,
+            //   completeRate:
+            //     parseInt(lineRateOverview.QcCompleteRate * 10000) / 100,
+            //   qualifiedRate:
+            //     parseInt(lineRateOverview.QcQualifiedRate * 10000) / 100
+            // },
             {
               process: "综合检测",
               totalNum: lineRateOverview.Qc1Sum,

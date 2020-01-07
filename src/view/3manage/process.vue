@@ -420,11 +420,28 @@ export default {
       this.spinShow = false;
     },
     // 结果值 - 是否可见
-    resultValueOnchange(value) {
+    async resultValueOnchange(value) {
       this.resultValueShow = value;
-      // 关闭可见的同时，设置为"不可编辑"
       if (value === false) {
+        // 关闭可见，设置为"不可编辑"，并传值给后台
         this.resultValueCanBeEdit = false;
+        if (!this.isMock) {
+          // 接口数据
+          const data = {
+            id: this.rowId,
+            plCAdd: ""
+          };
+          const result = await editSopItemPlcAdd(data);
+          resultCallback(result.data.status, "修改成功！", () => {});
+        } else {
+          // mock数据
+          resultCallback(200, "修改成功！", () => {
+            this.modalData.plcResultAdd = "";
+          });
+        }
+      } else {
+        // 可见，重置值
+        this.modalData.plcResultAdd = "";
       }
     },
     // 结果值 - 提交

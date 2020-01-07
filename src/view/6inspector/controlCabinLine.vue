@@ -467,9 +467,15 @@ export default {
               Qc3CompleteData.xAxisData.push(
                 row.EndTime.substring(0, row.EndTime.length - 3)
               );
-              Qc1CompleteData.seriesData.push(row.Qc1CompleteRate * 100);
-              Qc2CompleteData.seriesData.push(row.Qc2CompleteRate * 100);
-              Qc3CompleteData.seriesData.push(row.Qc3CompleteRate * 100);
+              Qc1CompleteData.seriesData.push(
+                parseInt(row.Qc1CompleteRate * 10000) / 100
+              );
+              Qc2CompleteData.seriesData.push(
+                parseInt(row.Qc2CompleteRate * 10000) / 100
+              );
+              Qc3CompleteData.seriesData.push(
+                parseInt(row.Qc3CompleteRate * 10000) / 100
+              );
               // 良品
               Qc1QualifiedData.xAxisData.push(
                 row.EndTime.substring(0, row.EndTime.length - 3)
@@ -480,9 +486,15 @@ export default {
               Qc3QualifiedData.xAxisData.push(
                 row.EndTime.substring(0, row.EndTime.length - 3)
               );
-              Qc1QualifiedData.seriesData.push(row.Qc1QualifiedRate * 100);
-              Qc2QualifiedData.seriesData.push(row.Qc2QualifiedRate * 100);
-              Qc3QualifiedData.seriesData.push(row.Qc3QualifiedRate * 100);
+              Qc1QualifiedData.seriesData.push(
+                parseInt(row.Qc1QualifiedRate * 10000) / 100
+              );
+              Qc2QualifiedData.seriesData.push(
+                parseInt(row.Qc2QualifiedRate * 10000) / 100
+              );
+              Qc3QualifiedData.seriesData.push(
+                parseInt(row.Qc3QualifiedRate * 10000) / 100
+              );
             });
             const standardValue =
               parseInt(msg.LineRateDetail[0].CompleteRateTask * 10000) / 100;

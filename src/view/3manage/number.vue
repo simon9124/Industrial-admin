@@ -44,8 +44,10 @@
       <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
           <Page show-sizer
+                transfer
+                placement="top"
                 :total="isMock?tableDataOrg.length:dataResult.dataCount"
-                :current="1"
+                :current.sync="pageNum"
                 :page-size-opts="[10, 50, 100, 200]"
                 :page-size="pageSize"
                 @on-change="changePage"
@@ -443,6 +445,8 @@ export default {
     // 顶部下拉框被选择
     resolveChange(value) {
       this.isUsed = value === 0 ? "" : value === 1 ? "true" : "false";
+      this.pageNum = 1;
+      this.pageSize = 10;
       this.getData();
     },
     // 日期被选择
@@ -450,6 +454,8 @@ export default {
       this.startTime = value[0] !== "" ? value[0] + " 00:00:00" : "";
       this.endTime = value[1] !== "" ? value[1] + " 23:59:59" : "";
       // // console.log(this.startTime, this.endTime);
+      this.pageNum = 1;
+      this.pageSize = 10;
       this.getData();
     },
     // 根据条件刷新数据
@@ -499,6 +505,7 @@ export default {
     // 每页条数变化
     changePageSize(pageSize) {
       this.pageSize = pageSize;
+      this.pageNum = 1;
       this.getData();
     },
     // 选项发生变化

@@ -29,8 +29,10 @@
                style="margin: 10px;overflow: hidden">
             <div style="float: right;">
               <Page show-sizer
+                    transfer
+                    placement="top"
                     :total="total"
-                    :current="1"
+                    :current.sync="pageNum"
                     :page-size-opts="[10, 20, 50, 100]"
                     :page-size="pageSize"
                     @on-change="changePage"
@@ -526,6 +528,7 @@ export default {
       this.tabSelected = JSON.parse(tab).id;
       this.tabSelectedMock = JSON.parse(tab).funcTypeId;
       this.pageNum = 1;
+      this.pageSize = 10;
       this.getData();
     },
     // 获取数据
@@ -577,6 +580,7 @@ export default {
     // 每页条数变化
     changePageSize(pageSize) {
       this.pageSize = pageSize;
+      this.pageNum = 1;
       this.getData();
     },
     // 点击按钮 - 新增

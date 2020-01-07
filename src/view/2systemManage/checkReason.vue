@@ -58,8 +58,12 @@
           <div style="margin: 10px;overflow: hidden">
             <div style="float: right;">
               <Page show-sizer
+                    transfer
+                    placement="top"
                     :total="isMock?tableDataFilter.length:dataResult.dataCount"
-                    :current="1"
+                    :current.sync="pageNum"
+                    :page-size-opts="[10, 20, 50, 100]"
+                    :page-size="pageSize"
                     @on-change="changePage"
                     @on-page-size-change="changePageSize"></Page>
             </div>
@@ -93,8 +97,12 @@
           <div style="margin: 10px;overflow: hidden">
             <div style="float: right;">
               <Page show-sizer
+                    transfer
+                    placement="top"
                     :total="isMock?tableDataFilter.length:dataResult.dataCount"
-                    :current="1"
+                    :current.sync="pageNum"
+                    :page-size-opts="[10, 20, 50, 100]"
+                    :page-size="pageSize"
                     @on-change="changePage"
                     @on-page-size-change="changePageSize"></Page>
             </div>
@@ -128,8 +136,12 @@
           <div style="margin: 10px;overflow: hidden">
             <div style="float: right;">
               <Page show-sizer
+                    transfer
+                    placement="top"
                     :total="isMock?tableDataFilter.length:dataResult.dataCount"
-                    :current="1"
+                    :current.sync="pageNum"
+                    :page-size-opts="[10, 20, 50, 100]"
+                    :page-size="pageSize"
                     @on-change="changePage"
                     @on-page-size-change="changePageSize"></Page>
             </div>
@@ -177,6 +189,8 @@
 import printJS from "print-js";
 // mockData
 import { checkReasonList, resolvedSelect } from "./mockData/checkReason";
+// function
+import { resultCallback } from "@/libs/dataHanding"; // 根据请求的status执行回调函数
 // api
 import {
   findUnqualifiedWithPage,
@@ -588,6 +602,8 @@ export default {
     tabSelect(name) {
       // console.log(name);
       this.tabSelected = name === "qc1" ? "1" : name === "qc2" ? "2" : "3";
+      this.pageNum = 1;
+      this.pageSize = 10;
       this.getData();
     },
     // 获取首页数据
@@ -610,6 +626,7 @@ export default {
     resolveChange(value) {
       this.isResolved = value === 0 ? "" : value === 1 ? "true" : "false";
       this.pageNum = 1;
+      this.pageSize = 10;
       this.getData();
     },
     // 根据条件刷新数据
@@ -632,6 +649,7 @@ export default {
     // 每页条数变化
     changePageSize(pageSize) {
       this.pageSize = pageSize;
+      this.pageNum = 1;
       this.getData();
     },
     // 选项发生变化
@@ -662,9 +680,11 @@ export default {
     // 错误原因确认
     async checkReasonConfirm() {
       if (!this.isMock) {
-        updateCheckReason(this.modalData);
-        this.getData();
-        this.modalShow = false;
+        const result = (await updateCheckReason(this.modalData)).data.status;
+        resultCallback(result, "修改成功！", () => {
+          this.getData();
+          this.modalShow = false;
+        });
       }
     },
     // PrintJs调用打印机

@@ -16,8 +16,12 @@
       <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
           <Page show-sizer
+                transfer
+                placement="top"
                 :total="tableDataOrg.length"
-                :current="1"
+                :current.sync="pageNum"
+                :page-size-opts="[10, 50, 100, 200]"
+                :page-size="pageSize"
                 @on-change="changePage"
                 @on-page-size-change="changePageSize"></Page>
         </div>
@@ -368,6 +372,7 @@ export default {
     // 每页条数变化
     changePageSize(pageSize) {
       this.pageSize = pageSize;
+      this.pageNum = 1;
       this.refreshData();
     },
     // 点击按钮 - 新增

@@ -32,6 +32,20 @@ export default {
     unit: {
       type: String,
       default: "件"
+    },
+    // 饼图大小
+    radius: {
+      type: String,
+      default: "80%"
+    },
+    // 数据位置
+    labelPosition: {
+      type: String,
+      default: "inner"
+    },
+    labelFormatterUnit: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -63,7 +77,7 @@ export default {
           {
             name: "今日生产",
             type: "pie",
-            radius: "80%",
+            radius: this.radius,
             center: this.seriesCenter,
             // hoverAnimation: false,
             // roseType: "radius",
@@ -80,9 +94,11 @@ export default {
             },
             label: {
               normal: {
-                position: "inner",
+                position: this.labelPosition,
                 // formatter: "{c}",
-                // formatter: `{b}\n{c}${this.unit}`,
+                formatter: this.labelFormatterUnit
+                  ? `{b}\n{c}${this.unit}`
+                  : "{b}",
                 // show: false,
                 textStyle: {
                   color: "#fff",

@@ -36,11 +36,17 @@
               {{alertList[0].LineNo!==''?'预警：'+item.LineNo+'#产线':'暂无预警'}}
             </div>
             <div class="col-block-chart">
-              <lineChart :style="{height:parseInt(colBlockMinHeight)-70+'px'}"
+              <lineChart v-if="alertList[0].LineNo!==''"
+                         :style="{height:parseInt(colBlockMinHeight)-70+'px'}"
                          :chartData="item.chartData"
                          :standardValue="item.AverageCount||20"
                          :yAxisMaxValue="item.AverageCount*2||30"
                          unit="件" />
+              <div v-else
+                   class="no-data"
+                   :style="{height:parseInt(colBlockMinHeight)-70+'px'}">
+                <div class="content">暂无预警</div>
+              </div>
             </div>
           </li>
         </ul>
@@ -62,40 +68,47 @@
                :style="{height:parseInt(colBlockLargeHeight)-70+'px',
                         padding:screenHeight>900?'2% 0':'1% 0'}">
 
-            <div v-for="(item,j) in todayList"
-                 :key="j"
-                 class="MainBlock"
-                 :style="{padding:screenHeight>1000?'20px 0':screenHeight>800?'10px 0':'0',textAlign:'left'}">
+            <div v-if="todayList.length!==0">
+              <div v-for="(item,j) in todayList"
+                   :key="j"
+                   class="MainBlock"
+                   :style="{padding:screenHeight>1000?'20px 0':screenHeight>800?'10px 0':'0',textAlign:'left'}">
 
-              <!-- class="MainBlock-title" -->
-              <div style="width:30%;display:inline-block;text-align:right">
-                <div class="MainBlock-title">
-                  {{item.ProductClass}}
+                <!-- class="MainBlock-title" -->
+                <div style="width:30%;display:inline-block;text-align:right">
+                  <div class="MainBlock-title">
+                    {{item.ProductClass}}
+                  </div>
                 </div>
+                <span class="MainBlock-title-block-small">目标</span>
+                <span class="MainBlock-title-block-huge">{{item.TaskCount}}</span>
+                <span class="MainBlock-title-block-small">台</span>
+                <span class="MainBlock-title-block-small">/</span>
+                <span class="MainBlock-title-block-small">完成</span>
+                <span class="MainBlock-title-block-huge">{{item.QualifiedCount}}</span>
+                <span class="MainBlock-title-block-small">台</span>
+
+                <span class="MainBlock-title-block-small"></span>
+
+                <span class="MainBlock-title-block"
+                      style="vertical-align:bottom">
+                  <i-circle :percent="item.CompletedRate"
+                            :stroke-color="item.CompletedRate===100?'#5cb85c':item.CompletedRate>=60?'#2db7f5':'#ff5500'"
+                            :size="70">
+                    <span class="demo-Circle-inner"
+                          style="font-size:1.2em;color:#fff">
+                      <p style="line-height:1.3em">达成率</p>
+                      {{item.CompletedRate}}%
+                    </span>
+                  </i-circle>
+                </span>
+
               </div>
-              <span class="MainBlock-title-block-small">目标</span>
-              <span class="MainBlock-title-block-huge">{{item.TaskCount}}</span>
-              <span class="MainBlock-title-block-small">台</span>
-              <span class="MainBlock-title-block-small">/</span>
-              <span class="MainBlock-title-block-small">完成</span>
-              <span class="MainBlock-title-block-huge">{{item.QualifiedCount}}</span>
-              <span class="MainBlock-title-block-small">台</span>
+            </div>
 
-              <span class="MainBlock-title-block-small"></span>
-
-              <span class="MainBlock-title-block"
-                    style="vertical-align:bottom">
-                <i-circle :percent="item.CompletedRate"
-                          :stroke-color="item.CompletedRate===100?'#5cb85c':item.CompletedRate>=60?'#2db7f5':'#ff5500'"
-                          :size="70">
-                  <span class="demo-Circle-inner"
-                        style="font-size:1.2em;color:#fff">
-                    <p style="line-height:1.3em">达成率</p>
-                    {{item.CompletedRate}}%
-                  </span>
-                </i-circle>
-              </span>
-
+            <div v-else
+                 class="no-data">
+              <div class="content">当前未生产</div>
             </div>
 
           </div>
@@ -115,8 +128,10 @@
               <pieChart v-if="todayAssign.proAssign.length!==0"
                         :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
                         :chartData="todayAssign.proAssign"
-                        :legendData="todayAssign.legendDataAssign||['A型', 'B型', 'R型', 'SS型']"
-                        :seriesCenter="['60%','50%']" />
+                        radius="60%"
+                        labelPosition="top" />
+              <!-- :seriesCenter="['60%','50%']" -->
+              <!-- :legendData="todayAssign.legendDataAssign||['A型', 'B型', 'R型', 'SS型']" -->
               <div v-else
                    class="no-data"
                    :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
@@ -140,10 +155,12 @@
               <pieChart v-if="todayAssign.proLine.length!==0"
                         :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
                         :chartData="todayAssign.proLine"
-                        :color="['#32ce32','#fc8a53','#2db7f5']"
-                        :legendData="['生产中', '预警', '未生产']"
-                        :seriesCenter="['60%','50%']"
-                        unit="台" />
+                        :color="['#fc8a53','#32ce32','#2db7f5']"
+                        unit="条"
+                        radius="60%"
+                        labelPosition="top" />
+              <!-- :seriesCenter="['60%','50%']" -->
+              <!-- :legendData="['生产中', '预警', '未生产']" -->
               <div v-else
                    class="no-data"
                    :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
@@ -290,7 +307,10 @@ export default {
       alertList: [], // 左 - 预警总览
       todayPro: [], // 右 - 今日各产线
       todayList: [], // 中 - 检测总览
-      todayAssign: [], // 中 - 生产任务 & 产线概况
+      todayAssign: {
+        proAssign: [],
+        proLine: []
+      }, // 中 - 生产任务 & 产线概况
       /* 多个预警栏时的动效 */
       animate: false,
       animStyle: {
@@ -483,10 +503,14 @@ export default {
           path: "/electric/electricSearch",
           name: "electricSearch"
         });
+        if (!this.isMock) this.client.end();
+        clearInterval(this.timer);
       } else if (this.userAccess.indexOf("admin") !== -1) {
         this.$router.push({
           name: this.$config.homeName
         });
+        if (!this.isMock) this.client.end();
+        clearInterval(this.timer);
       }
       // this.$router.go(-1);
     },
@@ -502,8 +526,8 @@ export default {
     },
     // 前往驾驶舱 - 产线
     proHandleClick(i) {
-      clearInterval(this.timer);
       if (!this.isMock) this.client.end();
+      clearInterval(this.timer);
       this.$router.push({
         path: "/control-leader-line",
         name: "control-leader-line",

@@ -80,17 +80,17 @@ export default [
   },
 
   // 检测驾驶舱 - 车间（非车间主管）
-  {
-    path: "/control-shop",
-    name: "control-shop",
-    meta: {
-      title: "驾驶舱",
-      hideInBread: true,
-      hideInMenu: true,
-      access: ["admin"]
-    },
-    component: () => import("@/view/6inspector/controlCabin.vue")
-  },
+  // {
+  //   path: "/control-shop",
+  //   name: "control-shop",
+  //   meta: {
+  //     title: "驾驶舱",
+  //     hideInBread: true,
+  //     hideInMenu: true,
+  //     access: ["admin"]
+  //   },
+  //   component: () => import("@/view/6inspector/controlCabin.vue")
+  // },
 
   // 检测驾驶舱 - 车间（车间主管）
   {
@@ -101,12 +101,12 @@ export default [
       title: "驾驶舱",
       hideInBread: true,
       // hideInMenu: true,
-      access: ["workshop_manager"]
+      access: ["admin", "workshop_manager"]
     },
     component: () => import("@/view/6inspector/controlCabin.vue")
   },
 
-  // 检测驾驶舱 - 产线（非车间主管）
+  // 检测驾驶舱 - 产线（非管理员或车间主管）
   {
     path: "/control-line",
     name: "control-line",
@@ -115,12 +115,12 @@ export default [
       title: "驾驶舱",
       hideInBread: true,
       // hideInMenu: true,
-      access: ["admin", "proline_leader"]
+      access: ["proline_leader"]
     },
     component: () => import("@/view/6inspector/controlCabinLine.vue")
   },
 
-  // 检测驾驶舱 - 产线（车间主管）
+  // 检测驾驶舱 - 产线（管理员和车间主管）
   {
     path: "/control-leader-line",
     name: "control-leader-line",
@@ -129,7 +129,7 @@ export default [
       title: "驾驶舱",
       hideInBread: true,
       hideInMenu: true,
-      access: ["workshop_manager"]
+      access: ["admin", "workshop_manager"]
     },
     component: () => import("@/view/6inspector/controlCabinLine.vue")
   },

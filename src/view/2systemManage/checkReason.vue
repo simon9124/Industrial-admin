@@ -158,7 +158,7 @@
               :label-width="80"
               ref="modalData"
               :rules="modalDataRule">
-          <FormItem label="错误原因"
+          <FormItem label="异常原因"
                     prop="reason">
             <Select v-model="modalData.reason">
               <Option v-for="item in checkReasonList"
@@ -207,12 +207,10 @@ export default {
       tabSelected: "1",
       // 错误原因下拉select框 - 原因列表
       checkReasonList: [],
-
       /* 筛选：是否已填写错误原因 */
       isResolvedSelect: resolvedSelect,
       isResolvedui: 0,
       isResolved: "",
-
       // 产线号
       lineNo: "",
       // 原始数据
@@ -276,7 +274,7 @@ export default {
           minWidth: 100
         },
         {
-          title: "错误原因",
+          title: "异常原因",
           key: "mark_reason_qc1",
           align: "center",
           minWidth: 100
@@ -311,7 +309,7 @@ export default {
                     }
                   }
                 },
-                "错误原因"
+                "异常原因"
               )
               // h(
               //   "Button",
@@ -392,7 +390,7 @@ export default {
           minWidth: 100
         },
         {
-          title: "错误原因",
+          title: "异常原因",
           key: "mark_reason_qc2",
           align: "center",
           minWidth: 100
@@ -427,7 +425,7 @@ export default {
                     }
                   }
                 },
-                "错误原因"
+                "异常原因"
               )
               // h(
               //   "Button",
@@ -508,7 +506,7 @@ export default {
           minWidth: 100
         },
         {
-          title: "错误原因",
+          title: "异常原因",
           key: "mark_reason_qc3",
           align: "center",
           minWidth: 100
@@ -543,7 +541,7 @@ export default {
                     }
                   }
                 },
-                "错误原因"
+                "异常原因"
               )
               // h(
               //   "Button",
@@ -582,12 +580,12 @@ export default {
       modalShow: false,
       // modal弹框 - 电机型号form
       modalData: {
-        // mNumber: 'DM35R-3/28'
+        reason: ""
       },
       // modal弹框 - 电机型号form规则
       modalDataRule: {
-        test_item_group_index: [
-          { required: true, message: "请选择所属步骤", trigger: "blur" }
+        reason: [
+          { required: true, message: "请选择异常原因", trigger: "change" }
         ]
       },
       printable: ""
@@ -662,6 +660,7 @@ export default {
     },
     // 点击按钮 - 编辑
     edit(row) {
+      this.$refs.modalData.resetFields();
       if (!this.isMock) {
         // 非mock时
         this.modalData = {
@@ -669,23 +668,28 @@ export default {
           qcIndex: parseInt(this.tabSelected),
           reason:
             this.tabSelected === "1"
-              ? row.mark_reason_qc1
+              ? row.mark_reason_qc1 || ""
               : this.tabSelected === "2"
-              ? row.mark_reason_qc2
-              : row.mark_reason_qc3
+              ? row.mark_reason_qc2 || ""
+              : row.mark_reason_qc3 || ""
         };
         this.modalShow = true;
       }
     },
-    // 错误原因确认
+    // 异常原因确认
     async checkReasonConfirm() {
-      if (!this.isMock) {
-        const result = (await updateCheckReason(this.modalData)).data.status;
-        resultCallback(result, "修改成功！", () => {
-          this.getData();
-          this.modalShow = false;
-        });
-      }
+      this.$refs.modalData.validate(async valid => {
+        if (valid) {
+          if (!this.isMock) {
+            const result = (await updateCheckReason(this.modalData)).data
+              .status;
+            resultCallback(result, "修改成功！", () => {
+              this.getData();
+              this.modalShow = false;
+            });
+          }
+        }
+      });
     },
     // PrintJs调用打印机
     printCodes(printable) {

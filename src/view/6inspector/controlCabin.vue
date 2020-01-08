@@ -41,7 +41,7 @@
                          :chartData="item.chartData"
                          :standardValue="item.AverageCount||20"
                          :yAxisMaxValue="item.AverageCount*2||30"
-                         unit="件" />
+                         unit="台" />
               <div v-else
                    class="no-data"
                    :style="{height:parseInt(colBlockMinHeight)-70+'px'}">
@@ -129,6 +129,7 @@
                         :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
                         :chartData="todayAssign.proAssign"
                         radius="60%"
+                        unit="台"
                         labelPosition="top" />
               <!-- :seriesCenter="['60%','50%']" -->
               <!-- :legendData="todayAssign.legendDataAssign||['A型', 'B型', 'R型', 'SS型']" -->
@@ -220,7 +221,9 @@
                 </div>
                 <div class="BoxWrap-block">
                   <p class="BoxWrap-block-num">
-                    {{isMock?pro.ProductClass:pro.ProductClass.substring(0,pro.ProductClass.length-2)}}
+                    {{isMock?pro.ProductClass:
+                      pro.ProductClass.substring((pro.ProductClass).length - 2)==="电机"?
+                      pro.ProductClass.substring(0,pro.ProductClass.length-2):pro.ProductClass}}
                   </p>
                   <p>
                     型号
@@ -228,7 +231,7 @@
                 </div>
                 <div class="BoxWrap-block">
                   <p class="BoxWrap-block-num">
-                    {{pro.TaskCount}}件
+                    {{pro.TaskCount}}台
                   </p>
                   <p>
                     任务量
@@ -236,7 +239,7 @@
                 </div>
                 <div class="BoxWrap-block">
                   <p class="BoxWrap-block-num">
-                    {{pro.QualifiedCount}}件
+                    {{pro.QualifiedCount}}台
                   </p>
                   <p>
                     达成量
@@ -496,7 +499,7 @@ export default {
         this.todayAssign = todayAssign;
       }
     },
-    // 车间主管 -> 返回检测列表 / 管理员 -> 返回首页
+    // 车间主管 -> 返回检测列表 / 管理员 -> 返回上一页
     backRouter() {
       if (this.userAccess.indexOf("workshop_manager") !== -1) {
         this.$router.push({
@@ -506,13 +509,13 @@ export default {
         if (!this.isMock) this.client.end();
         clearInterval(this.timer);
       } else if (this.userAccess.indexOf("admin") !== -1) {
-        this.$router.push({
-          name: this.$config.homeName
-        });
+        // this.$router.push({
+        //   name: this.$config.homeName
+        // });
+        this.$router.go(-1);
         if (!this.isMock) this.client.end();
         clearInterval(this.timer);
       }
-      // this.$router.go(-1);
     },
     // 鼠标进入预警框 - 动效暂停
     alertEnter() {

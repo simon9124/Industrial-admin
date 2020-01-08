@@ -295,7 +295,7 @@ export default {
             required: true,
             trigger: "change",
             validator: function(rule, value, callback) {
-              if (!validateTel(value) && value !== undefined) {
+              if (!validateTel(value) && value !== undefined && value !== "") {
                 callback(new Error("手机号格式不正确"));
               } else {
                 callback();

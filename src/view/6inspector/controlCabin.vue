@@ -443,9 +443,13 @@ export default {
         (this.screenHeight - imgTitle - 40 - 60) / 3 + "px";
       this.colBlockLargeHeight =
         ((this.screenHeight - imgTitle - 40 - 40) * 2) / 3 + "px";
+      /* eslint-disable */
       this.colBlockLargeHeightEvery =
-        parseInt(document.getElementsByClassName("MainBlock")[0].clientHeight) +
-        "px";
+        document.getElementsByClassName("MainBlock").length !== 0
+          ? parseInt(
+              document.getElementsByClassName("MainBlock")[0].clientHeight
+            ) + "px"
+          : "0px";
       this.colBlockMidHeight =
         ((this.screenHeight - imgTitle - 40 - 40) * 1) / 3 + "px";
       this.colBlockHeight = this.screenHeight - imgTitle - 40 - 20 + "px";

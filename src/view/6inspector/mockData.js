@@ -33,11 +33,15 @@ const todayAssign = {
     { value: 200, name: "A型" },
     { value: 250, name: "B型" },
     { value: 240, name: "R型" },
-    { value: 220, name: "SS型" }
+    { value: 220, name: "SS型" },
+    { value: 180, name: "C型" },
+    { value: 250, name: "BF型" },
+    { value: 340, name: "GF型" },
+    { value: 220, name: "SR型" }
   ],
   proLine: [
-    { value: 28, name: "生产中" },
     { value: 14, name: "预警" },
+    { value: 28, name: "生产中" },
     { value: 18, name: "未生产" }
   ]
 };

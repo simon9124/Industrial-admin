@@ -127,10 +127,11 @@
             <div class="col-block-chart">
               <pieChart v-if="todayAssign.proAssign.length!==0"
                         :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
-                        :chartData="todayAssign.proAssign"
+                        :chartData="todayAssignPieData"
                         radius="60%"
                         unit="台"
                         labelPosition="top" />
+              <!-- :chartData="todayAssign.proAssign" -->
               <!-- :seriesCenter="['60%','50%']" -->
               <!-- :legendData="todayAssign.legendDataAssign||['A型', 'B型', 'R型', 'SS型']" -->
               <div v-else
@@ -287,6 +288,8 @@ import lineChart from "./lineChart.vue";
 import pieChart from "./pieChart.vue";
 // mockData
 import { todayList, todayAssign, todayPro, alertList } from "./mockData";
+// function
+import { arraySort, addValueByKey, getValueByKey } from "@/libs/dataHanding";
 // mqtt
 import { mqtt, MQTT_SERVICE, options } from "@/libs/sysconstant.js";
 // vuex
@@ -314,13 +317,16 @@ export default {
         proAssign: [],
         proLine: []
       }, // 中 - 生产任务 & 产线概况
+      todayAssignPieData: [], // 生产任务呈现在饼图的数据
       /* 多个预警栏时的动效 */
       animate: false,
       animStyle: {
         transition: "all .5s",
         marginTop: ""
       },
-      timer: ""
+      timer: "",
+      /* mqtt */
+      client: null
     };
   },
   computed: {
@@ -393,96 +399,118 @@ export default {
 
         // mqtt连接
         this.client.on("connect", e => {
-          // 连接成功
+          // 连接成功：先退订其他消息！
+          this.client.unsubscribe("ProductRoom");
+          for (let i = 1; i <= 60; i++) {
+            this.client.unsubscribe(`${i}-ProductLine`);
+          }
+
+          // 再订阅该订阅的消息
           this.client.subscribe("ProductRoom", { qos: 1 }, error => {
             if (!error) {
               // 订阅成功
+              // console.log("订阅成功：ProductRoom");
             } else {
               // 订阅失败
             }
           });
-        });
-        /* eslint-disable */
-        // 接收消息处理
-        this.client.on("message", (topic, message) => {
-          const msg = JSON.parse(message.toString());
-          console.log(msg);
-          // 产线总览
-          msg.ProductClassOverview.forEach(row => {
-            this.$set(
-              row,
-              "CompletedRate",
-              parseInt(row.CompletedRate * 10000) / 100
-            );
-          });
-          this.todayList = msg.ProductClassOverview;
-          // 生产任务 & 产线概况
-          const legendDataAssign = [];
-          msg.ProductClassTask.forEach(row => {
-            this.$set(row, "value", row.TaskCount);
-            this.$set(row, "name", row.ProductClass);
-            legendDataAssign.push(row.ProductClass);
-          });
-          const proLine = [];
-          Object.keys(msg.LineStatuOverview).forEach(key => {
-            proLine.push({
-              name:
-                key === "NormalCount"
-                  ? "生产中"
-                  : key === "WaringCount"
-                  ? "预警"
-                  : "未生产",
-              value: msg.LineStatuOverview[key]
+
+          // 接收消息处理
+          /* eslint-disable */
+          this.client.on("message", (topic, message) => {
+            const msg = JSON.parse(message.toString());
+            console.log(topic, msg);
+
+            // 产线总览
+            msg.ProductClassOverview.forEach(row => {
+              this.$set(
+                row,
+                "CompletedRate",
+                parseInt(row.CompletedRate * 10000) / 100
+              );
             });
-          });
-          this.todayAssign = {
-            proAssign: msg.ProductClassTask,
-            proLine: proLine,
-            legendDataAssign: legendDataAssign
-          };
-          // 预警
-          if (msg.LineWorkingTimeWarning.length !== 0) {
-            msg.LineWorkingTimeWarning.forEach(row => {
-              const xAxisData = [];
-              const seriesData = [];
-              row.WorkInfo.forEach(work => {
-                xAxisData.push(
-                  work.EndTime.substring(0, work.EndTime.length - 3)
-                );
-                seriesData.push(work.CompleteCount);
-              });
-              this.$set(row, "chartData", {
-                xAxisData: xAxisData,
-                seriesData: seriesData
+            this.todayList = msg.ProductClassOverview;
+            // 生产任务 & 产线概况
+            const legendDataAssign = [];
+            msg.ProductClassTask.forEach(row => {
+              this.$set(row, "value", row.TaskCount);
+              this.$set(row, "name", row.ProductClass);
+              legendDataAssign.push(row.ProductClass);
+            });
+            const proLine = [];
+            Object.keys(msg.LineStatuOverview).forEach(key => {
+              proLine.push({
+                name:
+                  key === "NormalCount"
+                    ? "生产中"
+                    : key === "WaringCount"
+                    ? "预警"
+                    : "未生产",
+                value: msg.LineStatuOverview[key]
               });
             });
-            this.alertList = msg.LineWorkingTimeWarning;
-          } else {
-            this.alertList = [
-              {
-                LineNo: "",
-                chartData: {
-                  xAxisData: [],
-                  seriesData: []
+            this.todayAssign = {
+              proAssign: msg.ProductClassTask,
+              proLine: proLine,
+              legendDataAssign: legendDataAssign
+            };
+            // 如果生产任务的项数大于4
+            if (this.todayAssign.proAssign.length > 4) {
+              this.todayAssign.proAssign.sort(arraySort("value", "desc"));
+              const todayAssignPieData = [
+                this.todayAssign.proAssign[0].name,
+                this.todayAssign.proAssign[1].name,
+                this.todayAssign.proAssign[2].name
+              ];
+              this.getPieData(todayAssignPieData, 1);
+            } else {
+              this.todayAssignPieData = this.todayAssign.proAssign;
+            }
+            // 预警
+            if (msg.LineWorkingTimeWarning.length !== 0) {
+              msg.LineWorkingTimeWarning.forEach(row => {
+                const xAxisData = [];
+                const seriesData = [];
+                row.WorkInfo.forEach(work => {
+                  xAxisData.push(
+                    work.EndTime.substring(0, work.EndTime.length - 3)
+                  );
+                  seriesData.push(work.CompleteCount);
+                });
+                this.$set(row, "chartData", {
+                  xAxisData: xAxisData,
+                  seriesData: seriesData
+                });
+              });
+              this.alertList = msg.LineWorkingTimeWarning;
+            } else {
+              this.alertList = [
+                {
+                  LineNo: "",
+                  chartData: {
+                    xAxisData: [],
+                    seriesData: []
+                  }
                 }
-              }
-            ];
-          }
-          // 今日各产线
-          msg.LineOverviewReport.forEach(row => {
-            this.$set(
-              row,
-              "CompletedRate",
-              parseInt(row.CompletedRate * 10000) / 100
-            );
-            this.$set(
-              row,
-              "QualifiedRate",
-              parseInt(row.QualifiedRate * 10000) / 100
-            );
+              ];
+            }
+            // 今日各产线
+            msg.LineOverviewReport.forEach(row => {
+              this.$set(
+                row,
+                "CompletedRate",
+                parseInt(row.CompletedRate * 10000) / 100
+              );
+              this.$set(
+                row,
+                "QualifiedRate",
+                parseInt(row.QualifiedRate * 10000) / 100
+              );
+            });
+            this.todayPro = msg.LineOverviewReport;
           });
-          this.todayPro = msg.LineOverviewReport;
         });
+
         // 断开发起重连
         // this.client.on("reconnect", error => {
         //   console.log("正在重连:", error);
@@ -497,24 +525,79 @@ export default {
         this.todayPro = todayPro;
         this.todayList = todayList;
         this.todayAssign = todayAssign;
+        // 如果生产任务的项数大于4
+        if (this.todayAssign.proAssign.length > 4) {
+          this.todayAssign.proAssign.sort(arraySort("value", "desc"));
+          const todayAssignPieData = [
+            this.todayAssign.proAssign[0].name,
+            this.todayAssign.proAssign[1].name,
+            this.todayAssign.proAssign[2].name
+          ];
+          this.getPieData(todayAssignPieData, 1);
+        } else {
+          this.todayAssignPieData = this.todayAssign.proAssign;
+        }
+      }
+    },
+    // 封装：呈现给pieData的方法
+    getPieData(selectArray, pieIndex) {
+      switch (pieIndex) {
+        case 1:
+          this.todayAssignPieData = [];
+          var addValue1 = 0;
+          selectArray.forEach(select => {
+            this.todayAssignPieData.push({
+              value: getValueByKey(
+                this.todayAssign.proAssign,
+                "name",
+                select,
+                "value"
+              ),
+              name: select
+            });
+            addValue1 += getValueByKey(
+              this.todayAssign.proAssign,
+              "name",
+              select,
+              "value"
+            );
+          });
+          var otherValue1 =
+            addValueByKey(this.todayAssign.proAssign, "value") - addValue1;
+          this.todayAssignPieData.push({
+            value: otherValue1,
+            name: "其他"
+          });
+          break;
       }
     },
     // 车间主管 -> 返回检测列表 / 管理员 -> 返回上一页
     backRouter() {
       if (this.userAccess.indexOf("workshop_manager") !== -1) {
-        this.$router.push({
-          path: "/electric/electricSearch",
-          name: "electricSearch"
-        });
-        if (!this.isMock) this.client.end();
-        clearInterval(this.timer);
+        if (!this.isMock) {
+          this.client.unsubscribe("ProductRoom");
+          this.client.end(
+            true,
+            clearInterval(this.timer),
+            this.$router.push({
+              path: "/electric/electricSearch",
+              name: "electricSearch"
+            })
+          );
+        } else {
+          clearInterval(this.timer),
+            this.$router.push({
+              path: "/electric/electricSearch",
+              name: "electricSearch"
+            });
+        }
       } else if (this.userAccess.indexOf("admin") !== -1) {
-        // this.$router.push({
-        //   name: this.$config.homeName
-        // });
-        this.$router.go(-1);
-        if (!this.isMock) this.client.end();
-        clearInterval(this.timer);
+        if (!this.isMock) {
+          this.client.unsubscribe("ProductRoom");
+          this.client.end(clearInterval(this.timer), this.$router.go(-1));
+        } else {
+          clearInterval(this.timer), this.$router.go(-1);
+        }
       }
     },
     // 鼠标进入预警框 - 动效暂停
@@ -529,22 +612,45 @@ export default {
     },
     // 前往驾驶舱 - 产线
     proHandleClick(i) {
-      if (!this.isMock) this.client.end();
-      clearInterval(this.timer);
-      this.$router.push({
-        path: "/control-leader-line",
-        name: "control-leader-line",
-        query: {
-          lineNo: this.todayPro[i].LineNo
-        }
-      });
+      if (!this.isMock) {
+        this.client.unsubscribe("ProductRoom");
+        this.client.end(
+          true,
+          clearInterval(this.timer),
+          this.$router.push({
+            path: "/control-leader-line",
+            name: "control-leader-line",
+            query: {
+              lineNo: this.todayPro[i].LineNo
+            }
+          })
+        );
+      } else {
+        clearInterval(this.timer),
+          this.$router.push({
+            path: "/control-leader-line",
+            name: "control-leader-line",
+            query: {
+              lineNo: this.todayPro[i].LineNo
+            }
+          });
+      }
     },
     // 监听浏览器的返回按钮
     goBack() {
-      sessionStorage.clear();
-      window.history.back();
-      if (!this.isMock) this.client.end();
-      clearInterval(this.timer);
+      if (!this.isMock) {
+        this.client.unsubscribe("ProductRoom");
+        this.client.end(
+          true,
+          clearInterval(this.timer),
+          sessionStorage.clear(),
+          window.history.back()
+        );
+      } else {
+        clearInterval(this.timer),
+          sessionStorage.clear(),
+          window.history.back();
+      }
     }
   }
 };

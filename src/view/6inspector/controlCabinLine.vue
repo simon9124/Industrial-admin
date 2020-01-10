@@ -285,7 +285,7 @@ export default {
       qc1PieData: [], // qc1要呈现在饼图的数据
       qc2PieData: [], // qc2要呈现在饼图的数据
       qc3PieData: [], // qc3要呈现在饼图的数据
-      // mqtt服务
+      /* mqtt */
       client: null
     };
   },
@@ -298,6 +298,11 @@ export default {
         this.getHeight();
       })();
     };
+    // 监听浏览器的返回按钮：向历史记录中插入了当前页
+    if (window.history && window.history.pushState) {
+      history.pushState(null, null, document.URL);
+      window.addEventListener("popstate", this.goBack, false);
+    }
   },
   created() {
     if (this.$route.query.lineNo !== undefined) {
@@ -309,6 +314,10 @@ export default {
     }
     // 获取数据
     this.getData();
+  },
+  // 监听浏览器的返回按钮：页面销毁时取消监听（否则其他路由页面也会被监听）
+  destroyed() {
+    window.removeEventListener("popstate", this.goBack, false);
   },
   methods: {
     // 获取动态高度
@@ -333,23 +342,31 @@ export default {
 
         // mqtt连接
         this.client.on("connect", e => {
-          // 连接成功
+          // 连接成功：先退订其他消息！
+          this.client.unsubscribe("ProductRoom");
+          for (let i = 1; i <= 60; i++) {
+            this.client.unsubscribe(`${i}-ProductLine`);
+          }
+
+          // 再订阅该订阅的消息
           this.client.subscribe(
             `${this.lineNo}-ProductLine`,
             { qos: 1 },
             error => {
               if (!error) {
                 // 订阅成功
+                // console.log("订阅成功：ProductLine");
               } else {
                 // 订阅失败
               }
             }
           );
         });
+
         // 接收消息处理
         this.client.on("message", (topic, message) => {
           const msg = JSON.parse(message.toString());
-          console.log(msg);
+          console.log(topic, msg);
           // 产线总览
           const lineRateOverview = msg.LineRateOverview;
           this.lineProcessData = [
@@ -534,6 +551,7 @@ export default {
             ];
           }
         });
+
         // 断开发起重连
         // this.client.on("reconnect", error => {
         //   console.log("正在重连:", error);
@@ -672,8 +690,27 @@ export default {
     },
     // 返回上一页
     backRouter() {
-      if (!this.isMock) this.client.end();
-      this.$router.go(-1);
+      if (!this.isMock) {
+        this.client.unsubscribe(`${this.lineNo}-ProductLine`);
+        this.client.end(
+          true,
+          // this.$router.go(-1)
+          this.goBack()
+        );
+      } else {
+        // this.$router.go(-1);
+        this.goBack();
+      }
+    },
+    // 监听浏览器的返回按钮
+    goBack() {
+      if (!this.isMock) {
+        this.client.unsubscribe(`${this.lineNo}-ProductLine`);
+        this.client.end(true, sessionStorage.clear(), window.history.back());
+      } else {
+        sessionStorage.clear();
+        window.history.back();
+      }
     }
   }
 };

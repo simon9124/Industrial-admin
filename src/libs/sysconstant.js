@@ -15,7 +15,10 @@ const options = {
   username: MQTT_USERNAME,
   password: MQTT_PASSWORD,
   clean: false,
-  retain: true
+  retain: true,
+  properties: {
+    receiveMaximum: 1
+  }
 };
 
 export { mqtt, MQTT_SERVICE, options };

@@ -20,6 +20,12 @@ const todayList = [
     CompletedRate: 100
   },
   {
+    ProductClass: "FC型电机",
+    TaskCount: 235,
+    QualifiedCount: 235,
+    CompletedRate: 100
+  },
+  {
     ProductClass: "SS型电机",
     TaskCount: 220,
     QualifiedCount: 145,

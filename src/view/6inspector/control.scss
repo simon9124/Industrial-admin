@@ -66,8 +66,10 @@
           overflow: auto;
           overflow-y: hidden;
 
+          // 检测总览：不下拉 & 滚动
           .whole {
-            overflow: auto;
+            // overflow: auto;
+            overflow: hidden;
             padding: 2% 0;
             min-width: 650px;
           }
@@ -158,7 +160,7 @@
 
           // 今日各产线：不下拉 & 滚动
           &-row {
-            overflow: auto;
+            overflow: hidden;
           }
 
           // 今日各产线：每一块
@@ -225,8 +227,10 @@
               padding-left: 5%;
               font-size: 1.6em;
               font-weight: bold;
-              height: 2.8em;
-              line-height: 2.8em;
+              // height: 2.8em;
+              height: 3.5em;
+              // line-height: 2.8em;
+              line-height: 3.5em;
               margin-top: 2.5%;
             }
 

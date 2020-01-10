@@ -631,8 +631,10 @@ export default {
       if (array.indexOf(qc3_form.result) === -1) {
         this.$Message.error("输入有误！");
       } else {
-        await updateQc3(qc3_form);
-        this.search();
+        const result = (await updateQc3(qc3_form)).data.status;
+        if (result === 200) {
+          this.search();
+        }
       }
     }
   }

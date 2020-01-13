@@ -175,6 +175,8 @@ export default [
     name: "task",
     meta: {
       hideInBread: true,
+      title: "任务管理",
+      icon: "md-shuffle",
       access: ["admin", "proline_leader"]
     },
     component: Main,
@@ -184,10 +186,18 @@ export default [
         name: "distribute",
         meta: {
           title: "任务派发",
-          icon: "md-shuffle",
           access: ["admin", "proline_leader"]
         },
         component: () => import("@/view/8taskManage/taskDistribution.vue")
+      },
+      {
+        path: "history",
+        name: "history",
+        meta: {
+          title: "历史任务",
+          access: ["admin", "proline_leader"]
+        },
+        component: () => import("@/view/8taskManage/taskHistory.vue")
       }
     ]
   },

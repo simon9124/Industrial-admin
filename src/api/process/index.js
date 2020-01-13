@@ -1,6 +1,8 @@
 // import axios from '@/libs/api.request.mock';
 import axios from "@/libs/api.request";
 
+/* 任务管理 */
+
 // 获取可使用的SOP级联选择
 export const getSopTagFilteByEquipment = (
   qc1soptagId,
@@ -50,6 +52,14 @@ export const removeTask = id => {
 export const getAllEquipmentFunctype = () => {
   return axios.request({
     url: "/api/equipment/getAllEquipmentFunctype",
+    method: "get"
+  });
+};
+
+// 历史任务列表
+export const findTaskByPage = (pageIndex, pageSize, lineno) => {
+  return axios.request({
+    url: `/api/testprocess/findTaskByPage?pageIndex=${pageIndex}&pageSize=${pageSize}&lineno=${lineno}`,
     method: "get"
   });
 };

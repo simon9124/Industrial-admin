@@ -70,7 +70,7 @@
                @mouseenter="mouseEnter('todayList')"
                @mouseleave="mouseLeave('todayList')">
 
-            <div :style="{height:(parseInt(colBlockLargeHeightEvery)+20)*4+'px',
+            <div :style="{height:(parseInt(colBlockLargeHeightEvery))*4+'px',
                           overflow:'hidden'}">
               <div :style="{transition:wholeAnimate? wholeAnimStyle.transition:'',
                             transform: wholeAnimate? wholeAnimStyle.transform:''}">
@@ -778,6 +778,22 @@ export default {
         sessionStorage.clear();
         window.history.back();
       }
+    }
+  },
+  watch: {
+    todayList: {
+      handler(newVal, oldVal) {
+        this.$nextTick(() => {
+          /* eslint-disable */
+          this.colBlockLargeHeightEvery =
+            document.getElementsByClassName("MainBlock").length !== 0
+              ? parseInt(
+                  document.getElementsByClassName("MainBlock")[0].clientHeight
+                ) + "px"
+              : "0px";
+        });
+      },
+      deep: true
     }
   }
 };

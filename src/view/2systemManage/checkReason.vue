@@ -2,37 +2,12 @@
   <div class="dooya-container">
     <Card>
 
-      <Tabs value="qc1"
+      <Tabs value="1"
             @on-click="tabSelect">
-
-        <!-- <TabPane v-for="(tab,i) in tabList"
-                 :key="i"
-                 :label="tab"
-                 :name="'qc'+(i+1)">
-
-          <div style="margin-bottom: 10px">
-            <Select v-model="isResolved"
-                    style="width:200px"
-                    placeholder="已 / 未填写错误原因"
-                    @on-change="resolveChange">
-              <Option v-for="(item,i) in isResolvedSelect"
-                      :value="item.value"
-                      :key="i">{{ item.label }}</Option>
-            </Select>
-          </div>
-
-          <Table :data="isMock?tableData:dataResult.pageData"
-                 :columns="'tableColumns_qc'+(i+1)"
-                 :loading="tableLoading"
-                 stripe
-                 @on-selection-change="onSelectChange">
-          </Table>
-
-        </TabPane> -->
 
         <!-- 综合检测 -->
         <TabPane label="综合检测"
-                 name="qc1">
+                 name="1">
 
           <!-- 选择框 -->
           <div style="margin-bottom: 10px">
@@ -40,7 +15,7 @@
                     style="width:200px"
                     placeholder="已 / 未填写错误原因"
                     @on-change="resolveChange">
-              <Option v-for="(item,i) in isResolvedSelect"
+              <Option v-for="(item,i) in resolvedSelect"
                       :value="item.value"
                       :key="i">{{ item.label }}</Option>
             </Select>
@@ -72,7 +47,7 @@
 
         <!-- 静音检测 -->
         <TabPane label="静音检测"
-                 name="qc2">
+                 name="2">
 
           <!-- 选择框 -->
           <div style="margin-bottom: 10px">
@@ -80,7 +55,7 @@
                     style="width:200px"
                     placeholder="已 / 未填写错误原因"
                     @on-change="resolveChange">
-              <Option v-for="(item,i) in isResolvedSelect"
+              <Option v-for="(item,i) in resolvedSelect"
                       :value="item.value"
                       :key="i">{{ item.label }}</Option>
             </Select>
@@ -111,7 +86,7 @@
 
         <!-- 外观检测 -->
         <TabPane label="外观检测"
-                 name="qc3">
+                 name="3">
 
           <!-- 选择框 -->
           <div style="margin-bottom: 10px">
@@ -119,7 +94,7 @@
                     style="width:200px"
                     placeholder="已 / 未填写错误原因"
                     @on-change="resolveChange">
-              <Option v-for="(item,i) in isResolvedSelect"
+              <Option v-for="(item,i) in resolvedSelect"
                       :value="item.value"
                       :key="i">{{ item.label }}</Option>
             </Select>
@@ -188,49 +163,60 @@
 // Print.js
 import printJS from "print-js";
 // mockData
-import { checkReasonList, resolvedSelect } from "./mockData/checkReason";
+import {
+  checkReasonList, // 异常确认列表
+  resolvedSelect // 异常原因列表
+} from "./mockData/checkReason";
 // function
 import { resultCallback } from "@/libs/dataHanding"; // 根据请求的status执行回调函数
 // api
 import {
-  findUnqualifiedWithPage,
-  getDropDownList,
-  updateCheckReason
+  findUnqualifiedWithPage, // 查询异常确认列表
+  getDropDownList, // 获取异常原因列表
+  updateCheckReason // 更新异常原因
 } from "@/api/check";
 
 /* eslint-disable*/
 export default {
   data() {
     return {
-      tabList: ["综合检测", "静音检测", "外观检测"],
-      // 顶部tab切换
-      tabSelected: "1",
-      // 错误原因下拉select框 - 原因列表
-      checkReasonList: [],
-      /* 筛选：是否已填写错误原因 */
-      isResolvedSelect: resolvedSelect,
-      isResolvedui: 0,
-      isResolved: "",
-      // 产线号
-      lineNo: "",
-      // 原始数据
-      tableDataOrg: [],
-      // 筛选后的所有数据
-      tableDataFilter: [],
+      /* 全局 */
+      tabList: ["综合检测", "静音检测", "外观检测"], // 顶部tab列表
+      tabSelected: "1", // 顶部tab切换
+      checkReasonList: [], // 错误原因select列表
+      resolvedSelect: resolvedSelect, // 筛选 - 下拉框list
+      isResolvedui: 0, // 筛选 - 界面绑定的值
+      isResolved: "", // 筛选 - 要传给后台的值
+      lineNo: "", // 产线号
+      /* 每页 */
+      tableDataOrg: [], // 原始数据
+      tableDataFilter: [], // 筛选后的所有数据
       dataResult: {},
-      // 处理后的当页数据
-      tableData: [],
-      // 表头列项 - qc1
+      tableData: [], // 处理后的当页数据
       tableColumns_qc1: [
-        {
-          type: "selection",
-          width: 60,
-          align: "center"
-        },
         {
           title: "编号",
           key: "barcode",
           align: "center",
+          render: (h, params) => {
+            return h(
+              "a",
+              {
+                on: {
+                  click: () => {
+                    this.$router.push({
+                      path: "/check/checkSearch",
+                      name: "checkSearch",
+                      params: {
+                        checkSearchNumber: params.row.barcode
+                      }
+                    });
+                  }
+                }
+              },
+              params.row.barcode
+            );
+          },
           minWidth: 150
         },
         {
@@ -244,7 +230,7 @@ export default {
           minWidth: 80
         },
         {
-          title: "综合检测",
+          title: "检测结果",
           key: "qc1_result",
           align: "center",
           render: (h, params) => {
@@ -335,18 +321,31 @@ export default {
             ]);
           }
         }
-      ],
-      // 表头列项 - qc2
+      ], // 表头列项 - qc1
       tableColumns_qc2: [
-        {
-          type: "selection",
-          width: 60,
-          align: "center"
-        },
         {
           title: "编号",
           key: "barcode",
           align: "center",
+          render: (h, params) => {
+            return h(
+              "a",
+              {
+                on: {
+                  click: () => {
+                    this.$router.push({
+                      path: "/check/checkSearch",
+                      name: "checkSearch",
+                      params: {
+                        checkSearchNumber: params.row.barcode
+                      }
+                    });
+                  }
+                }
+              },
+              params.row.barcode
+            );
+          },
           minWidth: 150
         },
         {
@@ -451,18 +450,31 @@ export default {
             ]);
           }
         }
-      ],
-      // 表头列项 - qc3
+      ], // 表头列项 - qc2
       tableColumns_qc3: [
-        {
-          type: "selection",
-          width: 60,
-          align: "center"
-        },
         {
           title: "编号",
           key: "barcode",
           align: "center",
+          render: (h, params) => {
+            return h(
+              "a",
+              {
+                on: {
+                  click: () => {
+                    this.$router.push({
+                      path: "/check/checkSearch",
+                      name: "checkSearch",
+                      params: {
+                        checkSearchNumber: params.row.barcode
+                      }
+                    });
+                  }
+                }
+              },
+              params.row.barcode
+            );
+          },
           minWidth: 150
         },
         {
@@ -567,60 +579,62 @@ export default {
             ]);
           }
         }
-      ],
-      // 页码
-      pageNum: 1,
-      // 每页显示数量
-      pageSize: 10,
+      ], // 表头列项 - qc3
+      pageNum: 1, // 页码
+      pageSize: 10, // 每页显示数量
       // 选中的选项 - 当前
       selectionChange: [],
       // loading
       tableLoading: false,
-      // modal弹框 - 是否显示
-      modalShow: false,
-      // modal弹框 - 电机型号form
+      /* modal弹框 */
+      modalShow: false, //是否显示
       modalData: {
         reason: ""
-      },
-      // modal弹框 - 电机型号form规则
+      }, //电机型号form
       modalDataRule: {
         reason: [
           { required: true, message: "请选择异常原因", trigger: "change" }
         ]
-      },
+      }, //电机型号form规则
       printable: ""
     };
   },
   async created() {
     this.lineNo = localStorage.getItem("loginLineNo") || "22";
     this.getData();
+    this.getCheckReason();
   },
   methods: {
     // 顶部tab被选择
     tabSelect(name) {
-      // console.log(name);
-      this.tabSelected = name === "qc1" ? "1" : name === "qc2" ? "2" : "3";
+      this.tabSelected = name;
+      this.isResolvedui = 0;
+      this.isResolved = "";
       this.pageNum = 1;
       this.pageSize = 10;
       this.getData();
+      this.getCheckReason();
+    },
+    // 获取异常原因下拉列表
+    async getCheckReason() {
+      this.checkReasonList = (await getDropDownList(
+        this.tabSelected
+      )).data.data;
     },
     // 获取首页数据
     async getData() {
       if (!this.isMock) {
-        // 错误原因下拉列表
+        // 接口数据
         this.tableLoading = true;
-        this.checkReasonList = (await getDropDownList(
-          this.tabSelected
-        )).data.data;
-        // table表格数据
         this.dataResult = (await findUnqualifiedWithPage(this)).data.data;
         this.tableLoading = false;
       } else {
+        // mock数据
         this.tableDataFilter = checkReasonList;
         this.refreshData();
       }
     },
-    // 顶部下拉框被选择
+    // 顶部下拉框筛选
     resolveChange(value) {
       this.isResolved = value === 0 ? "" : value === 1 ? "true" : "false";
       this.pageNum = 1;
@@ -728,6 +742,10 @@ export default {
   // }
   .ivu-table-cell {
     padding: 0;
+    a {
+      color: #2db7f5;
+      text-decoration: underline;
+    }
   }
 }
 </style>

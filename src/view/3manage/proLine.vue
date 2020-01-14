@@ -126,20 +126,26 @@
         <FormItem label="关联设备"
                   prop="equipmentId">
           <div v-if="tabList.length>0">
-            <Select v-if="tabSelected===tabList[0].id"
+            <Select v-model="modalData.equipmentId"
+                    placeholder="请选择">
+              <Option v-for="(item,i) in equipmentList"
+                      :value="item.id"
+                      :key="i">{{ item.equipmentName }}</Option>
+            </Select>
+            <!-- <Select v-if="tabSelected===tabList[0].id"
                     v-model="modalData.equipmentId"
                     placeholder="请选择">
               <Option v-for="(item,i) in equipmentListQc1"
                       :value="item.id"
                       :key="i">{{ item.equipmentName }}</Option>
-            </Select>
-            <Select v-if="tabSelected===tabList[1].id"
+            </Select> -->
+            <!-- <Select v-if="tabSelected===tabList[1].id"
                     v-model="modalData.equipmentId"
                     placeholder="请选择">
               <Option v-for="(item,i) in equipmentListQc2"
                       :value="item.id"
                       :key="i">{{ item.equipmentName }}</Option>
-            </Select>
+            </Select> -->
           </div>
         </FormItem>
 
@@ -187,6 +193,7 @@ export default {
       tabList: [], // 顶部tab列表
       tabSelected: "", // 顶部tab切换 - 接口
       tabSelectedMock: 1, // 顶部tab切换 - mock
+      equipmentList: [], // 设备列表
       equipmentListQc1: [], // qc1设备列表
       equipmentListQc2: [], // qc2设备列表
       /* 每页 */
@@ -493,16 +500,18 @@ export default {
       /* 2.自动选择第一个标签 */
       this.tabSelected = this.tabList[0].id;
       /* 3.产线列表 */
-      this.getData();
+      // this.getData();
       /* 4.根据工位，渲染设备列表 */
       if (!this.isMock) {
-        this.equipmentListQc1 = (await findByFunctionType(
-          this.tabList[0].funcTypeId
-        )).data.data;
-        this.equipmentListQc2 = (await findByFunctionType(
-          this.tabList[1].funcTypeId
-        )).data.data;
+        // this.equipmentListQc1 = (await findByFunctionType(
+        //   this.tabList[0].funcTypeId
+        // )).data.data;
+        // this.equipmentListQc2 = (await findByFunctionType(
+        //   this.tabList[1].funcTypeId
+        // )).data.data;
+        this.tabSelect(JSON.stringify(this.tabList[0]));
       } else {
+        this.getData();
         this.equipmentListQc1 = [];
         this.equipmentListQc2 = [];
         equipmentList.forEach(equipment => {
@@ -524,9 +533,15 @@ export default {
   },
   methods: {
     // 顶部tab被选择
-    tabSelect(tab) {
+    async tabSelect(tab) {
       this.tabSelected = JSON.parse(tab).id;
       this.tabSelectedMock = JSON.parse(tab).funcTypeId;
+      if (!this.isMock) {
+        this.tableLoading = true;
+        this.equipmentList = (await findByFunctionType(
+          this.tabSelectedMock
+        )).data.data;
+      }
       this.pageNum = 1;
       this.pageSize = 10;
       this.getData();

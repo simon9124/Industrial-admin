@@ -455,6 +455,15 @@ export default [
         component: () => import("@/view/3manage/equipment.vue")
       },
       {
+        path: "workStation",
+        name: "workStation",
+        meta: {
+          title: "工位配置",
+          access: ["admin", "cestc"]
+        },
+        component: () => import("@/view/3manage/workStation.vue")
+      },
+      {
         path: "proLine",
         name: "proLine",
         meta: {

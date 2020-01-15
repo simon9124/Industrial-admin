@@ -18,7 +18,7 @@ nodejs + vuejs + iview + echart
 - workshop_manager：车间主管
 - proline_leader：产线线长
 
-*密码均为123456
+*密码均为2019@cestc
 
 **安装教程：**
 

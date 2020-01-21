@@ -92,7 +92,7 @@ export default [
   //   component: () => import("@/view/6inspector/controlCabin.vue")
   // },
 
-  // 检测驾驶舱 - 车间（车间主管）
+  // 检测驾驶舱 - 车间（管理员或车间主管）
   {
     path: "/control-leader-shop",
     name: "control-leader-shop",
@@ -200,6 +200,17 @@ export default [
         component: () => import("@/view/8taskManage/taskHistory.vue")
       }
     ]
+  },
+
+  // mes演示
+  {
+    path: "/erp",
+    name: "erp",
+    meta: {
+      hideInBread: true,
+      hideInMenu: true
+    },
+    component: () => import("@/view/8taskManage/taskDistributionMes.vue")
   },
 
   // 查看SOP

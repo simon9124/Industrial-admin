@@ -16,7 +16,7 @@ const router = new Router({
 const LOGIN_PAGE_NAME = "login";
 
 // 白名单
-const whiteList = ["login"];
+const whiteList = ["login", "erp"];
 
 const turnTo = (to, access, next) => {
   if (canTurnTo(to.name, access, routes)) {
@@ -34,14 +34,14 @@ const turnTo = (to, access, next) => {
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start();
   const token = getToken();
-  if (!token && to.name !== LOGIN_PAGE_NAME) {
+  if (whiteList.indexOf(to.name) !== -1) {
+    // 在免登录白名单
+    next(); // 直接进入
+  } else if (!token && to.name !== LOGIN_PAGE_NAME) {
     // 未登录且要跳转的页面不是登录页
     next({
       name: LOGIN_PAGE_NAME // 跳转到登录页
     });
-  } else if (whiteList.indexOf(to.name) !== -1) {
-    // 在免登录白名单
-    next(); // 直接进入
   } else if (!token && to.name === LOGIN_PAGE_NAME) {
     // 未登陆且要跳转的页面是登录页
     next(); // 跳转

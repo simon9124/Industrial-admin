@@ -3,7 +3,7 @@ export default {
    * @description 配置显示在浏览器标签的title
    */
   // title: '杜亚机电',
-  title: window.location.href.indexOf("/mes") > -1 ? "Mes" : "质量检测追溯系统",
+  title: window.location.href.indexOf("/erp") > -1 ? "ERP" : "质量检测追溯系统",
   /**
    * @description token在Cookie中存储的天数，默认1天
    */
@@ -27,8 +27,7 @@ export default {
   },
   pdfUrl: {
     dev: "",
-    pro: "http://192.168.200.161:66"
-    // pro: "http://192.168.200.99"
+    pro: ""
   },
   mockUrl: {
     // dev: 'https://www.easy-mock.com/mock/5d5e559ed064102521b410b2',

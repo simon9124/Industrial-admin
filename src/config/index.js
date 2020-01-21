@@ -3,7 +3,7 @@ export default {
    * @description 配置显示在浏览器标签的title
    */
   // title: '杜亚机电',
-  title: "电机检测追溯系统",
+  title: window.location.href.indexOf("/mes") > -1 ? "Mes" : "质量检测追溯系统",
   /**
    * @description token在Cookie中存储的天数，默认1天
    */
@@ -19,12 +19,16 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
+    // dev: 'http://192.168.200.99',
+    // dev: ' https://www.easy-mock.com/mock/5d5e559ed064102521b410b2',
+    // pro: 'http://192.168.200.168:8001'
     dev: "",
     pro: ""
   },
   pdfUrl: {
     dev: "",
-    pro: "http://192.168.200.99"
+    pro: "http://192.168.200.161:66"
+    // pro: "http://192.168.200.99"
   },
   mockUrl: {
     // dev: 'https://www.easy-mock.com/mock/5d5e559ed064102521b410b2',
@@ -32,7 +36,7 @@ export default {
     pro: "https://www.easy-mock.com/mock/5d5e559ed064102521b410b2"
   },
   // 是否使用mock数据或接口（前后端联调时设置为false）
-  isMock: true,
+  isMock: false,
   /**
    * @description 默认打开的首页的路由name值，默认为home
    */

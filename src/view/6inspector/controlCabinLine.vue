@@ -120,10 +120,9 @@
               今日异常：综合检测
             </div>
             <div class="col-block-chart">
-              <pieChart v-if="pieUnqalifiedReason.qc1.length!==0"
-                        :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
                         :chartData="qc1PieData" />
-              <div v-else
+              <div v-if="pieUnqalifiedReason.qc1.length===0"
                    class="no-data"
                    :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
                 <div class="content">未检测异常</div>
@@ -143,10 +142,9 @@
               今日异常：静音检测
             </div>
             <div class="col-block-chart">
-              <pieChart v-if="pieUnqalifiedReason.qc2.length!==0"
-                        :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
                         :chartData="qc2PieData" />
-              <div v-else
+              <div v-if="pieUnqalifiedReason.qc2.length===0"
                    class="no-data"
                    :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
                 <div class="content">未检测异常</div>
@@ -166,10 +164,9 @@
               今日异常：外观检测
             </div>
             <div class="col-block-chart">
-              <pieChart v-if="pieUnqalifiedReason.qc3.length!==0"
-                        :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
                         :chartData="qc3PieData" />
-              <div v-else
+              <div v-if="pieUnqalifiedReason.qc3.length===0"
                    class="no-data"
                    :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
                 <div class="content">未检测异常</div>
@@ -279,7 +276,10 @@ export default {
       pieUnqalifiedReason: {
         qc1: [],
         qc2: [],
-        qc3: []
+        qc3: [],
+        qc1Null: [],
+        qc2Null: [],
+        qc3Null: []
       }, // 中 - 不合格原因
       lineProcessData: [], // 中 - 检测总览,
       qc1PieData: [], // qc1要呈现在饼图的数据
@@ -464,6 +464,22 @@ export default {
             this.getPieData(qc3Selected, 3);
           } else {
             this.qc3PieData = this.pieUnqalifiedReason.qc3;
+          }
+          // 如果qc1或qc2或qc3为空
+          // this.pieUnqalifiedReason.qc1 = [];
+          // this.pieUnqalifiedReason.qc2 = [];
+          // this.pieUnqalifiedReason.qc3 = [];
+          if (this.pieUnqalifiedReason.qc1.length === 0) {
+            this.pieUnqalifiedReason.qc1Null = pieUnqalifiedReason.qc1;
+            this.qc1PieData = this.pieUnqalifiedReason.qc1Null;
+          }
+          if (this.pieUnqalifiedReason.qc2.length === 0) {
+            this.pieUnqalifiedReason.qc2Null = pieUnqalifiedReason.qc3;
+            this.qc2PieData = this.pieUnqalifiedReason.qc2Null;
+          }
+          if (this.pieUnqalifiedReason.qc3.length === 0) {
+            this.pieUnqalifiedReason.qc3Null = pieUnqalifiedReason.qc3;
+            this.qc3PieData = this.pieUnqalifiedReason.qc3Null;
           }
           // 达成率 & 良品率
           const Qc1CompleteData = { xAxisData: [], seriesData: [] };

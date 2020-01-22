@@ -25,7 +25,8 @@
              :style="{height:parseInt(colBlockHeight)+20+'px'}"
              class="col-left">
 
-        <ul :style="alertAnimate===true?alertAnimStyle:''"
+        <ul v-if="alertList.length!==0"
+            :style="alertAnimate===true?alertAnimStyle:''"
             @mouseenter="mouseEnter('alertList')"
             @mouseleave="mouseLeave('alertList')">
           <li v-for='(item,i) in alertList'
@@ -42,8 +43,30 @@
                          :standardValue="item.AverageCount||20"
                          :yAxisMaxValue="item.AverageCount*2||30"
                          unit="台" />
-              <div v-else
+              <!-- <div v-else
                    class="no-data"
+                   :style="{height:parseInt(colBlockMinHeight)-70+'px'}">
+                <div class="content">暂无预警</div>
+              </div> -->
+            </div>
+          </li>
+        </ul>
+        <ul v-else
+            :style="alertAnimate===true?alertAnimStyle:''">
+          <li v-for='(item,i) in alertListNull'
+              :key="i"
+              class="col-block col-block-min col-block-min-alert"
+              :style="{height:colBlockMinHeight}">
+            <div class="col-block-title left">
+              暂无预警
+            </div>
+            <div class="col-block-chart">
+              <lineChart :style="{height:parseInt(colBlockMinHeight)-70+'px'}"
+                         :chartData="item.chartData"
+                         :standardValue="item.AverageCount||20"
+                         :yAxisMaxValue="item.AverageCount*2||30"
+                         unit="台" />
+              <div class="no-data"
                    :style="{height:parseInt(colBlockMinHeight)-70+'px'}">
                 <div class="content">暂无预警</div>
               </div>
@@ -64,7 +87,8 @@
           <div class="col-block-title">
             检测总览
           </div>
-          <div class="col-block-chart whole"
+          <div v-if="todayList.length!==0"
+               class="col-block-chart whole"
                :style="{height:parseInt(colBlockLargeHeight)-70+'px',
                         padding:screenHeight>900?'2% 0':'1% 0'}"
                @mouseenter="mouseEnter('todayList')"
@@ -112,11 +136,49 @@
               </div>
             </div>
 
-            <div v-if="todayList.length===0"
-                 class="no-data">
+          </div>
+          <div v-else
+               class="col-block-chart whole"
+               :style="{height:parseInt(colBlockLargeHeight)-70+'px',padding:0}">
+
+            <div v-for="(item,j) in todayListNull"
+                 :key="j"
+                 class="MainBlock"
+                 :style="{padding:screenHeight>1000?'20px 0':screenHeight>800?'10px 0':'0',textAlign:'left'}">
+
+              <!-- class="MainBlock-title" -->
+              <div style="width:30%;display:inline-block;text-align:right">
+                <div class="MainBlock-title">
+                  {{item.ProductClass}}
+                </div>
+              </div>
+              <span class="MainBlock-title-block-small">目标</span>
+              <span class="MainBlock-title-block-huge">{{item.TaskCount}}</span>
+              <span class="MainBlock-title-block-small">台</span>
+              <span class="MainBlock-title-block-small">/</span>
+              <span class="MainBlock-title-block-small">完成</span>
+              <span class="MainBlock-title-block-huge">{{item.QualifiedCount}}</span>
+              <span class="MainBlock-title-block-small">台</span>
+
+              <span class="MainBlock-title-block-small"></span>
+
+              <span class="MainBlock-title-block"
+                    style="vertical-align:bottom">
+                <i-circle :percent="item.CompletedRate"
+                          :stroke-color="item.CompletedRate===100?'#5cb85c':item.CompletedRate>=60?'#2db7f5':'#ff5500'"
+                          :size="70">
+                  <span class="demo-Circle-inner"
+                        style="font-size:1.2em;color:#fff">
+                    <p style="line-height:1.3em">达成率</p>
+                    {{item.CompletedRate}}%
+                  </span>
+                </i-circle>
+              </span>
+
+            </div>
+            <div class="no-data">
               <div class="content">当前未生产</div>
             </div>
-
           </div>
         </div>
 
@@ -131,16 +193,12 @@
               生产任务
             </div>
             <div class="col-block-chart">
-              <pieChart v-if="todayAssign.proAssign.length!==0"
-                        :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
                         :chartData="todayAssignPieData"
                         radius="60%"
                         unit="台"
                         labelPosition="top" />
-              <!-- :chartData="todayAssign.proAssign" -->
-              <!-- :seriesCenter="['60%','50%']" -->
-              <!-- :legendData="todayAssign.legendDataAssign||['A型', 'B型', 'R型', 'SS型']" -->
-              <div v-else
+              <div v-if="todayAssign.proAssign.length===0"
                    class="no-data"
                    :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
                 <div class="content">当前未生产</div>
@@ -159,18 +217,24 @@
             <div class="col-block-title">
               产线概况
             </div>
-            <div class="col-block-chart">
-              <pieChart v-if="todayAssign.proLine.length!==0"
-                        :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+            <div v-if="todayAssign.proLine.length!==0"
+                 class="col-block-chart">
+              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
                         :chartData="todayAssign.proLine"
                         :color="['#fc8a53','#32ce32','#2db7f5']"
                         unit="条"
                         radius="60%"
                         labelPosition="top" />
-              <!-- :seriesCenter="['60%','50%']" -->
-              <!-- :legendData="['正常', '预警', '未生产']" -->
-              <div v-else
-                   class="no-data"
+            </div>
+            <div v-else
+                 class="col-block-chart">
+              <pieChart :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}"
+                        :chartData="todayAssign.proLineNull"
+                        :color="['#fc8a53','#32ce32','#2db7f5']"
+                        unit="条"
+                        radius="60%"
+                        labelPosition="top" />
+              <div class="no-data"
                    :style="{height:parseInt(colBlockMidHeight) - 70 + 'px'}">
                 <div class="content">当前未生产</div>
               </div>
@@ -192,7 +256,8 @@
           <div class="col-block-title">
             今日各产线概况
           </div>
-          <div class="col-block-chart"
+          <div v-if="todayPro.length!==0"
+               class="col-block-chart"
                style="background:transparent"
                @mouseenter="mouseEnter('todayPro')"
                @mouseleave="mouseLeave('todayPro')">
@@ -275,9 +340,89 @@
                 </div>
                 </Col>
               </div>
+            </Row>
+          </div>
+          <div v-else
+               class="col-block-chart"
+               style="background:transparent">
+            <Row class="col-block-chart-row"
+                 :gutter="15"
+                 :style="{height:parseInt(colBlockHeight)-70+'px',padding:'0'}">
+              <Col :xs="24"
+                   :sm="24"
+                   :md="12"
+                   :xl="24"
+                   class="col-block-chart-box"
+                   v-for="(pro,i) in todayProNull"
+                   :key="i">
 
-              <div v-if="todayPro.length===0"
-                   class="no-data">
+              <div class="BoxWrap"
+                   :style="{height:proBlockHeight}">
+
+                <!-- 蓝色边框 -->
+                <div class="horn">
+                  <div class="lt"></div>
+                  <div class="rt"></div>
+                  <div class="rb"></div>
+                  <div class="lb"></div>
+                </div>
+
+                <!-- 清除浮动 -->
+                <table></table>
+                <div class="BoxWrap-title">
+                  <Tag :color="!pro.IsWarning?'success':'error'"
+                       style="padding:0 5px">
+                    {{!pro.IsWarning?'正常':'预警'}}
+                  </Tag>
+                  &nbsp;{{pro.LineNo}}#&nbsp;{{pro.captain}}&nbsp;{{pro.captionPhone}}
+                </div>
+                <div class="BoxWrap-block">
+                  <p class="BoxWrap-block-num">
+                    {{isMock?pro.ProductClass:
+                      pro.ProductClass.substring((pro.ProductClass).length - 2)==="电机"?
+                      pro.ProductClass.substring(0,pro.ProductClass.length-2):pro.ProductClass}}
+                  </p>
+                  <p>
+                    型号
+                  </p>
+                </div>
+                <div class="BoxWrap-block">
+                  <p class="BoxWrap-block-num">
+                    {{pro.TaskCount}}台
+                  </p>
+                  <p>
+                    任务量
+                  </p>
+                </div>
+                <div class="BoxWrap-block">
+                  <p class="BoxWrap-block-num">
+                    {{pro.QualifiedCount}}台
+                  </p>
+                  <p>
+                    达成量
+                  </p>
+                </div>
+                <div class="BoxWrap-block">
+                  <p class="BoxWrap-block-num">
+                    {{pro.CompletedRate}}%
+                  </p>
+                  <p>
+                    达成率
+                  </p>
+                </div>
+                <div class="BoxWrap-block">
+                  <p class="BoxWrap-block-num">
+                    {{pro.QualifiedRate}}%
+                  </p>
+                  <p>
+                    良品率
+                  </p>
+                </div>
+
+              </div>
+              </Col>
+
+              <div class="no-data">
                 <div class="content">当前未生产</div>
               </div>
 
@@ -322,11 +467,16 @@ export default {
       proBlockHeight: "0px", // 右 - 各产线（每个）
       /* 页面数据 */
       alertList: [], // 左 - 预警总览
+      alertListNull: [], // 左 - 预警总览为空时
       todayPro: [], // 右 - 今日各产线
+      todayProNull: [], // 右 - 今日各产线为空时
       todayList: [], // 中 - 检测总览
+      todayListNull: [], // 中 - 检测总览为空时
       todayAssign: {
         proAssign: [],
-        proLine: []
+        proLine: [],
+        proAssignNull: [],
+        proLineNull: []
       }, // 中 - 生产任务 & 产线概况
       todayAssignPieData: [], // 生产任务呈现在饼图的数据
       /* 多个预警栏、今日产线、检测总览时的动效 */
@@ -462,7 +612,7 @@ export default {
       this.wholeAnimStyle.transform =
         "translate(0," +
         "-" +
-        (parseInt(this.colBlockLargeHeightEvery) * 2 + 20 * 2) +
+        ((parseInt(this.colBlockLargeHeightEvery) + 20) * 2 + 20 * 2) +
         "px)";
       this.proAnimStyle.transform =
         "translate(0," +
@@ -550,33 +700,21 @@ export default {
               this.todayAssignPieData = this.todayAssign.proAssign;
             }
             // 预警
-            if (msg.LineWorkingTimeWarning.length !== 0) {
-              msg.LineWorkingTimeWarning.forEach(row => {
-                const xAxisData = [];
-                const seriesData = [];
-                row.WorkInfo.forEach(work => {
-                  xAxisData.push(
-                    work.EndTime.substring(0, work.EndTime.length - 3)
-                  );
-                  seriesData.push(work.CompleteCount);
-                });
-                this.$set(row, "chartData", {
-                  xAxisData: xAxisData,
-                  seriesData: seriesData
-                });
+            msg.LineWorkingTimeWarning.forEach(row => {
+              const xAxisData = [];
+              const seriesData = [];
+              row.WorkInfo.forEach(work => {
+                xAxisData.push(
+                  work.EndTime.substring(0, work.EndTime.length - 3)
+                );
+                seriesData.push(work.CompleteCount);
               });
-              this.alertList = msg.LineWorkingTimeWarning;
-            } else {
-              this.alertList = [
-                {
-                  LineNo: "",
-                  chartData: {
-                    xAxisData: [],
-                    seriesData: []
-                  }
-                }
-              ];
-            }
+              this.$set(row, "chartData", {
+                xAxisData: xAxisData,
+                seriesData: seriesData
+              });
+            });
+            this.alertList = msg.LineWorkingTimeWarning;
             // 今日各产线
             msg.LineOverviewReport.forEach(row => {
               this.$set(
@@ -591,6 +729,29 @@ export default {
               );
             });
             this.todayPro = msg.LineOverviewReport;
+
+            /* 如果有数据为空 */
+            // this.todayList = [];
+            // this.todayAssign.proAssign = [];
+            // this.todayAssign.proLine = [];
+            // this.todayPro = [];
+            // this.alertList = [];
+            if (this.todayList.length === 0) {
+              this.todayListNull = todayList.slice(0, 4);
+            }
+            if (this.todayAssign.proAssign.length === 0) {
+              this.todayAssign.proAssignNull = todayAssign.proAssign;
+              this.todayAssignPieData = this.todayAssign.proAssignNull;
+            }
+            if (this.todayAssign.proLine.length === 0) {
+              this.todayAssign.proLineNull = todayAssign.proLine;
+            }
+            if (this.todayPro.length === 0) {
+              this.todayProNull = todayPro.slice(0, 5);
+            }
+            if (this.alertList.length === 0) {
+              this.alertListNull = alertList.slice(0, 1);
+            }
           });
         });
 

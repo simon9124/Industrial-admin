@@ -52,22 +52,26 @@ router.beforeEach((to, from, next) => {
     });
   } else {
     if (store.state.user.hasGetInfo) {
+      if (store.getters.menuList.length === 0) {
+        store.dispatch("getMenuData").then(res => {});
+      }
       turnTo(to, store.state.user.access, next);
     } else {
-      store.dispatch("getMenuData").then(res => {
-        store
-          .dispatch("getUserInfo")
-          .then(user => {
-            // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
-            turnTo(to, user.data.user_access, next);
-          })
-          .catch(() => {
-            setToken("");
-            next({
-              name: "login"
-            });
+      if (store.getters.menuList.length === 0) {
+        store.dispatch("getMenuData").then(res => {});
+      }
+      store
+        .dispatch("getUserInfo")
+        .then(user => {
+          // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
+          turnTo(to, user.data.user_access, next);
+        })
+        .catch(() => {
+          setToken("");
+          next({
+            name: "login"
           });
-      });
+        });
     }
   }
 });

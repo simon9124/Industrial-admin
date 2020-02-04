@@ -35,7 +35,7 @@ export default {
     pro: "https://www.easy-mock.com/mock/5d5e559ed064102521b410b2"
   },
   // 是否使用mock数据或接口（前后端联调时设置为false）
-  isMock: false,
+  isMock: true,
   /**
    * @description 默认打开的首页的路由name值，默认为home
    */

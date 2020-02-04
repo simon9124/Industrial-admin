@@ -65,6 +65,7 @@
 import LoginForm from "_c/login-form";
 import InspectForm from "_c/login-form/inspect-form";
 import { mapActions } from "vuex";
+
 export default {
   components: {
     LoginForm,

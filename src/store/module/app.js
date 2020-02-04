@@ -11,15 +11,12 @@ import {
   localSave,
   localRead
 } from "@/libs/util";
-import {
-  saveErrorLogger
-} from "@/api/data";
+import { saveErrorLogger } from "@/api/data";
 import router from "@/router";
-import routers from "@/router/routers";
+// import routers from "@/router/routers";
 import config from "@/config";
-const {
-  homeName
-} = config;
+import { routerList } from "@/router/mockRouter";
+const { homeName } = config;
 
 const closePage = (state, route) => {
   const nextRoute = getNextRoute(state.tagNavList, route);
@@ -36,10 +33,14 @@ export default {
     homeRoute: {},
     local: localRead("local"),
     errorList: [],
-    hasReadErrorPage: false
+    hasReadErrorPage: false,
+    menuRspList: []
   },
   getters: {
-    menuList: (state, getters, rootState) => getMenuByRouter(routers, rootState.user.access),
+    // menuList: (state, getters, rootState) =>
+    //   getMenuByRouter(routers, rootState.user.access),
+    menuList: (state, getters, rootState) =>
+      getMenuByRouter(state.menuRspList, rootState.user.access),
     errorCount: state => state.errorList.length
   },
   mutations: {
@@ -69,10 +70,7 @@ export default {
       if (!route) return;
       closePage(state, route);
     },
-    addTag(state, {
-      route,
-      type = "unshift"
-    }) {
+    addTag(state, { route, type = "unshift" }) {
       let router = getRouteTitleHandled(route);
       if (!routeHasExist(state.tagNavList, router)) {
         if (type === "push") state.tagNavList.push(router);
@@ -92,20 +90,23 @@ export default {
     },
     setHasReadErrorLoggerStatus(state, status = true) {
       state.hasReadErrorPage = status;
+    },
+    setMenuRspList(state, list) {
+      let len = list.length;
+      for (let i = 0; i < len; i++) {
+        state.menuRspList.push(list[i]);
+      }
+
+      state.hasInfo = true;
     }
   },
   actions: {
-    addErrorLog({
-      commit,
-      rootState
-    }, info) {
-      if (!window.location.href.includes("error_logger_page")) commit("setHasReadErrorLoggerStatus", false);
+    addErrorLog({ commit, rootState }, info) {
+      if (!window.location.href.includes("error_logger_page")) {
+        commit("setHasReadErrorLoggerStatus", false);
+      }
       const {
-        user: {
-          token,
-          userId,
-          userName
-        }
+        user: { token, userId, userName }
       } = rootState;
       let data = {
         ...info,
@@ -117,6 +118,15 @@ export default {
       saveErrorLogger(info).then(() => {
         commit("addError", data);
       });
+    },
+    // 获取动态路由
+    getMenuData({ commit, rootState }, params) {
+      commit("setMenuRspList", routerList);
+
+      // mainList(params).then(res => {
+      //   // console.log(res.data)
+      //   commit("setMenuRspList", res.data.data);
+      // });
     }
   }
 };

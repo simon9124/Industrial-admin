@@ -375,6 +375,16 @@ const routerList = [
         component: () => import("@/view/3manage/account.vue")
       },
       {
+        path: "role",
+        name: "role",
+        meta: {
+          title: "角色管理",
+          icon: "md-settings",
+          access: ["admin", "cestc", "workshop_manager"]
+        },
+        component: () => import("@/view/3manage/role.vue")
+      },
+      {
         path: "snCode",
         name: "snCode",
         meta: {

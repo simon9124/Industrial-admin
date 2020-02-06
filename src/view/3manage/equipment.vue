@@ -76,7 +76,8 @@
                  placeholder="请输入详情，100字以内"></Input>
         </FormItem>
         <FormItem label="关联SOP："
-                  prop="list">
+                  prop="list"
+                  class="sop">
 
           <!-- 多选框 -->
           <Select v-model="sopSelectedId"
@@ -84,7 +85,7 @@
                   multiple
                   label-in-value
                   placeholder="添加SOP"
-                  style="margin:0 10px 10px 0;width:300px"
+                  style="margin:0 10px 0px 0;width:300px"
                   @on-change="sopOnChange">
             <Option v-for="item in sopList"
                     :value="item.id"
@@ -95,11 +96,10 @@
           <!-- 按钮：添加SOP -->
           <Button type="success"
                   size="small"
-                  style="vertical-align:super"
                   @click="addToSopSelect">添加</Button>
 
           <!-- tagList -->
-          <div>
+          <div style="margin-top:10px">
             <Tag v-for="(item,i) in sopSelectList"
                  :key="i"
                  type="border"
@@ -326,11 +326,13 @@ export default {
         // 接口数据
         this.tableLoading = true;
         /* 表格数据 */
-        const dataResult = (await findEquipmentByPage(
-          this.pageNum,
-          this.pageSize,
-          this.tabSelected
-        )).data.data;
+        const dataResult = (
+          await findEquipmentByPage(
+            this.pageNum,
+            this.pageSize,
+            this.tabSelected
+          )
+        ).data.data;
         if (dataResult !== null) {
           // 如果是在删除之后获取的数据 -> 若删掉的是某一页的最后项且页码不是1，则自动获取前一页的数据
           if (dataResult.pageData.length === 0 && dataResult.pageIndex !== 1) {
@@ -579,6 +581,15 @@ export default {
     }
     td {
       padding: 10px 0;
+    }
+  }
+}
+.v-transfer-dom /deep/ {
+  .ivu-modal {
+    .ivu-form {
+      .sop {
+        margin-bottom: 14px;
+      }
     }
   }
 }

@@ -58,7 +58,7 @@
                   style="margin:0 10px 0px 0;width:300px"
                   @on-change="menuOnChange">
             <Option v-for="menu in menuList"
-                    :value="menu.menuName"
+                    :value="menu.menuId"
                     :key="menu.menuName"
                     :disabled="JSON.stringify(menuSelectList).indexOf(menu.menuName)>-1">
               {{ menu.menuName }}
@@ -96,7 +96,7 @@
             <Option v-for="user in userList"
                     :value="user"
                     :key="user"
-                    :disabled="JSON.stringify(userSelectList).indexOf(user)>-1">
+                    :disabled="JSON.stringify(tableDataOrg).indexOf(user)>-1">
               {{ user }}
             </Option>
           </Select>
@@ -137,12 +137,18 @@ import {
   menuList, // 菜单列表
   userList // 用户列表
 } from "./mockData/role";
+// function
 import {
-  // getUserList,
-  insertUser,
-  updateUser,
-  deleteUser
-} from "@/api/user/index";
+  arraySort, // 对象数组根据key排序
+  resultCallback // 根据请求的status执行回调函数
+  // getValueByKey // 根据对象数组某个key的value，查询另一个key的value
+} from "@/libs/dataHanding";
+// api
+// import // getUserList,
+// insertUser
+// updateUser
+// deleteUser
+// "@/api/user/index";
 // import { getUseGroupList } from "@/api/userGroup/index";
 
 export default {
@@ -259,6 +265,7 @@ export default {
         menuFunction: [],
         users: []
       }, // 数据 - 获取或提交
+      modalDataOrg: {}, // 数据 - 行内原始
       menuSelectList: [], // 已选择的menu - 标签列表
       menuSelectedId: [], // select里选择的menu - id
       menuSelectedData: [], // select里选择的menu - 整个data
@@ -310,10 +317,18 @@ export default {
     },
     // 根据条件刷新数据
     refreshData() {
+      // 按"id"升序
+      this.tableDataOrg.sort(arraySort("role_id", "asc"));
+      // 分页 & 每页条数
       this.tableData = this.tableDataOrg.slice(
         (this.pageNum - 1) * this.pageSize,
         this.pageNum * this.pageSize
       );
+      // 如果是在删除之后获取的数据 -> 若删掉的是某一页的最后项且页码不是1，则自动获取前一页的数据
+      if (this.tableData.length === 0 && this.tableDataOrg.length !== 0) {
+        this.pageNum--;
+        this.refreshData();
+      }
     },
     // 分页
     changePage(pageNum) {
@@ -339,6 +354,7 @@ export default {
     // 点击按钮 - 详情
     async edit(row) {
       this.modalDataType = "edit";
+      this.modalDataOrg = row;
       this.modalData = JSON.parse(JSON.stringify(row));
       this.menuSelectList = this.modalData.menuFunction;
       this.userSelectList = this.modalData.users;
@@ -349,8 +365,8 @@ export default {
       this.menuSelectedData = [];
       value.forEach(item => {
         this.menuSelectedData.push({
-          functionName: item.value
-          // sop: item.label,
+          functionId: item.value,
+          functionName: item.label
           // qc: getValueByKey(this.sopList, "id", item.value, "qc")
         });
       });
@@ -361,6 +377,7 @@ export default {
         this.menuSelectList.push(item);
       });
       // console.log(this.menuSelectedData);
+      // console.log(this.menuSelectList);
       // 清空已选项
       this.menuSelectedId = [];
     },
@@ -398,10 +415,10 @@ export default {
             case "insert":
               if (!this.isMock) {
                 // 接口数据
-                const result = (await insertUser(this.modalData)).data.status;
-                if (result === 200) {
-                  this.$Message.success("添加成功！");
-                }
+                // const result = (await insertUser(this.modalData)).data.status;
+                // if (result === 200) {
+                //   this.$Message.success("添加成功！");
+                // }
                 this.modalShow = false;
                 this.getData();
               } else {
@@ -409,29 +426,63 @@ export default {
                 this.modalData.role_id = (
                   this.tableDataOrg.length + 1
                 ).toString();
-                this.tableDataOrg.push(this.modalData);
-                this.refreshData();
-                this.$Message.success("添加成功！");
-                this.buttonLoading = false;
-                this.modalShow = false;
+                // 按"id"升序
+                this.menuSelectList.sort(arraySort("functionId", "asc"));
+                this.modalData.menuFunction = this.menuSelectList;
+                this.modalData.users = this.userSelectList;
+                if (
+                  this.tableDataOrg.some(
+                    item => item.roleName === this.modalData.roleName
+                  )
+                ) {
+                  this.$Message.error("该角色已存在！");
+                  this.buttonLoading = false;
+                } else {
+                  this.tableDataOrg.push(
+                    JSON.parse(JSON.stringify(this.modalData))
+                  );
+                  resultCallback(200, "添加成功！", () => {
+                    this.refreshData();
+                    this.buttonLoading = false;
+                    this.modalShow = false;
+                  });
+                }
               }
               break;
             case "edit":
               if (!this.isMock) {
                 // 非mock时
-                const result = (await updateUser(this.modalData)).data.status;
-                if (result === 200) {
-                  this.$Message.success("修改成功！");
-                }
+                // const result = (await updateUser(this.modalData)).data.status;
+                // if (result === 200) {
+                //   this.$Message.success("修改成功！");
+                // }
                 this.modalShow = false;
                 this.getData();
               } else {
                 // mock时
-                // console.log(this.modalData.role_id);
-                this.refreshData();
-                this.$Message.success("修改成功！");
-                this.buttonLoading = false;
-                this.modalShow = false;
+                // 按"id"升序
+                this.menuSelectList.sort(arraySort("functionId", "asc"));
+                // 判断重复
+                if (
+                  this.tableDataOrg.some(
+                    item => item.roleName === this.modalData.roleName
+                  ) &&
+                  this.modalData.roleName !== this.modalDataOrg.roleName
+                ) {
+                  this.$Message.error("该角色已存在！");
+                  this.buttonLoading = false;
+                } else {
+                  this.$set(
+                    this.tableDataOrg,
+                    (this.pageNum - 1) * this.pageSize + this.modalData._index,
+                    JSON.parse(JSON.stringify(this.modalData))
+                  );
+                  resultCallback(200, "修改成功！", () => {
+                    this.refreshData();
+                    this.buttonLoading = false;
+                    this.modalShow = false;
+                  });
+                }
               }
               break;
           }
@@ -445,20 +496,26 @@ export default {
         onOk: async () => {
           if (!this.isMock) {
             // 接口数据
-            const result = (await deleteUser(row.role_id)).data.status;
-            if (result === 200) {
-              this.$Message.success("删除成功");
-            }
+            // const result = (await deleteUser(row.role_id)).data.status;
+            // if (result === 200) {
+            //   this.$Message.success("删除成功");
+            // }
             this.getData();
           } else {
             // mock数据
-            this.tableData.forEach((list, i) => {
-              if (row.role_id === list.role_id) {
-                this.tableDataOrg.splice(i, 1);
-              }
+            this.tableDataOrg
+              .slice(
+                (this.pageNum - 1) * this.pageSize,
+                this.pageNum * this.pageSize
+              )
+              .forEach((list, i) => {
+                if (row.role_id === list.role_id) {
+                  this.tableDataOrg.splice(i, 1);
+                }
+              });
+            resultCallback(200, "删除成功！", () => {
+              this.refreshData();
             });
-            this.$Message.success("删除成功");
-            this.refreshData();
           }
         },
         closable: true

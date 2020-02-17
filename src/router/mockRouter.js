@@ -37,6 +37,17 @@ const routerList = [
     ]
   },
 
+  // epidemic
+  // {
+  //   path: "/epidemic",
+  //   name: "epidemic",
+  //   meta: {
+  //     title: "疫情监控",
+  //     hideInMenu: true
+  //   },
+  //   component: () => import("@/view/6inspector/epidemic.vue")
+  // },
+
   // 错误收集
   {
     path: "/error_logger",
@@ -383,6 +394,16 @@ const routerList = [
           access: ["admin", "cestc", "workshop_manager"]
         },
         component: () => import("@/view/3manage/role.vue")
+      },
+      {
+        path: "menu",
+        name: "menu",
+        meta: {
+          title: "菜单管理",
+          icon: "md-settings",
+          access: ["admin", "cestc", "workshop_manager"]
+        },
+        component: () => import("@/view/3manage/menu.vue")
       },
       {
         path: "snCode",

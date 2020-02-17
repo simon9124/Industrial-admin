@@ -65,8 +65,8 @@ export default {
       form: {
         userName: "",
         password: "",
-        // lineNo: getUrlKey('lineNo') || '22'
-        lineNo: this.$route.query.lineNo || "22"
+        // lineNo: getUrlKey('lineNo') || 22
+        lineNo: parseInt(this.$route.query.lineNo) || 22
       },
       buttonLoading: false
     };

@@ -60,6 +60,45 @@ export function listToCascader(array) {
 }
 
 /**
+ * 将菜单接口数据转换成iview树形数据结构(2层)
+ *  =>
+ * @param {Array} array 数组
+ */
+export const computedMenuData = array => {
+  let treeData = [];
+
+  array.forEach(menu => {
+    // 外层节点
+    if (menu.parenetId === "root") {
+      treeData.push({
+        title: menu.title,
+        id: menu.id,
+        children: []
+      });
+    }
+  });
+
+  // 内层节点
+  treeData.forEach(data => {
+    array.forEach(menu => {
+      if (data.id === menu.parenetId) {
+        data.children.push({
+          title: menu.title,
+          id: menu.id,
+          children: []
+        });
+      }
+    });
+  });
+
+  // 外层第一项若有内层，则展开
+  if (treeData.length > 0) {
+    treeData[0].expand = true;
+  }
+  return treeData;
+};
+
+/**
  * 按照对象数组[{},{},{}...]的某个object key，进行数组排序
  * @param {String} key 要排序的key
  * @param {String} sort 正序/倒序：asc/desc，默认为asc

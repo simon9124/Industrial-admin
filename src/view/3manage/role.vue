@@ -28,105 +28,128 @@
       </div>
     </Card>
 
-    <!-- Modal -->
-    <Modal v-model="modalShow"
+    <!-- Modal - 角色 -->
+    <Modal v-model="modalShowRole"
            :mask-closable="false"
            :closable="false"
            footer-hide
-           :title="modalDataType==='edit'?'编辑角色':'新增角色'"
-           @on-ok="handleSubmit">
-      <Form ref="formModalData"
-            :model="modalData"
+           :title="modalDataRoleType==='edit'?'编辑角色':'新增角色'"
+           @on-ok="handleSubmitRole">
+      <Form ref="formModalDataRole"
+            :model="modalDataRole"
             :rules="formModalRule"
             :label-width="100"
             @submit.native.prevent>
         <FormItem label="名称："
-                  prop="roleName">
+                  prop="title">
           <Input type="text"
-                 v-model.trim="modalData.roleName"></Input>
+                 v-model.trim="modalDataRole.title"></Input>
         </FormItem>
-        <FormItem label="菜单："
-                  prop="menuFunction"
-                  class="menu-function">
-
-          <!-- 多选框 -->
-          <Select v-model="menuSelectedId"
-                  filterable
-                  multiple
-                  label-in-value
-                  placeholder="添加菜单"
-                  style="margin:0 10px 0px 0;width:300px"
-                  @on-change="menuOnChange">
-            <Option v-for="menu in menuList"
-                    :value="menu.menuId"
-                    :key="menu.menuName"
-                    :disabled="JSON.stringify(menuSelectList).indexOf(menu.menuName)>-1">
-              {{ menu.menuName }}
-            </Option>
-          </Select>
-
-          <!-- 按钮：添加SOP -->
-          <Button type="success"
-                  size="small"
-                  @click="addToMenuSelect">添加</Button>
-
-          <!-- tagList -->
-          <div style="margin-top:10px">
-            <Tag v-for="(item,i) in menuSelectList"
-                 :key="i"
-                 type="border"
-                 color="primary"
-                 closable
-                 @on-close="deleteMenuItem(i)">{{item.functionName}}</Tag>
-          </div>
-
+        <FormItem label="描述："
+                  prop="description">
+          <Input type="text"
+                 v-model.trim="modalDataRole.description"></Input>
         </FormItem>
+
+        <FormItem>
+          <Button type="primary"
+                  @click="handleSubmitRole('formModalDataRole')"
+                  :loading="buttonLoading">确定</Button>
+          <Button @click="modalShowRole=false"
+                  style="margin-left: 8px">取消</Button>
+        </FormItem>
+      </Form>
+    </Modal>
+
+    <!-- Modal - 用户 -->
+    <Modal v-model="modalShowUser"
+           :mask-closable="false"
+           :closable="false"
+           footer-hide
+           title="关联用户"
+           @on-ok="handleSubmitUser">
+      <Form ref="formModalDataUser"
+            :model="modalDataUser"
+            :label-width="60"
+            @submit.native.prevent>
         <FormItem label="用户："
                   prop="users"
                   class="users">
 
-          <!-- 多选框 -->
           <Select v-model="userSelectedId"
                   filterable
                   multiple
                   label-in-value
                   placeholder="添加用户"
-                  style="margin:0 10px 0 0;width:300px"
+                  style="margin:0 10px 0 0;width:340px"
                   @on-change="userOnChange">
-            <Option v-for="user in userList"
-                    :value="user"
-                    :key="user"
-                    :disabled="JSON.stringify(tableDataOrg).indexOf(user)>-1">
-              {{ user }}
+            <Option v-for="(user,i) in userList"
+                    :value="user.user_id"
+                    :key="i"
+                    :disabled="JSON.stringify(tableDataOrg).indexOf(user.display_name)>-1">
+              {{ user.display_name }}
             </Option>
           </Select>
 
-          <!-- 按钮：添加SOP -->
           <Button type="success"
                   size="small"
                   @click="addToUserSelect">添加</Button>
 
-          <!-- tagList -->
           <div style="margin-top:10px">
             <Tag v-for="(item,i) in userSelectList"
                  :key="i"
                  type="border"
                  color="primary"
                  closable
-                 @on-close="deleteUserItem(i)">{{item}}</Tag>
+                 @on-close="deleteUserItem(i)">{{item.display_name}}</Tag>
           </div>
 
         </FormItem>
 
         <FormItem>
           <Button type="primary"
-                  @click="handleSubmit('formModalData')"
+                  @click="handleSubmitUser('formModalDataUser')"
                   :loading="buttonLoading">确定</Button>
-          <Button @click="modalShow=false;menuSelectedId = []"
+          <Button @click="modalShowUser=false;userSelectedId = []"
                   style="margin-left: 8px">取消</Button>
         </FormItem>
       </Form>
     </Modal>
+
+    <!-- Modal - 菜单 -->
+    <Modal v-model="modalShowMenu"
+           :mask-closable="false"
+           :closable="false"
+           footer-hide
+           title="关联菜单"
+           @on-ok="handleSubmitMenu">
+      <Form ref="formModalDataMenu"
+            :model="modalDataMenu"
+            :label-width="60"
+            @submit.native.prevent>
+        <FormItem label="菜单："
+                  prop="menus"
+                  class="menu-function">
+
+          <div v-for="(menu,i) in menuList"
+               :key="i">
+            <Tree :ref="'menu'+i"
+                  :data="[menu]"
+                  show-checkbox></Tree>
+          </div>
+        </FormItem>
+
+        <FormItem>
+          <Button type="primary"
+                  @click="handleSubmitMenu('formModalDataMenu')"
+                  :loading="buttonLoading">确定</Button>
+          <Button @click="modalShowMenu=false;menuSelectedId=[];
+                          menuList=JSON.parse(JSON.stringify(menuListOrg))"
+                  style="margin-left: 8px">取消</Button>
+        </FormItem>
+      </Form>
+    </Modal>
+
   </div>
 </template>
 
@@ -139,41 +162,51 @@ import {
 } from "./mockData/role";
 // function
 import {
+  computedMenuData, // 菜单数据转换成iview树形数据结构(2层)
   arraySort, // 对象数组根据key排序
   resultCallback // 根据请求的status执行回调函数
   // getValueByKey // 根据对象数组某个key的value，查询另一个key的value
 } from "@/libs/dataHanding";
 // api
-// import // getUserList,
-// insertUser
-// updateUser
-// deleteUser
-// "@/api/user/index";
-// import { getUseGroupList } from "@/api/userGroup/index";
+import {
+  getRolelist, // 获取角色列表
+  addRole, // 新增角色
+  updateRole, // 更新角色
+  removeRole, // 删除角色
+  getUsersByRole, // 根据角色id获取关联的用户
+  updateRoleUser, // 角色 - 用户关系维护
+  getMenusByRole, // 根据角色id获取关联的菜单
+  updateRoleMenu // 角色 - 菜单关系维护
+  // updateRoleMenu // 角色菜单关系维护
+} from "@/api/role/index";
+import { getUserList } from "@/api/user/index"; // 获取全部用户
+import { getAllMenus } from "@/api/menu/index"; // 获取全部菜单
 
 export default {
   data() {
     return {
       /* 全局 */
-      menuList: [], // 全部菜单列表 - select用
       userList: [], // 全部用户列表 - select用
+      menuListOrg: [], // 全部菜单列表 - 原始数据
+      menuList: [], // 全部菜单列表 - 渲染后的tree
+      roleId: "", // 角色id - 维护关系用
       /* 每页 */
       tableDataOrg: [], // 原始数据
       tableData: [], // 处理后的当页数据
       tableColumns: [
         {
           title: "名称",
-          key: "roleName",
+          key: "title",
           align: "center",
           minWidth: 120
         },
         {
           title: "功能",
-          key: "menuFunction",
+          key: "menus",
           // align: "center",
           render: (h, params) => {
             return h("div", [
-              params.row.menuFunction.map(item => {
+              params.row.menus.map(item => {
                 return h(
                   "Tag",
                   {
@@ -181,7 +214,7 @@ export default {
                       color: "blue"
                     }
                   },
-                  item.functionName
+                  !this.isMock ? item : item.functionName
                 );
               })
             ]);
@@ -229,6 +262,62 @@ export default {
                 {
                   props: {
                     trigger: "hover",
+                    content: "关联用户",
+                    placement: "top",
+                    transfer: true
+                  }
+                },
+                [
+                  h("Button", {
+                    props: {
+                      type: "success",
+                      size: "small",
+                      icon: "ios-person-outline"
+                    },
+                    style: {
+                      marginRight: "5px"
+                    },
+                    on: {
+                      click: () => {
+                        this.relateUsers(params.row);
+                      }
+                    }
+                  })
+                ]
+              ),
+              h(
+                "Tooltip",
+                {
+                  props: {
+                    trigger: "hover",
+                    content: "关联菜单",
+                    placement: "top",
+                    transfer: true
+                  }
+                },
+                [
+                  h("Button", {
+                    props: {
+                      type: "info",
+                      size: "small",
+                      icon: "ios-menu-outline"
+                    },
+                    style: {
+                      marginRight: "5px"
+                    },
+                    on: {
+                      click: () => {
+                        this.relateMenus(params.row);
+                      }
+                    }
+                  })
+                ]
+              ),
+              h(
+                "Tooltip",
+                {
+                  props: {
+                    trigger: "hover",
                     content: "删除",
                     placement: "top",
                     transfer: true
@@ -259,21 +348,30 @@ export default {
       tableLoading: false, // table
       buttonLoading: false, // button
       /* modal弹框 */
-      modalShow: false, // 是否显示
-      modalData: {
-        roleName: "",
-        menuFunction: [],
+      modalShowRole: false, // 是否显示 - role
+      modalShowUser: false, // 是否显示 - user
+      modalShowMenu: false, // 是否显示 - menu
+      modalDataRole: {
+        title: "",
+        description: ""
+        // menus: [],
+        // users: []
+      }, // 数据 - role
+      modalDataUser: {
         users: []
-      }, // 数据 - 获取或提交
-      modalDataOrg: {}, // 数据 - 行内原始
-      menuSelectList: [], // 已选择的menu - 标签列表
-      menuSelectedId: [], // select里选择的menu - id
-      menuSelectedData: [], // select里选择的menu - 整个data
+      }, // 数据 - user
+      modalDataMenu: {
+        menus: []
+      }, // 数据 - menu
+      modalDataRoleOrg: {}, // 数据 - role行内原始
       userSelectList: [], // 已选择的user - 标签列表
       userSelectedId: [], // select里选择的user - id
       userSelectedData: [], // select里选择的user - 整个data
+      menuSelectList: [], // 已选择的menu - 接口数据
+      menuSelectedId: [], // tree提交的menu - id
+      // menuSelectedData: [], // tree里选择的menu - 整个data
       formModalRule: {
-        roleName: [
+        title: [
           {
             required: true,
             message: "请输入角色名称",
@@ -285,17 +383,29 @@ export default {
             message: "角色名称过长",
             trigger: "change"
           }
+        ],
+        description: [
+          {
+            type: "string",
+            max: 100,
+            message: "描述过长",
+            trigger: "change"
+          }
         ]
       }, // form规则
-      modalDataType: "" // 类型：insert/edit
+      modalDataRoleType: "" // 类型：insert/edit
     };
   },
   async created() {
     this.getData();
-    // 用户组 -> select选框用
-    // this.userGroup = (await getUseGroupList()).data.data;
-    this.menuList = menuList;
-    this.userList = userList;
+    // 设置menuList的副本，每次关联时以副本为基准清空已选项
+    this.menuListOrg = !this.isMock
+      ? computedMenuData((await getAllMenus()).data.data) || []
+      : menuList;
+    this.menuList = JSON.parse(JSON.stringify(this.menuListOrg));
+    this.userList = !this.isMock
+      ? (await getUserList()).data.data || []
+      : userList;
   },
   methods: {
     // 获取首页数据
@@ -303,8 +413,8 @@ export default {
       if (!this.isMock) {
         // 接口数据
         this.tableLoading = true;
-        // this.tableDataOrg = (await getUserList()).data.data;
-        this.tableDataOrg = roleList;
+        this.tableDataOrg = (await getRolelist()).data.data;
+        // this.tableDataOrg = roleList;
         this.refreshData();
         this.buttonLoading = false;
         this.tableLoading = false;
@@ -318,7 +428,7 @@ export default {
     // 根据条件刷新数据
     refreshData() {
       // 按"id"升序
-      this.tableDataOrg.sort(arraySort("role_id", "asc"));
+      this.tableDataOrg.sort(arraySort("id", "asc"));
       // 分页 & 每页条数
       this.tableData = this.tableDataOrg.slice(
         (this.pageNum - 1) * this.pageSize,
@@ -341,110 +451,71 @@ export default {
       this.pageNum = 1;
       this.refreshData();
     },
+    /* 角色表单操作 */
     // 点击按钮 - 新增
     insert() {
-      this.modalDataType = "insert";
-      this.$refs.formModalData.resetFields();
-      this.menuSelectList = [];
-      this.menuSelectedId = [];
-      this.userSelectList = [];
-      this.userSelectedId = [];
-      this.modalShow = true;
+      this.modalDataRoleType = "insert";
+      this.$refs.formModalDataRole.resetFields();
+      this.modalShowRole = true;
     },
-    // 点击按钮 - 详情
+    // 点击按钮 - 编辑
     async edit(row) {
-      this.modalDataType = "edit";
-      this.modalDataOrg = row;
-      this.modalData = JSON.parse(JSON.stringify(row));
-      this.menuSelectList = this.modalData.menuFunction;
-      this.userSelectList = this.modalData.users;
-      this.modalShow = true;
+      this.modalDataRoleType = "edit";
+      this.modalDataRoleOrg = row;
+      this.modalDataRole = JSON.parse(JSON.stringify(row));
+      this.modalShowRole = true;
     },
-    // select框选择的数据发生变化 - menu
-    menuOnChange(value) {
-      this.menuSelectedData = [];
-      value.forEach(item => {
-        this.menuSelectedData.push({
-          functionId: item.value,
-          functionName: item.label
-          // qc: getValueByKey(this.sopList, "id", item.value, "qc")
-        });
-      });
-    },
-    // 将select框内选择的menu，添加到menuSelectList
-    addToMenuSelect() {
-      this.menuSelectedData.forEach(item => {
-        this.menuSelectList.push(item);
-      });
-      // console.log(this.menuSelectedData);
-      // console.log(this.menuSelectList);
-      // 清空已选项
-      this.menuSelectedId = [];
-    },
-    // 删除已选择的menu标签
-    deleteMenuItem(i) {
-      this.menuSelectList.splice(i, 1);
-    },
-    // select框选择的数据发生变化 - user
-    userOnChange(value) {
-      this.userSelectedData = [];
-      value.forEach(item => {
-        this.userSelectedData.push(item.value);
-      });
-    },
-    // 将select框内选择的user，添加到userSelectList
-    addToUserSelect() {
-      this.userSelectedData.forEach(item => {
-        this.userSelectList.push(item);
-      });
-      // console.log(this.menuSelectedData);
-      // 清空已选项
-      this.userSelectedId = [];
-    },
-    // 删除已选择的user标签
-    deleteUserItem(i) {
-      this.userSelectList.splice(i, 1);
-    },
-    // 点击表单按钮 - 确定
-    handleSubmit() {
-      // console.log(this.modalData);
-      this.$refs.formModalData.validate(async valid => {
+    // 提交表单 - 角色
+    handleSubmitRole() {
+      // console.log(this.modalDataRole);
+      this.$refs.formModalDataRole.validate(async valid => {
         if (valid) {
           this.buttonLoading = true;
-          switch (this.modalDataType) {
+          switch (this.modalDataRoleType) {
             case "insert":
               if (!this.isMock) {
                 // 接口数据
-                // const result = (await insertUser(this.modalData)).data.status;
+                const result = (await addRole(this.modalDataRole)).data.status;
+                resultCallback(
+                  result,
+                  "添加成功！",
+                  () => {
+                    this.modalShowRole = false;
+                    this.getData();
+                  },
+                  () => {
+                    this.buttonLoading = false;
+                  }
+                );
                 // if (result === 200) {
                 //   this.$Message.success("添加成功！");
                 // }
-                this.modalShow = false;
-                this.getData();
+                // this.modalShowRole = false;
+                // this.getData();
               } else {
                 // mock时
-                this.modalData.role_id = (
+                this.modalDataRole.id = (
                   this.tableDataOrg.length + 1
                 ).toString();
                 // 按"id"升序
                 this.menuSelectList.sort(arraySort("functionId", "asc"));
-                this.modalData.menuFunction = this.menuSelectList;
-                this.modalData.users = this.userSelectList;
+                this.modalDataRole.menus = this.menuSelectList;
+                this.modalDataRole.users = this.userSelectList;
                 if (
                   this.tableDataOrg.some(
-                    item => item.roleName === this.modalData.roleName
+                    item => item.title === this.modalDataRole.title
                   )
                 ) {
                   this.$Message.error("该角色已存在！");
                   this.buttonLoading = false;
                 } else {
                   this.tableDataOrg.push(
-                    JSON.parse(JSON.stringify(this.modalData))
+                    JSON.parse(JSON.stringify(this.modalDataRole))
                   );
                   resultCallback(200, "添加成功！", () => {
                     this.refreshData();
                     this.buttonLoading = false;
-                    this.modalShow = false;
+                    this.modalShowRole = false;
                   });
                 }
               }
@@ -452,12 +523,19 @@ export default {
             case "edit":
               if (!this.isMock) {
                 // 非mock时
-                // const result = (await updateUser(this.modalData)).data.status;
-                // if (result === 200) {
-                //   this.$Message.success("修改成功！");
-                // }
-                this.modalShow = false;
-                this.getData();
+                const result = (await updateRole(this.modalDataRole)).data
+                  .status;
+                resultCallback(
+                  result,
+                  "修改成功！",
+                  () => {
+                    this.modalShowRole = false;
+                    this.getData();
+                  },
+                  () => {
+                    this.buttonLoading = false;
+                  }
+                );
               } else {
                 // mock时
                 // 按"id"升序
@@ -465,22 +543,23 @@ export default {
                 // 判断重复
                 if (
                   this.tableDataOrg.some(
-                    item => item.roleName === this.modalData.roleName
+                    item => item.title === this.modalDataRole.title
                   ) &&
-                  this.modalData.roleName !== this.modalDataOrg.roleName
+                  this.modalDataRole.title !== this.modalDataRoleOrg.title
                 ) {
                   this.$Message.error("该角色已存在！");
                   this.buttonLoading = false;
                 } else {
                   this.$set(
                     this.tableDataOrg,
-                    (this.pageNum - 1) * this.pageSize + this.modalData._index,
-                    JSON.parse(JSON.stringify(this.modalData))
+                    (this.pageNum - 1) * this.pageSize +
+                      this.modalDataRole._index,
+                    JSON.parse(JSON.stringify(this.modalDataRole))
                   );
                   resultCallback(200, "修改成功！", () => {
                     this.refreshData();
                     this.buttonLoading = false;
-                    this.modalShow = false;
+                    this.modalShowRole = false;
                   });
                 }
               }
@@ -491,35 +570,171 @@ export default {
     },
     // 点击按钮 - 删除
     delete(row) {
-      this.$Modal.confirm({
-        title: "确定删除该角色？",
-        onOk: async () => {
-          if (!this.isMock) {
-            // 接口数据
-            // const result = (await deleteUser(row.role_id)).data.status;
-            // if (result === 200) {
-            //   this.$Message.success("删除成功");
-            // }
-            this.getData();
+      if (row.users.length !== 0) {
+        this.$message.error("该角色已关联用户，请先解除关联");
+      } else if (row.menus.length !== 0) {
+        this.$Modal.confirm({
+          title: "删除角色将删除角色菜单关联，是否删除？",
+          onOk: async () => {
+            this.deleteOnOK(row);
+          },
+          closable: true
+        });
+      } else {
+        this.$Modal.confirm({
+          title: "确定删除该角色？",
+          onOk: async () => {
+            this.deleteOnOK(row);
+          },
+          closable: true
+        });
+      }
+    },
+    // 确认删除事件
+    async deleteOnOK(row) {
+      if (!this.isMock) {
+        // 接口数据
+        const result = (await removeRole(row.id)).data.status;
+        resultCallback(result, "删除成功！", () => {
+          this.getData();
+        });
+      } else {
+        // mock数据
+        this.tableDataOrg
+          .slice(
+            (this.pageNum - 1) * this.pageSize,
+            this.pageNum * this.pageSize
+          )
+          .forEach((list, i) => {
+            if (row.id === list.id) {
+              this.tableDataOrg.splice(i, 1);
+            }
+          });
+        resultCallback(200, "删除成功！", () => {
+          this.refreshData();
+        });
+      }
+    },
+    /* 用户表单操作 */
+    // 点击按钮 - 关联用户
+    async relateUsers(row) {
+      this.roleId = row.id;
+      this.userSelectList = (await getUsersByRole(row.id)).data.data || [];
+      this.modalShowUser = true;
+    },
+    // select框选择的数据发生变化 - user
+    userOnChange(value) {
+      this.userSelectedData = [];
+      value.forEach(item => {
+        this.userSelectedData.push({
+          user_id: item.value,
+          display_name: item.label
+        });
+      });
+    },
+    // 将select框内选择的user，添加到userSelectList
+    addToUserSelect() {
+      this.userSelectedData.forEach(item => {
+        this.userSelectList.push(item);
+      });
+      // console.log(this.userSelectList);
+      // 清空已选项
+      this.userSelectedId = [];
+    },
+    // 删除已选择的user标签
+    deleteUserItem(i) {
+      this.userSelectList.splice(i, 1);
+    },
+    // 提交表单 - 用户
+    async handleSubmitUser() {
+      this.buttonLoading = true;
+      const userIds = [];
+      this.userSelectList.forEach(user => {
+        userIds.push(user.user_id);
+      });
+      // console.log(userIds);
+      const result = (
+        await updateRoleUser({
+          roleId: this.roleId,
+          userIds: userIds
+        })
+      ).data.status;
+      resultCallback(
+        result,
+        "修改成功！",
+        () => {
+          this.modalShowUser = false;
+          this.getData();
+        },
+        () => {
+          this.buttonLoading = false;
+        }
+      );
+    },
+    /* 菜单表单操作 */
+    // 点击按钮 - 关联菜单
+    async relateMenus(row) {
+      this.roleId = row.id;
+      this.menuSelectList = (await getMenusByRole(row.id)).data.data;
+      // 根据menuSelectList，动态渲染menuList已选中的选项
+      if (this.menuList.length > 0) {
+        this.menuList.forEach(menu => {
+          if (menu.children.length === 0) {
+            // 如果没有子节点
+            if (JSON.stringify(this.menuSelectList).indexOf(menu.title) > -1) {
+              this.$set(menu, "checked", true);
+            }
           } else {
-            // mock数据
-            this.tableDataOrg
-              .slice(
-                (this.pageNum - 1) * this.pageSize,
-                this.pageNum * this.pageSize
-              )
-              .forEach((list, i) => {
-                if (row.role_id === list.role_id) {
-                  this.tableDataOrg.splice(i, 1);
-                }
-              });
-            resultCallback(200, "删除成功！", () => {
-              this.refreshData();
+            // 如果有子节点
+            menu.children.forEach(_menu => {
+              if (
+                JSON.stringify(this.menuSelectList).indexOf(_menu.title) > -1
+              ) {
+                this.$set(_menu, "checked", true);
+              }
             });
           }
-        },
-        closable: true
+        });
+      }
+      this.modalShowMenu = true;
+    },
+    // 提交表单 - 菜单
+    async handleSubmitMenu() {
+      /* 1获取所有的tree中被勾选的节点，concat成一个数组（数组对象） */
+      let menuSelected = [];
+      this.menuList.forEach((menu, i) => {
+        let menuRef = "menu" + i;
+        menuSelected = menuSelected.concat(
+          this.$refs[menuRef][0].getCheckedNodes()
+        );
       });
+      // console.log(menuSelected);
+      /* 2.将所有被勾选的节点（数组对象），处理成只保留id的一维数组 */
+      this.menuSelected = [];
+      menuSelected.forEach(menu => {
+        this.menuSelected.push(menu.id);
+      });
+      // console.log(this.menuSelected);
+      /* 3.调用接口 */
+      const result = (
+        await updateRoleMenu({
+          roleId: this.roleId,
+          menuIds: this.menuSelected
+        })
+      ).data.status;
+      resultCallback(
+        result,
+        "修改成功！",
+        () => {
+          this.modalShowMenu = false;
+          this.getData();
+          // 清空选项
+          this.menuList = JSON.parse(JSON.stringify(this.menuListOrg));
+        },
+        () => {
+          this.buttonLoading = false;
+        }
+      );
     }
   }
 };
@@ -545,6 +760,13 @@ export default {
       .menu-function,
       .users {
         margin-bottom: 14px;
+      }
+      .ivu-tree {
+        &-children {
+          li {
+            margin: 0;
+          }
+        }
       }
     }
   }

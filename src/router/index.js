@@ -5,6 +5,7 @@ import store from "@/store";
 import iView from "iview";
 import { setToken, getToken, canTurnTo, setTitle } from "@/libs/util";
 import config from "@/config";
+// import routerList from "@/router/mockRouter";
 const { homeName } = config;
 
 Vue.use(Router);
@@ -52,14 +53,14 @@ router.beforeEach((to, from, next) => {
     });
   } else {
     if (store.state.user.hasGetInfo) {
-      if (store.getters.menuList.length === 0) {
-        store.dispatch("getMenuData").then(res => {});
-      }
+      // if (store.getters.menuList.length === 0) {
+      //   store.dispatch("getMenuData").then(() => {});
+      // }
       turnTo(to, store.state.user.access, next);
     } else {
-      if (store.getters.menuList.length === 0) {
-        store.dispatch("getMenuData").then(res => {});
-      }
+      // if (store.getters.menuList.length === 0) {
+      //   store.dispatch("getMenuData").then(() => {});
+      // }
       store
         .dispatch("getUserInfo")
         .then(user => {

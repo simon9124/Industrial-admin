@@ -13,9 +13,9 @@ import {
 } from "@/libs/util";
 import { saveErrorLogger } from "@/api/data";
 import router from "@/router";
-// import routers from "@/router/routers";
+import routers from "@/router/routers";
 import config from "@/config";
-import { routerList } from "@/router/mockRouter";
+// import routerList from "@/router/mockRouter";
 const { homeName } = config;
 
 const closePage = (state, route) => {
@@ -33,14 +33,15 @@ export default {
     homeRoute: {},
     local: localRead("local"),
     errorList: [],
-    hasReadErrorPage: false,
-    menuRspList: []
+    hasReadErrorPage: false
+    // menuRspList: [], // 拿到的路由数据
+    // hasGetRouter: false // 是否已经拿过路由数据
   },
   getters: {
-    // menuList: (state, getters, rootState) =>
-    //   getMenuByRouter(routers, rootState.user.access),
     menuList: (state, getters, rootState) =>
-      getMenuByRouter(state.menuRspList, rootState.user.access),
+      getMenuByRouter(routers, rootState.user.access),
+    // menuList: (state, getters, rootState) =>
+    //   getMenuByRouter(state.menuRspList, rootState.user.access),
     errorCount: state => state.errorList.length
   },
   mutations: {
@@ -90,15 +91,16 @@ export default {
     },
     setHasReadErrorLoggerStatus(state, status = true) {
       state.hasReadErrorPage = status;
-    },
-    setMenuRspList(state, list) {
-      let len = list.length;
-      for (let i = 0; i < len; i++) {
-        state.menuRspList.push(list[i]);
-      }
-
-      state.hasInfo = true;
     }
+    // 设置路由数据
+    // setMenuRspList(state, list) {
+    //   let len = list.length;
+    //   for (let i = 0; i < len; i++) {
+    //     state.menuRspList.push(list[i]);
+    //   }
+
+    //   state.hasGetRouter = true;
+    // }
   },
   actions: {
     addErrorLog({ commit, rootState }, info) {
@@ -118,15 +120,15 @@ export default {
       saveErrorLogger(info).then(() => {
         commit("addError", data);
       });
-    },
-    // 获取动态路由
-    getMenuData({ commit, rootState }, params) {
-      commit("setMenuRspList", routerList);
-
-      // mainList(params).then(res => {
-      //   // console.log(res.data)
-      //   commit("setMenuRspList", res.data.data);
-      // });
     }
+    // 获取动态路由
+    // getMenuData({ commit, rootState }, params) {
+    // commit("setMenuRspList", routerList);
+
+    // mainList(params).then(res => {
+    //   // console.log(res.data)
+    //   commit("setMenuRspList", res.data.data);
+    // });
+    // }
   }
 };

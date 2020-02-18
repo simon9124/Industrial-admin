@@ -49,3 +49,10 @@ export const getTreeSelectData = () => {
     method: "get"
   });
 };
+
+export const getMockMenuData = () => {
+  return axios.request({
+    url: "get_mock_menu_data",
+    method: "post"
+  });
+};

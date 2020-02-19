@@ -1,4 +1,5 @@
 import Main from "@/components/main";
+import { dynamicRouterAdd } from "@/libs/router-util"; // ①添 引入加载菜单
 
 // import parentView from '@/components/parent-view';
 
@@ -18,8 +19,8 @@ import Main from "@/components/main";
  * }
  */
 
-export default [
-  // login
+// 不作为Main组件的子页面展示的页面单独写
+export const otherRouter = [
   {
     path: "/login",
     name: "login",
@@ -29,45 +30,35 @@ export default [
     },
     component: () => import("@/view/login/login.vue")
   },
-
-  // home
   {
-    path: "/",
-    name: "_home",
-    redirect: "/home",
-    component: Main,
+    path: "/401",
+    name: "error_401",
     meta: {
-      // hideInMenu: true,
-      notCache: true,
-      access: ["admin", "proline_leader"]
+      hideInMenu: true
     },
-    children: [
-      {
-        path: "/home",
-        name: "home",
-        meta: {
-          // hideInMenu: true,
-          title: "首页概览",
-          notCache: true,
-          icon: "md-home",
-          access: ["admin", "proline_leader"]
-        },
-        component: () => import("@/view/single-page/home")
-      }
-    ]
+    component: () => import("@/view/error-page/401.vue")
   },
+  {
+    path: "/500",
+    meta: {
+      title: "500-服务端错误"
+    },
+    name: "error_500",
+    component: () => import("@/view/error-page/500.vue")
+  },
+  {
+    path: "/erp",
+    name: "erp",
+    meta: {
+      hideInBread: true,
+      hideInMenu: true
+    },
+    component: () => import("@/view/8taskManage/taskDistributionMes")
+  }
+];
 
-  // epidemic
-  // {
-  //   path: "/epidemic",
-  //   name: "epidemic",
-  //   meta: {
-  //     title: "疫情监控",
-  //     hideInMenu: true
-  //   },
-  //   component: () => import("@/view/6inspector/epidemic.vue")
-  // },
-
+// 作为Main组件的子页面展示但是不在左侧菜单显示的路由写在mainRouter里
+export const mainRouter = [
   // 错误收集
   {
     path: "/error_logger",
@@ -89,522 +80,6 @@ export default [
       }
     ]
   },
-
-  // 检测驾驶舱 - 车间（非车间主管）
-  // {
-  //   path: "/control-shop",
-  //   name: "control-shop",
-  //   meta: {
-  //     title: "驾驶舱",
-  //     hideInBread: true,
-  //     hideInMenu: true,
-  //     access: ["admin"]
-  //   },
-  //   component: () => import("@/view/6inspector/controlCabin.vue")
-  // },
-
-  // 检测驾驶舱 - 车间（管理员或车间主管）
-  {
-    path: "/control-leader-shop",
-    name: "control-leader-shop",
-    meta: {
-      icon: "md-laptop",
-      title: "驾驶舱",
-      hideInBread: true,
-      // hideInMenu: true,
-      access: ["admin", "workshop_manager"]
-    },
-    component: () => import("@/view/6inspector/controlCabin.vue")
-  },
-
-  // 检测驾驶舱 - 产线（非管理员或车间主管）
-  {
-    path: "/control-line",
-    name: "control-line",
-    meta: {
-      icon: "md-laptop",
-      title: "驾驶舱",
-      hideInBread: true,
-      // hideInMenu: true,
-      access: ["proline_leader"]
-    },
-    component: () => import("@/view/6inspector/controlCabinLine.vue")
-  },
-
-  // 检测驾驶舱 - 产线（管理员和车间主管）
-  {
-    path: "/control-leader-line",
-    name: "control-leader-line",
-    meta: {
-      icon: "md-laptop",
-      title: "驾驶舱",
-      hideInBread: true,
-      hideInMenu: true,
-      access: ["admin", "workshop_manager"]
-    },
-    component: () => import("@/view/6inspector/controlCabinLine.vue")
-  },
-
-  // 检测员
-  {
-    path: "/inspect",
-    name: "inspect",
-    meta: {
-      hideInBread: true,
-      access: ["admin", "proline_leader", "examine"]
-    },
-    component: Main,
-    children: [
-      {
-        path: "inspector",
-        name: "inspector",
-        meta: {
-          icon: "md-person",
-          title: "检测员",
-          access: ["admin", "proline_leader", "examine"]
-        },
-        component: () => import("@/view/1inspector/inspector.vue")
-      }
-    ]
-  },
-
-  // 操作行为分析
-  // {
-  //   path: '/operation',
-  //   name: 'operation',
-  //   meta: {
-  //     icon: 'md-hand',
-  //     title: '操作行为分析',
-  //     hideInBread: true
-  //   },
-  //   component: () => import('@/view/7operationBehavior/controlCabin.vue')
-  // },
-
-  // 任务派发
-  {
-    path: "/task",
-    name: "task",
-    meta: {
-      hideInBread: true,
-      title: "任务管理",
-      icon: "md-shuffle",
-      access: ["admin", "proline_leader"]
-    },
-    component: Main,
-    children: [
-      {
-        path: "distribute",
-        name: "distribute",
-        meta: {
-          title: "任务派发",
-          access: ["admin", "proline_leader"]
-        },
-        component: () => import("@/view/8taskManage/taskDistribution.vue")
-      },
-      {
-        path: "history",
-        name: "history",
-        meta: {
-          title: "历史任务",
-          access: ["admin", "proline_leader"]
-        },
-        component: () => import("@/view/8taskManage/taskHistory.vue")
-      }
-    ]
-  },
-
-  // mes演示
-  {
-    path: "/erp",
-    name: "erp",
-    meta: {
-      hideInBread: true,
-      hideInMenu: true
-    },
-    component: () => import("@/view/8taskManage/taskDistributionMes.vue")
-  },
-
-  // 查看SOP
-  {
-    path: "/sop",
-    name: "sopMessage",
-    meta: {
-      hideInBread: true,
-      access: ["admin", "proline_leader", "examine"]
-    },
-    component: Main,
-    children: [
-      {
-        path: "message",
-        name: "message",
-        meta: {
-          title: "查看SOP",
-          icon: "md-document",
-          access: ["admin", "proline_leader", "examine"]
-        },
-        component: () => import("@/view/8taskManage/sopMessage.vue")
-      }
-    ]
-  },
-
-  // 查看报表
-  // {
-  //   path: "/iframe",
-  //   name: "iframe",
-  //   meta: {
-  //     hideInBread: true
-  //   },
-  //   component: Main,
-  //   children: [
-  //     {
-  //       path: "chart",
-  //       name: "chart",
-  //       meta: {
-  //         title: "查看报表",
-  //         icon: "md-document"
-  //       },
-  //       component: () => import("@/view/8taskManage/iframe.vue")
-  //     }
-  //   ]
-  // },
-
-  // 条码打印
-  {
-    path: "/number",
-    name: "number",
-    meta: {
-      hideInBread: true,
-      access: ["admin", "proline_leader", "examine"]
-    },
-    component: Main,
-    children: [
-      {
-        path: "print",
-        name: "print",
-        meta: {
-          icon: "md-print",
-          title: "条码打印",
-          access: ["admin", "proline_leader", "examine"]
-        },
-        component: () => import("@/view/3manage/number.vue")
-      }
-    ]
-  },
-
-  // 实时监控
-  // {
-  //   path: "/mqtt",
-  //   name: "mqtt",
-  //   meta: {
-  //     hideInBread: true
-  //   },
-  //   component: Main,
-  //   children: [
-  //     {
-  //       path: "data",
-  //       name: "data",
-  //       meta: {
-  //         icon: "md-analytics",
-  //         title: "实时监控"
-  //       },
-  //       component: () => import("@/view/2systemManage/mqtt.vue")
-  //     }
-  //   ]
-  // },
-
-  // 检测列表
-  {
-    path: "/electric",
-    name: "electric",
-    meta: {
-      hideInBread: true,
-      access: ["admin", "workshop_manager", "proline_leader"]
-    },
-    component: Main,
-    children: [
-      {
-        path: "electricSearch",
-        name: "electricSearch",
-        meta: {
-          icon: "md-options",
-          title: "检测列表",
-          access: ["admin", "workshop_manager", "proline_leader"]
-        },
-        component: () => import("@/view/2systemManage/electricSearch.vue")
-      }
-    ]
-  },
-
-  // 追溯查询
-  {
-    path: "/check",
-    name: "check",
-    meta: {
-      hideInBread: true,
-      access: ["admin", "workshop_manager", "proline_leader", "examine"]
-    },
-    component: Main,
-    children: [
-      {
-        path: "checkSearch",
-        name: "checkSearch",
-        meta: {
-          icon: "md-git-pull-request",
-          title: "追溯查询",
-          access: ["admin", "workshop_manager", "proline_leader", "examine"]
-        },
-        component: () => import("@/view/2systemManage/checkSearch.vue")
-      }
-    ]
-  },
-
-  // 异常确认
-  {
-    path: "/systemManage",
-    name: "systemManage",
-    meta: {
-      hideInBread: true,
-      title: "异常确认",
-      icon: "md-options",
-      access: ["admin", "proline_leader"]
-    },
-    component: Main,
-    children: [
-      {
-        path: "checkReason",
-        name: "checkReason",
-        meta: {
-          icon: "md-bug",
-          title: "异常确认",
-          access: ["admin", "proline_leader"]
-        },
-        component: () => import("@/view/2systemManage/checkReason.vue")
-      }
-    ]
-  },
-
-  // 管理中心
-  {
-    path: "/manage",
-    name: "manage",
-    meta: {
-      hideInBread: true,
-      title: "管理中心",
-      icon: "md-settings",
-      access: ["admin", "cestc", "workshop_manager", "proline_leader"]
-    },
-    component: Main,
-    children: [
-      {
-        path: "account",
-        name: "account",
-        meta: {
-          title: "账号管理",
-          icon: "md-settings",
-          access: ["admin", "cestc", "workshop_manager"]
-        },
-        component: () => import("@/view/3manage/account.vue")
-      },
-      {
-        path: "role",
-        name: "role",
-        meta: {
-          title: "角色管理",
-          icon: "md-settings",
-          access: ["admin", "cestc", "workshop_manager"]
-        },
-        component: () => import("@/view/3manage/role.vue")
-      },
-      {
-        path: "menu",
-        name: "menu",
-        meta: {
-          title: "菜单管理",
-          icon: "md-settings",
-          access: ["admin", "cestc", "workshop_manager"]
-        },
-        component: () => import("@/view/3manage/menu.vue")
-      },
-      {
-        path: "snCode",
-        name: "snCode",
-        meta: {
-          title: "组合管理",
-          icon: "md-settings",
-          access: ["admin", "cestc", "workshop_manager"]
-        },
-        component: () => import("@/view/3manage/snCode.vue")
-      },
-      {
-        path: "reject",
-        name: "reject",
-        meta: {
-          title: "异常原因",
-          icon: "md-settings",
-          access: ["admin", "cestc", "workshop_manager", "proline_leader"]
-        },
-        component: () => import("@/view/3manage/reject.vue")
-      }
-    ]
-  },
-
-  // 配置中心
-  {
-    path: "/dispose",
-    name: "dispose",
-    meta: {
-      hideInBread: true,
-      title: "配置中心",
-      icon: "md-build",
-      access: ["admin", "cestc"]
-    },
-    component: Main,
-    children: [
-      {
-        path: "sop",
-        name: "sop",
-        meta: {
-          title: "SOP配置",
-          access: ["admin", "cestc"]
-        },
-        component: () => import("@/view/3manage/sop.vue")
-      },
-      {
-        path: "process",
-        name: "process",
-        meta: {
-          title: "数据配置",
-          access: ["admin", "cestc"]
-        },
-        component: () => import("@/view/3manage/process.vue")
-      },
-      {
-        path: "checkStandard",
-        name: "checkStandard",
-        meta: {
-          title: "配方配置",
-          access: ["admin", "cestc"]
-        },
-        component: () => import("@/view/3manage/checkStandard.vue")
-      },
-      {
-        path: "equipment",
-        name: "equipment",
-        meta: {
-          title: "设备配置",
-          access: ["admin", "cestc"]
-        },
-        component: () => import("@/view/3manage/equipment.vue")
-      },
-      {
-        path: "workStation",
-        name: "workStation",
-        meta: {
-          title: "工位配置",
-          access: ["admin", "cestc"]
-        },
-        component: () => import("@/view/3manage/workStation.vue")
-      },
-      {
-        path: "proLine",
-        name: "proLine",
-        meta: {
-          title: "产线配置",
-          access: ["admin", "cestc"]
-        },
-        component: () => import("@/view/3manage/proLine.vue")
-      }
-    ]
-  },
-
-  // 配置管理
-  // {
-  //   path: "/dispose",
-  //   name: "dispose",
-  //   meta: {
-  //     hideInBread: true,
-  //     title: "配置管理",
-  //     icon: "ios-navigate"
-  //   },
-  //   component: Main,
-  //   children: [
-  //     // {
-  //     //   path: 'log',
-  //     //   name: 'log',
-  //     //   meta: {
-  //     //     title: '日志记录'
-  //     //   },
-  //     //   component: () => import('@/view/4disposeManage/log.vue')
-  //     // },
-  //     // {
-  //     //   path: 'authority',
-  //     //   name: 'authority',
-  //     //   meta: {
-  //     //     title: '权限管理',
-  //     //     access: ['super_admin']
-  //     //   },
-  //     //   component: () => import('@/view/4disposeManage/authority.vue')
-  //     // },
-  //     {
-  //       path: "userGroup",
-  //       name: "userGroup",
-  //       meta: {
-  //         title: "用户组管理",
-  //         access: ["super_admin"]
-  //       },
-  //       component: () => import("@/view/4disposeManage/userGroup.vue")
-  //     },
-  //     {
-  //       path: "server",
-  //       name: "server",
-  //       meta: {
-  //         title: "服务器信息"
-  //       },
-  //       component: () => import("@/view/4disposeManage/server.vue")
-  //     }
-  //     // {
-  //     //   path: "canvas",
-  //     //   name: "canvas",
-  //     //   meta: {
-  //     //     title: "canvas绘图"
-  //     //   },
-  //     //   component: () => import("@/view/4disposeManage/canvas.vue")
-  //     // }
-  //   ]
-  // },
-
-  // excel
-  // {
-  //   path: '/excel',
-  //   name: 'excel',
-  //   meta: {
-  //     icon: 'ios-stats',
-  //     title: 'EXCEL导入导出'
-  //   },
-  //   component: Main,
-  //   children: [
-
-  //     {
-  //       path: 'upload-excel',
-  //       name: 'upload-excel',
-  //       meta: {
-  //         icon: 'md-add',
-  //         title: '导入EXCEL'
-  //       },
-  //       component: () => import('@/view/excel/upload-excel.vue')
-  //     },
-  //     {
-  //       path: 'export-excel',
-  //       name: 'export-excel',
-  //       meta: {
-  //         icon: 'md-download',
-  //         title: '导出EXCEL'
-  //       },
-  //       component: () => import('@/view/excel/export-excel.vue')
-  //     }
-  //   ]
-  // },
-
   {
     path: "/argu",
     name: "argu",
@@ -635,29 +110,13 @@ export default [
         component: () => import("@/view/argu-page/query.vue")
       }
     ]
-  },
-  {
-    path: "/401",
-    name: "error_401",
-    meta: {
-      hideInMenu: true
-    },
-    component: () => import("@/view/error-page/401.vue")
-  },
-  {
-    path: "/500",
-    name: "error_500",
-    meta: {
-      hideInMenu: true
-    },
-    component: () => import("@/view/error-page/500.vue")
-  },
-  {
-    path: "*",
-    name: "error_404",
-    meta: {
-      hideInMenu: true
-    },
-    component: () => import("@/view/error-page/404.vue")
   }
 ];
+
+// 作为Main组件的子页面展示并且在左侧菜单显示的路由写在appRouter里
+export const appRouter = [...dynamicRouterAdd()];
+
+export const routes = [...otherRouter, ...mainRouter, ...appRouter];
+
+// 所有上面定义的路由都要写在下面输出
+export default routes;

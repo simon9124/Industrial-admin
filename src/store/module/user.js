@@ -8,7 +8,8 @@ import {
   getUnreadCount
 } from "@/api/login";
 import { getUserInfo } from "@/api/user/index";
-import { setToken, getToken } from "@/libs/util";
+import { setToken, getToken, localSave } from "@/libs/util";
+import { initRouter, dynamicRouterAdd } from "@/libs/router-util"; // ①添 引入加载菜单
 
 export default {
   state: {
@@ -84,7 +85,8 @@ export default {
           password,
           lineNo
         })
-          .then(res => {
+          .then(async res => {
+            initRouter(); // ①新增 调用方法，动态生成路由
             const data = res.data;
             commit("setToken", data.data);
             resolve();
@@ -107,6 +109,9 @@ export default {
         // 如果你的退出登录无需请求接口，则可以直接使用下面三行代码而无需使用logout调用接口
         commit("setToken", "");
         commit("setAccess", []);
+        localSave("dynamicRouter", []); // 清空本地存储localStorage中的dynamicRouter
+        localSave("tagNaveList", []); // 清空localStorage中的tagNaveList记录
+        dynamicRouterAdd();
         resolve();
       });
     },

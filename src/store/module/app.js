@@ -13,9 +13,10 @@ import {
 } from "@/libs/util";
 import { saveErrorLogger } from "@/api/data";
 import router from "@/router";
-import routers from "@/router/routers";
+// import routers from "@/router/routers";
+import { dynamicRouterAdd } from "@/libs/router-util"; // ①添 引入加载菜单
 import config from "@/config";
-// import routerList from "@/router/mockRouter";
+
 const { homeName } = config;
 
 const closePage = (state, route) => {
@@ -33,15 +34,14 @@ export default {
     homeRoute: {},
     local: localRead("local"),
     errorList: [],
-    hasReadErrorPage: false
-    // menuRspList: [], // 拿到的路由数据
-    // hasGetRouter: false // 是否已经拿过路由数据
+    hasReadErrorPage: false,
+    menuList: [] // 拿到的路由数据
   },
   getters: {
     menuList: (state, getters, rootState) =>
-      getMenuByRouter(routers, rootState.user.access),
-    // menuList: (state, getters, rootState) =>
-    //   getMenuByRouter(state.menuRspList, rootState.user.access),
+      // getMenuByRouter(routers, rootState.user.access), // 原始方法
+      // getMenuByRouter(state.menuList, rootState.user.access), // ①改 通过路由列表得到菜单列表
+      getMenuByRouter(dynamicRouterAdd(), rootState.user.access), // ①改 通过路由列表得到菜单列表
     errorCount: state => state.errorList.length
   },
   mutations: {
@@ -91,16 +91,17 @@ export default {
     },
     setHasReadErrorLoggerStatus(state, status = true) {
       state.hasReadErrorPage = status;
+    },
+    // 添接受前台数组，刷新菜单
+    updateMenuList(state, routes) {
+      // 动态添加路由 - 真正添加路由（不会立刻刷新，需要手动往router.options.routes里添加数据）
+      router.addRoutes(routes);
+      // 手动添加路由数据
+      routes.forEach(route => {
+        router.options.routes.push(route);
+      });
+      state.menuList = routes; // 动态添加左侧菜单
     }
-    // 设置路由数据
-    // setMenuRspList(state, list) {
-    //   let len = list.length;
-    //   for (let i = 0; i < len; i++) {
-    //     state.menuRspList.push(list[i]);
-    //   }
-
-    //   state.hasGetRouter = true;
-    // }
   },
   actions: {
     addErrorLog({ commit, rootState }, info) {
@@ -121,14 +122,5 @@ export default {
         commit("addError", data);
       });
     }
-    // 获取动态路由
-    // getMenuData({ commit, rootState }, params) {
-    // commit("setMenuRspList", routerList);
-
-    // mainList(params).then(res => {
-    //   // console.log(res.data)
-    //   commit("setMenuRspList", res.data.data);
-    // });
-    // }
   }
 };

@@ -95,8 +95,20 @@ const getDate = (timeStamp, startType) => {
   const minutes = getHandledValue(d.getMinutes());
   const second = getHandledValue(d.getSeconds());
   let resStr = "";
-  if (startType === "year") resStr = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + second;
-  else resStr = month + "-" + date + " " + hours + ":" + minutes;
+  if (startType === "year") {
+    resStr =
+      year +
+      "-" +
+      month +
+      "-" +
+      date +
+      " " +
+      hours +
+      ":" +
+      minutes +
+      ":" +
+      second;
+  } else resStr = month + "-" + date + " " + hours + ":" + minutes;
   return resStr;
 };
 
@@ -108,7 +120,7 @@ export const getRelativeTime = timeStamp => {
   // 判断当前传入的时间戳是秒格式还是毫秒
   const IS_MILLISECOND = isMillisecond(timeStamp);
   // 如果是毫秒格式则转为秒格式
-  if (IS_MILLISECOND) Math.floor(timeStamp /= 1000);
+  if (IS_MILLISECOND) Math.floor((timeStamp /= 1000));
   // 传入的时间戳可以是数值或字符串类型，这里统一转为数值类型
   timeStamp = Number(timeStamp);
   // 获取当前时间时间戳
@@ -124,14 +136,18 @@ export const getRelativeTime = timeStamp => {
   // 少于等于59秒
   if (diff <= 59) resStr = diff + "秒" + dirStr;
   // 多于59秒，少于等于59分钟59秒
-  else if (diff > 59 && diff <= 3599) resStr = Math.floor(diff / 60) + "分钟" + dirStr;
-  // 多于59分钟59秒，少于等于23小时59分钟59秒
-  else if (diff > 3599 && diff <= 86399) resStr = Math.floor(diff / 3600) + "小时" + dirStr;
-  // 多于23小时59分钟59秒，少于等于29天59分钟59秒
-  else if (diff > 86399 && diff <= 2623859) resStr = Math.floor(diff / 86400) + "天" + dirStr;
-  // 多于29天59分钟59秒，少于364天23小时59分钟59秒，且传入的时间戳早于当前
-  else if (diff > 2623859 && diff <= 31567859 && IS_EARLY) resStr = getDate(timeStamp);
-  else resStr = getDate(timeStamp, "year");
+  else if (diff > 59 && diff <= 3599) {
+    resStr = Math.floor(diff / 60) + "分钟" + dirStr;
+  } else if (diff > 3599 && diff <= 86399) {
+    // 多于59分钟59秒，少于等于23小时59分钟59秒
+    resStr = Math.floor(diff / 3600) + "小时" + dirStr;
+  } else if (diff > 86399 && diff <= 2623859) {
+    // 多于23小时59分钟59秒，少于等于29天59分钟59秒
+    resStr = Math.floor(diff / 86400) + "天" + dirStr;
+  } else if (diff > 2623859 && diff <= 31567859 && IS_EARLY) {
+    // 多于29天59分钟59秒，少于364天23小时59分钟59秒，且传入的时间戳早于当前
+    resStr = getDate(timeStamp);
+  } else resStr = getDate(timeStamp, "year");
   return resStr;
 };
 
@@ -140,7 +156,7 @@ export const getRelativeTime = timeStamp => {
  */
 export const getExplorer = () => {
   const ua = window.navigator.userAgent;
-  const isExplorer = (exp) => {
+  const isExplorer = exp => {
     return ua.indexOf(exp) > -1;
   };
   if (isExplorer("MSIE")) return "IE";
@@ -153,15 +169,15 @@ export const getExplorer = () => {
 /**
  * @description 绑定事件 on(element, event, handler)
  */
-export const on = (function () {
+export const on = (function() {
   if (document.addEventListener) {
-    return function (element, event, handler) {
+    return function(element, event, handler) {
       if (element && event && handler) {
         element.addEventListener(event, handler, false);
       }
     };
   } else {
-    return function (element, event, handler) {
+    return function(element, event, handler) {
       if (element && event && handler) {
         element.attachEvent("on" + event, handler);
       }
@@ -172,15 +188,15 @@ export const on = (function () {
 /**
  * @description 解绑事件 off(element, event, handler)
  */
-export const off = (function () {
+export const off = (function() {
   if (document.removeEventListener) {
-    return function (element, event, handler) {
+    return function(element, event, handler) {
       if (element && event) {
         element.removeEventListener(event, handler, false);
       }
     };
   } else {
-    return function (element, event, handler) {
+    return function(element, event, handler) {
       if (element && event) {
         element.detachEvent("on" + event, handler);
       }
@@ -210,6 +226,11 @@ export const objEqual = (obj1, obj2) => {
   const keysArr2 = Object.keys(obj2);
   if (keysArr1.length !== keysArr2.length) return false;
   else if (keysArr1.length === 0 && keysArr2.length === 0) return true;
-  /* eslint-disable-next-line */
-  else return !keysArr1.some(key => obj1[key] != obj2[key])
+  /* eslint-disable-next-line */ else {
+    return !keysArr1.some(key => obj1[key] != obj2[key]);
+  }
 };
+
+//  @函数: 引入组件
+export const lazyLoadingCop = file =>
+  require("@/view/" + file + ".vue").default;

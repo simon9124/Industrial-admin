@@ -19,7 +19,7 @@ export default [
           icon: "md-home",
           access: ["admin", "proline_leader"]
         },
-        component: "single-page/home"
+        component: "single-page/home/home"
       }
     ]
   },
@@ -35,7 +35,7 @@ export default [
       // hideInMenu: true,
       access: ["admin", "workshop_manager"]
     },
-    component: "6inspector/controlCabin.vue"
+    component: "6inspector/controlCabin"
   },
 
   // 检测驾驶舱 - 产线（非管理员或车间主管）
@@ -48,7 +48,7 @@ export default [
       hideInBread: true,
       access: ["proline_leader"]
     },
-    component: "6inspector/controlCabinLine.vue"
+    component: "6inspector/controlCabinLine"
   },
 
   // 检测驾驶舱 - 产线（管理员和车间主管）
@@ -62,7 +62,7 @@ export default [
       hideInMenu: true,
       access: ["admin", "workshop_manager"]
     },
-    component: "6inspector/controlCabinLine.vue"
+    component: "6inspector/controlCabinLine"
   },
 
   // 检测员
@@ -83,7 +83,7 @@ export default [
           title: "检测员",
           access: ["admin", "proline_leader", "examine"]
         },
-        component: "1inspector/inspector.vue"
+        component: "1inspector/inspector"
       }
     ]
   },
@@ -107,7 +107,7 @@ export default [
           title: "任务派发",
           access: ["admin", "proline_leader"]
         },
-        component: "8taskManage/taskDistribution.vue"
+        component: "8taskManage/taskDistribution"
       },
       {
         path: "history",
@@ -116,21 +116,21 @@ export default [
           title: "历史任务",
           access: ["admin", "proline_leader"]
         },
-        component: "8taskManage/taskHistory.vue"
+        component: "8taskManage/taskHistory"
       }
     ]
   },
 
   // mes演示
-  {
-    path: "/erp",
-    name: "erp",
-    meta: {
-      hideInBread: true,
-      hideInMenu: true
-    },
-    component: "8taskManage/taskDistributionMes.vue"
-  },
+  // {
+  //   path: "/erp",
+  //   name: "erp",
+  //   meta: {
+  //     hideInBread: true,
+  //     hideInMenu: true
+  //   },
+  //   component: "8taskManage/taskDistributionMes"
+  // },
 
   // 查看SOP
   {
@@ -150,7 +150,7 @@ export default [
           icon: "md-document",
           access: ["admin", "proline_leader", "examine"]
         },
-        component: "8taskManage/sopMessage.vue"
+        component: "8taskManage/sopMessage"
       }
     ]
   },
@@ -173,7 +173,7 @@ export default [
           title: "条码打印",
           access: ["admin", "proline_leader", "examine"]
         },
-        component: "@/view/3manage/number.vue"
+        component: "3manage/number"
       }
     ]
   },
@@ -196,7 +196,7 @@ export default [
           title: "检测列表",
           access: ["admin", "workshop_manager", "proline_leader"]
         },
-        component: "2systemManage/electricSearch.vue"
+        component: "2systemManage/electricSearch"
       }
     ]
   },
@@ -219,7 +219,7 @@ export default [
           title: "追溯查询",
           access: ["admin", "workshop_manager", "proline_leader", "examine"]
         },
-        component: "2systemManage/checkSearch.vue"
+        component: "2systemManage/checkSearch"
       }
     ]
   },
@@ -244,7 +244,7 @@ export default [
           title: "异常确认",
           access: ["admin", "proline_leader"]
         },
-        component: "2systemManage/checkReason.vue"
+        component: "2systemManage/checkReason"
       }
     ]
   },
@@ -269,7 +269,7 @@ export default [
           icon: "md-settings",
           access: ["admin", "cestc", "workshop_manager"]
         },
-        component: "3manage/account.vue"
+        component: "3manage/account"
       },
       {
         path: "role",
@@ -279,7 +279,7 @@ export default [
           icon: "md-settings",
           access: ["admin", "cestc", "workshop_manager"]
         },
-        component: "3manage/role.vue"
+        component: "3manage/role"
       },
       {
         path: "menu",
@@ -289,7 +289,7 @@ export default [
           icon: "md-settings",
           access: ["admin", "cestc", "workshop_manager"]
         },
-        component: "3manage/menu.vue"
+        component: "3manage/menu"
       },
       {
         path: "snCode",
@@ -299,7 +299,7 @@ export default [
           icon: "md-settings",
           access: ["admin", "cestc", "workshop_manager"]
         },
-        component: "3manage/snCode.vue"
+        component: "3manage/snCode"
       },
       {
         path: "reject",
@@ -309,7 +309,7 @@ export default [
           icon: "md-settings",
           access: ["admin", "cestc", "workshop_manager", "proline_leader"]
         },
-        component: "3manage/reject.vue"
+        component: "3manage/reject"
       }
     ]
   },
@@ -333,7 +333,7 @@ export default [
           title: "SOP配置",
           access: ["admin", "cestc"]
         },
-        component: "3manage/sop.vue"
+        component: "3manage/sop"
       },
       {
         path: "process",
@@ -342,7 +342,7 @@ export default [
           title: "数据配置",
           access: ["admin", "cestc"]
         },
-        component: "3manage/process.vue"
+        component: "3manage/process"
       },
       {
         path: "checkStandard",
@@ -351,7 +351,7 @@ export default [
           title: "配方配置",
           access: ["admin", "cestc"]
         },
-        component: "3manage/checkStandard.vue"
+        component: "3manage/checkStandard"
       },
       {
         path: "equipment",
@@ -360,7 +360,7 @@ export default [
           title: "设备配置",
           access: ["admin", "cestc"]
         },
-        component: "3manage/equipment.vue"
+        component: "3manage/equipment"
       },
       {
         path: "workStation",
@@ -369,7 +369,7 @@ export default [
           title: "工位配置",
           access: ["admin", "cestc"]
         },
-        component: "3manage/workStation.vue"
+        component: "3manage/workStation"
       },
       {
         path: "proLine",
@@ -378,33 +378,33 @@ export default [
           title: "产线配置",
           access: ["admin", "cestc"]
         },
-        component: "3manage/proLine.vue"
+        component: "3manage/proLine"
       }
     ]
-  },
-
-  {
-    path: "/401",
-    name: "error_401",
-    meta: {
-      hideInMenu: true
-    },
-    component: "error-page/401.vue"
-  },
-  {
-    path: "/500",
-    name: "error_500",
-    meta: {
-      hideInMenu: true
-    },
-    component: "error-page/500.vue"
-  },
-  {
-    path: "*",
-    name: "error_404",
-    meta: {
-      hideInMenu: true
-    },
-    component: "error-page/404.vue"
   }
+
+  // {
+  //   path: "/401",
+  //   name: "error_401",
+  //   meta: {
+  //     hideInMenu: true
+  //   },
+  //   component: "error-page/401"
+  // },
+  // {
+  //   path: "/500",
+  //   name: "error_500",
+  //   meta: {
+  //     hideInMenu: true
+  //   },
+  //   component: "error-page/500"
+  // },
+  // {
+  //   path: "*",
+  //   name: "error_404",
+  //   meta: {
+  //     hideInMenu: true
+  //   },
+  //   component: "error-page/404"
+  // }
 ];

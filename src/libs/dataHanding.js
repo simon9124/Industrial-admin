@@ -71,25 +71,61 @@ export const computedMenuData = array => {
     // 外层节点
     if (menu.parenetId === "root") {
       treeData.push({
-        title: menu.title,
         id: menu.id,
+        name: menu.name,
+        title: menu.title,
+        url: menu.url,
+        path: menu.path,
+        sort: menu.sort,
+        parenetId: menu.parenetId,
+        parenetPath: menu.parenetPath,
+        status: menu.status,
+        description: menu.description,
+        ico: menu.ico,
         children: []
       });
     }
   });
 
-  // 内层节点
-  treeData.forEach(data => {
-    array.forEach(menu => {
-      if (data.id === menu.parenetId) {
-        data.children.push({
-          title: menu.title,
-          id: menu.id,
-          children: []
-        });
-      }
+  // 内层节点：递归
+  const handleRecurrence = recurrenceData => {
+    recurrenceData.forEach(data => {
+      array.forEach(menu => {
+        if (data.id === menu.parenetId) {
+          data.children.push({
+            id: menu.id,
+            name: menu.name,
+            title: menu.title,
+            url: menu.url,
+            path: menu.path,
+            sort: menu.sort,
+            parenetId: menu.parenetId,
+            parenetPath: menu.parenetPath,
+            status: menu.status,
+            description: menu.description,
+            ico: menu.ico,
+            children: []
+          });
+        }
+      });
+      // console.log(data);
+      handleRecurrence(data.children);
     });
-  });
+  };
+  handleRecurrence(treeData);
+
+  // 内层节点
+  // treeData.forEach(data => {
+  //   array.forEach(menu => {
+  //     if (data.id === menu.parenetId) {
+  //       data.children.push({
+  //         title: menu.title,
+  //         id: menu.id,
+  //         children: []
+  //       });
+  //     }
+  //   });
+  // });
 
   // 外层第一项若有内层，则展开
   if (treeData.length > 0) {

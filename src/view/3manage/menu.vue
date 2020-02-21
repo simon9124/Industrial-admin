@@ -400,6 +400,7 @@ export default {
               const result = (await removeMenu(data.id)).data.status;
               resultCallback(result, "删除成功！", () => {
                 this.getData();
+                this.insert();
               });
             } else {
               // mock数据

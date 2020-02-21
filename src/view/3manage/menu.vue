@@ -124,6 +124,11 @@
             <Button @click="()=>{insert();if(menuType==='first'){modalData.parenetId='root'}}"
                     style="margin-left: 8px">{{modalDataType==='insert'?'清空':'新增'}}
             </Button>
+            <Button v-if="modalDataType!=='insert'"
+                    type="error"
+                    @click="deleteMenu(modalData)"
+                    style="margin-left: 8px">删除
+            </Button>
           </FormItem>
         </Form>
 
@@ -155,7 +160,8 @@ import {
 import {
   getAllMenus, // 获取全部菜单
   addMenu, // 新增菜单
-  updateMenu // 更新菜单
+  updateMenu, // 更新菜单
+  removeMenu // 删除菜单
 } from "@/api/menu/index";
 import IconChoose from "@/components/icons/icon-choose";
 
@@ -382,26 +388,29 @@ export default {
       });
     },
     // 点击按钮 - 删除
-    delete(row) {
-      this.$Modal.confirm({
-        title: "确定删除该角色？",
-        onOk: async () => {
-          if (!this.isMock) {
-            // 接口数据
-            // const result = (await deleteUser(row.role_id)).data.status;
-            // if (result === 200) {
-            //   this.$Message.success("删除成功");
-            // }
-            this.getData();
-          } else {
-            // mock数据
-            resultCallback(200, "删除成功！", () => {
-              this.refreshData();
-            });
-          }
-        },
-        closable: true
-      });
+    deleteMenu(data) {
+      if (data.children.length !== 0) {
+        this.$message.error("请先删除或解绑该菜单下的子菜单");
+      } else {
+        this.$Modal.confirm({
+          title: "确定删除？",
+          onOk: async () => {
+            if (!this.isMock) {
+              // 接口数据
+              const result = (await removeMenu(data.id)).data.status;
+              resultCallback(result, "删除成功！", () => {
+                this.getData();
+              });
+            } else {
+              // mock数据
+              resultCallback(200, "删除成功！", () => {
+                this.refreshData();
+              });
+            }
+          },
+          closable: true
+        });
+      }
     }
   }
 };

@@ -401,7 +401,7 @@ export default {
     // 设置menuList的副本，每次关联时以副本为基准清空已选项
     this.menuListOrg = !this.isMock
       ? computedMenuData((await getAllMenus()).data.data) || []
-      : menuList;
+      : computedMenuData(menuList);
     this.menuList = JSON.parse(JSON.stringify(this.menuListOrg));
     this.userList = !this.isMock
       ? (await getUserList()).data.data || []

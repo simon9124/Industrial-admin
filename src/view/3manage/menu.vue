@@ -1,144 +1,146 @@
 <template>
   <div class="dooya-container">
     <Card>
-      <!-- 操作 -->
-      <div style="margin: 10px 0">
-        <Button type="success"
-                icon="md-add"
-                @click="insert">新增角色</Button>
-      </div>
+      <Row :gutter="20">
 
-      <!-- 表格 -->
-      <Table :data="tableData"
-             :loading="tableLoading"
-             :columns="tableColumns"
-             stripe></Table>
-      <div style="margin: 10px;overflow: hidden">
-        <div style="float: right;">
-          <Page show-sizer
-                transfer
-                placement="top"
-                :total="tableDataOrg.length"
-                :current.sync="pageNum"
-                :page-size-opts="[10, 50, 100, 200]"
-                :page-size="pageSize"
-                @on-change="changePage"
-                @on-page-size-change="changePageSize"></Page>
+        <!-- left -->
+        <Col :span="6">
+
+        <!-- 操作 -->
+        <!-- <div style="margin-bottom: 10px">
+          <Button type="success"
+                  icon="md-add"
+                  @click="insert">新增菜单</Button>
+        </div> -->
+
+        <Alert show-icon>当前选择：
+          <span style="color:#2d8cf0;font-weight:bold;margin-right:10px">{{modalData.title}}</span>
+          <span class="cancel"
+                v-if="modalData.title!==''"
+                style="color:#2d8cf0;cursor: pointer"
+                @click="insert">取消选择</span>
+        </Alert>
+
+        <!-- tree -->
+        <div v-for="(menu,i) in menuList"
+             :key="i">
+          <Tree :ref="'menu'+i"
+                :data="[menu]"
+                :render="renderContent"></Tree>
+          <!-- show-checkbox -->
+          <Spin size="large"
+                fix
+                v-if="treeLoading"></Spin>
         </div>
-      </div>
+
+        </Col>
+
+        <!-- right -->
+        <Col :span="10">
+
+        <!-- form -->
+        <Form ref="formModalData"
+              :model="modalData"
+              :rules="formModalRule"
+              :label-width="100"
+              @submit.native.prevent>
+          <FormItem label="类型："
+                    class="menu-type">
+            <Icon :type="menuType==='first'?'ios-list-box-outline':'ios-document-outline'" />
+            {{menuType==='first'?'模块菜单':'页面菜单'}}
+            <Button type="success"
+                    icon="md-add"
+                    size="small"
+                    style="margin-left:10px"
+                    :disabled="menuType==='first'"
+                    @click="insert();menuType='first';modalData.parenetId='root'">新增模块</Button>
+            <Button type="success"
+                    icon="md-add"
+                    size="small"
+                    style="margin-left:10px"
+                    :disabled="menuType==='notFirst'"
+                    @click="insert();menuType='notFirst'">新增页面</Button>
+          </FormItem>
+          <FormItem label="上级："
+                    prop="parenetId">
+            <Input v-if="menuType==='first'"
+                   type="text"
+                   disabled
+                   v-model.trim="modalData.parenetId"></Input>
+            <Select v-else
+                    v-model="modalData.parenetId">
+              <Option v-for="menu in menuList"
+                      :value="menu.id"
+                      :key="menu.id">{{ menu.title }}</Option>
+            </Select>
+          </FormItem>
+          <FormItem label="系统名："
+                    prop="name">
+            <Input type="text"
+                   v-model.trim="modalData.name"
+                   placeholder="英文系统名，20个字符以内"></Input>
+          </FormItem>
+          <FormItem label="展现名："
+                    prop="title">
+            <Input type="text"
+                   v-model.trim="modalData.title"
+                   placeholder="中文展现名，8个字符以内"></Input>
+          </FormItem>
+          <FormItem label="路径："
+                    prop="url">
+            <Input type="text"
+                   v-model.trim="modalData.url"
+                   placeholder="地址栏路径"></Input>
+          </FormItem>
+          <FormItem v-if="menuType!=='first'"
+                    label="组件："
+                    prop="path">
+            <Input type="text"
+                   v-model.trim="modalData.path"
+                   placeholder="前端组件路径"></Input>
+          </FormItem>
+          <FormItem v-else
+                    label="图标："
+                    prop="ico">
+            <icon-choose v-model="modalData.ico"></icon-choose>
+          </FormItem>
+          <FormItem label="排序："
+                    prop="sort">
+            <Input type="number"
+                   v-model.trim="modalData.sort"
+                   @on-keypress="taskCountOnPress"
+                   @on-keyup="taskCountOnUp"></Input>
+          </FormItem>
+          <FormItem label="描述："
+                    prop="description">
+            <Input type="text"
+                   v-model.trim="modalData.description"></Input>
+          </FormItem>
+
+          <FormItem>
+            <Button type="primary"
+                    @click="handleSubmit('formModalData')"
+                    :loading="buttonLoading">{{modalDataType==='insert'?'新增':'保存修改'}}</Button>
+            <Button @click="()=>{insert();if(menuType==='first'){modalData.parenetId='root'}}"
+                    style="margin-left: 8px">{{modalDataType==='insert'?'清空':'新增'}}
+            </Button>
+          </FormItem>
+        </Form>
+
+        </Col>
+
+      </Row>
     </Card>
 
-    <!-- Modal -->
-    <Modal v-model="modalShow"
-           :mask-closable="false"
-           :closable="false"
-           footer-hide
-           :title="modalDataType==='edit'?'编辑角色':'新增角色'"
-           @on-ok="handleSubmit">
-      <Form ref="formModalData"
-            :model="modalData"
-            :rules="formModalRule"
-            :label-width="100"
-            @submit.native.prevent>
-        <FormItem label="名称："
-                  prop="roleName">
-          <Input type="text"
-                 v-model.trim="modalData.roleName"></Input>
-        </FormItem>
-        <FormItem label="菜单："
-                  prop="menuFunction"
-                  class="menu-function">
-
-          <!-- 多选框 -->
-          <Select v-model="menuSelectedId"
-                  filterable
-                  multiple
-                  label-in-value
-                  placeholder="添加菜单"
-                  style="margin:0 10px 0px 0;width:300px"
-                  @on-change="menuOnChange">
-            <Option v-for="menu in menuList"
-                    :value="menu.menuId"
-                    :key="menu.menuName"
-                    :disabled="JSON.stringify(menuSelectList).indexOf(menu.menuName)>-1">
-              {{ menu.menuName }}
-            </Option>
-          </Select>
-
-          <!-- 按钮：添加SOP -->
-          <Button type="success"
-                  size="small"
-                  @click="addToMenuSelect">添加</Button>
-
-          <!-- tagList -->
-          <div style="margin-top:10px">
-            <Tag v-for="(item,i) in menuSelectList"
-                 :key="i"
-                 type="border"
-                 color="primary"
-                 closable
-                 @on-close="deleteMenuItem(i)">{{item.functionName}}</Tag>
-          </div>
-
-        </FormItem>
-        <FormItem label="用户："
-                  prop="users"
-                  class="users">
-
-          <!-- 多选框 -->
-          <Select v-model="userSelectedId"
-                  filterable
-                  multiple
-                  label-in-value
-                  placeholder="添加用户"
-                  style="margin:0 10px 0 0;width:300px"
-                  @on-change="userOnChange">
-            <Option v-for="user in userList"
-                    :value="user"
-                    :key="user"
-                    :disabled="JSON.stringify(tableDataOrg).indexOf(user)>-1">
-              {{ user }}
-            </Option>
-          </Select>
-
-          <!-- 按钮：添加SOP -->
-          <Button type="success"
-                  size="small"
-                  @click="addToUserSelect">添加</Button>
-
-          <!-- tagList -->
-          <div style="margin-top:10px">
-            <Tag v-for="(item,i) in userSelectList"
-                 :key="i"
-                 type="border"
-                 color="primary"
-                 closable
-                 @on-close="deleteUserItem(i)">{{item}}</Tag>
-          </div>
-
-        </FormItem>
-
-        <FormItem>
-          <Button type="primary"
-                  @click="handleSubmit('formModalData')"
-                  :loading="buttonLoading">确定</Button>
-          <Button @click="modalShow=false;menuSelectedId = []"
-                  style="margin-left: 8px">取消</Button>
-        </FormItem>
-      </Form>
-    </Modal>
   </div>
 </template>
 
 <script>
 // mockData
-import {
-  roleList, // 角色列表
-  menuList, // 菜单列表
-  userList // 用户列表
-} from "./mockData/role";
+import { menuList } from "./mockData/role"; // 菜单列表
 // function
 import {
+  computedMenuData, // 菜单数据转换成iview树形数据结构(2层)
   arraySort, // 对象数组根据key排序
   resultCallback // 根据请求的status执行回调函数
   // getValueByKey // 根据对象数组某个key的value，查询另一个key的value
@@ -150,286 +152,179 @@ import {
 // deleteUser
 // "@/api/user/index";
 // import { getUseGroupList } from "@/api/userGroup/index";
+import {
+  getAllMenus, // 获取全部菜单
+  addMenu, // 新增菜单
+  updateMenu // 更新菜单
+} from "@/api/menu/index";
+import IconChoose from "@/components/icons/icon-choose";
 
 export default {
+  components: {
+    IconChoose
+  },
   data() {
     return {
       /* 全局 */
-      menuList: [], // 全部菜单列表 - select用
-      userList: [], // 全部用户列表 - select用
+      menuList: [], // 全部菜单列表 - 渲染后的tree
       /* 每页 */
       tableDataOrg: [], // 原始数据
-      tableData: [], // 处理后的当页数据
-      tableColumns: [
-        {
-          title: "名称",
-          key: "roleName",
-          align: "center",
-          minWidth: 120
-        },
-        {
-          title: "功能",
-          key: "menuFunction",
-          // align: "center",
-          render: (h, params) => {
-            return h("div", [
-              params.row.menuFunction.map(item => {
-                return h(
-                  "Tag",
-                  {
-                    props: {
-                      color: "blue"
-                    }
-                  },
-                  item.functionName
-                );
-              })
-            ]);
-          },
-          minWidth: 500
-        },
-        {
-          title: "操作",
-          key: "action",
-          fixed: "right",
-          minWidth: 150,
-          align: "center",
-          render: (h, params) => {
-            return h("div", [
-              h(
-                "Tooltip",
-                {
-                  props: {
-                    trigger: "hover",
-                    content: "修改",
-                    placement: "top",
-                    transfer: true
-                  }
-                },
-                [
-                  h("Button", {
-                    props: {
-                      type: "primary",
-                      size: "small",
-                      icon: "ios-create-outline"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.edit(params.row);
-                      }
-                    }
-                  })
-                ]
-              ),
-              h(
-                "Tooltip",
-                {
-                  props: {
-                    trigger: "hover",
-                    content: "删除",
-                    placement: "top",
-                    transfer: true
-                  }
-                },
-                [
-                  h("Button", {
-                    props: {
-                      type: "error",
-                      size: "small",
-                      icon: "md-close"
-                    },
-                    on: {
-                      click: () => {
-                        this.delete(params.row);
-                      }
-                    }
-                  })
-                ]
-              )
-            ]);
-          }
-        }
-      ], // 表头列项
-      pageNum: 1, // 页码
-      pageSize: 10, // 每页显示数量
       /* loading */
-      tableLoading: false, // table
+      treeLoading: false, // tree
       buttonLoading: false, // button
       /* modal弹框 */
-      modalShow: false, // 是否显示
       modalData: {
-        roleName: "",
-        menuFunction: [],
-        users: []
+        name: "",
+        title: "",
+        url: "",
+        path: "",
+        sort: 0,
+        parenetId: "",
+        ico: "",
+        description: ""
       }, // 数据 - 获取或提交
       modalDataOrg: {}, // 数据 - 行内原始
-      menuSelectList: [], // 已选择的menu - 标签列表
-      menuSelectedId: [], // select里选择的menu - id
-      menuSelectedData: [], // select里选择的menu - 整个data
-      userSelectList: [], // 已选择的user - 标签列表
-      userSelectedId: [], // select里选择的user - id
-      userSelectedData: [], // select里选择的user - 整个data
       formModalRule: {
-        roleName: [
-          {
-            required: true,
-            message: "请输入角色名称",
-            trigger: "change"
-          },
-          {
-            type: "string",
-            max: 10,
-            message: "角色名称过长",
-            trigger: "change"
-          }
+        name: [
+          { required: true, message: "请输入系统名", trigger: "change" },
+          { type: "string", max: 20, message: "系统名过长", trigger: "change" }
+        ],
+        title: [
+          { required: true, message: "请输入展现名", trigger: "change" },
+          { type: "string", max: 8, message: "展现名过长", trigger: "change" }
+        ],
+        url: [
+          { required: true, message: "请输入地址栏路径", trigger: "change" }
+        ],
+        path: [
+          { required: true, message: "请输入前端组件路径", trigger: "change" }
+        ],
+        parenetId: [
+          { required: true, message: "请选择上级菜单", trigger: "change" }
+        ],
+        sort: [
+          // { required: true, message: "请填写排序值", trigger: "change" }
+          // { type: "string", max: 4, message: "排序值过大", trigger: "change" }
         ]
       }, // form规则
-      modalDataType: "" // 类型：insert/edit
+      modalDataType: "insert", // 类型：insert/edit
+      menuType: "notFirst" // 菜单级别：first/notFirst
     };
   },
   async created() {
     this.getData();
-    // 用户组 -> select选框用
-    // this.userGroup = (await getUseGroupList()).data.data;
-    this.menuList = menuList;
-    this.userList = userList;
   },
   methods: {
     // 获取首页数据
     async getData() {
       if (!this.isMock) {
         // 接口数据
-        this.tableLoading = true;
-        // this.tableDataOrg = (await getUserList()).data.data;
-        this.tableDataOrg = roleList;
-        this.refreshData();
+        this.treeLoading = true;
+        this.menuList = computedMenuData((await getAllMenus()).data.data || []);
         this.buttonLoading = false;
-        this.tableLoading = false;
+        this.treeLoading = false;
       } else {
         // mock数据
-        this.tableDataOrg = roleList;
+        this.menuList = computedMenuData(menuList);
         this.refreshData();
         this.buttonLoading = false;
       }
+    },
+    // 自定义菜单树的节点内容
+    renderContent(h, { root, node, data }) {
+      return h(
+        "span",
+        {
+          style: {
+            display: "inline-block",
+            width: "100%",
+            cursor: "pointer"
+          },
+          on: {
+            click: () => {
+              this.menuOnSelect(data);
+            }
+          }
+        },
+        [
+          h("span", [
+            h("Icon", {
+              props: {
+                type: data.ico
+              },
+              style: {
+                marginRight: "8px"
+              }
+            }),
+            h("span", data.title)
+          ])
+        ]
+      );
     },
     // 根据条件刷新数据
     refreshData() {
       // 按"id"升序
       this.tableDataOrg.sort(arraySort("role_id", "asc"));
-      // 分页 & 每页条数
-      this.tableData = this.tableDataOrg.slice(
-        (this.pageNum - 1) * this.pageSize,
-        this.pageNum * this.pageSize
-      );
-      // 如果是在删除之后获取的数据 -> 若删掉的是某一页的最后项且页码不是1，则自动获取前一页的数据
-      if (this.tableData.length === 0 && this.tableDataOrg.length !== 0) {
-        this.pageNum--;
-        this.refreshData();
-      }
-    },
-    // 分页
-    changePage(pageNum) {
-      this.pageNum = pageNum;
-      this.refreshData();
-    },
-    // 每页条数变化
-    changePageSize(pageSize) {
-      this.pageSize = pageSize;
-      this.pageNum = 1;
-      this.refreshData();
     },
     // 点击按钮 - 新增
     insert() {
       this.modalDataType = "insert";
       this.$refs.formModalData.resetFields();
-      this.menuSelectList = [];
-      this.menuSelectedId = [];
-      this.userSelectList = [];
-      this.userSelectedId = [];
-      this.modalShow = true;
     },
-    // 点击按钮 - 详情
-    async edit(row) {
+    // 选中菜单
+    menuOnSelect(value) {
       this.modalDataType = "edit";
-      this.modalDataOrg = row;
-      this.modalData = JSON.parse(JSON.stringify(row));
-      this.menuSelectList = this.modalData.menuFunction;
-      this.userSelectList = this.modalData.users;
-      this.modalShow = true;
+      // console.log(value);
+      this.modalDataOrg = value;
+      this.modalData = JSON.parse(JSON.stringify(value));
+      this.menuType =
+        this.modalData.parenetId === "root" ? "first" : "notFirst";
     },
-    // select框选择的数据发生变化 - menu
-    menuOnChange(value) {
-      this.menuSelectedData = [];
-      value.forEach(item => {
-        this.menuSelectedData.push({
-          functionId: item.value,
-          functionName: item.label
-          // qc: getValueByKey(this.sopList, "id", item.value, "qc")
-        });
-      });
+    // 数量校验 - 禁止输入e和E和-和.
+    taskCountOnPress(event) {
+      if (
+        event.key === "e" ||
+        event.key === "E" ||
+        event.key === "-" ||
+        event.key === "."
+      ) {
+        event.preventDefault();
+      }
     },
-    // 将select框内选择的menu，添加到menuSelectList
-    addToMenuSelect() {
-      this.menuSelectedData.forEach(item => {
-        this.menuSelectList.push(item);
-      });
-      // console.log(this.menuSelectedData);
-      // console.log(this.menuSelectList);
-      // 清空已选项
-      this.menuSelectedId = [];
-    },
-    // 删除已选择的menu标签
-    deleteMenuItem(i) {
-      this.menuSelectList.splice(i, 1);
-    },
-    // select框选择的数据发生变化 - user
-    userOnChange(value) {
-      this.userSelectedData = [];
-      value.forEach(item => {
-        this.userSelectedData.push(item.value);
-      });
-    },
-    // 将select框内选择的user，添加到userSelectList
-    addToUserSelect() {
-      this.userSelectedData.forEach(item => {
-        this.userSelectList.push(item);
-      });
-      // console.log(this.menuSelectedData);
-      // 清空已选项
-      this.userSelectedId = [];
-    },
-    // 删除已选择的user标签
-    deleteUserItem(i) {
-      this.userSelectList.splice(i, 1);
+    // 数量校验 - 去掉0开头
+    taskCountOnUp(event) {
+      if (event.srcElement.value.slice(0, 1) === "0" && event.key === "0") {
+        event.srcElement.value = parseInt(event.srcElement.value);
+      }
     },
     // 点击表单按钮 - 确定
     handleSubmit() {
-      // console.log(this.modalData);
+      console.log(this.modalData);
       this.$refs.formModalData.validate(async valid => {
         if (valid) {
-          this.buttonLoading = true;
+          // this.buttonLoading = true;
+          this.modalData.sort = parseInt(this.modalData.sort);
           switch (this.modalDataType) {
             case "insert":
               if (!this.isMock) {
                 // 接口数据
-                // const result = (await insertUser(this.modalData)).data.status;
-                // if (result === 200) {
-                //   this.$Message.success("添加成功！");
-                // }
-                this.modalShow = false;
-                this.getData();
+                const result = (await addMenu(this.modalData)).data.status;
+                resultCallback(
+                  result,
+                  "新增成功！",
+                  () => {
+                    this.getData();
+                    this.buttonLoading = false;
+                  },
+                  () => {
+                    this.buttonLoading = false;
+                  }
+                );
               } else {
                 // mock时
                 this.modalData.role_id = (
                   this.tableDataOrg.length + 1
                 ).toString();
-                // 按"id"升序
-                this.menuSelectList.sort(arraySort("functionId", "asc"));
-                this.modalData.menuFunction = this.menuSelectList;
-                this.modalData.users = this.userSelectList;
                 if (
                   this.tableDataOrg.some(
                     item => item.roleName === this.modalData.roleName
@@ -444,7 +339,6 @@ export default {
                   resultCallback(200, "添加成功！", () => {
                     this.refreshData();
                     this.buttonLoading = false;
-                    this.modalShow = false;
                   });
                 }
               }
@@ -452,16 +346,20 @@ export default {
             case "edit":
               if (!this.isMock) {
                 // 非mock时
-                // const result = (await updateUser(this.modalData)).data.status;
-                // if (result === 200) {
-                //   this.$Message.success("修改成功！");
-                // }
-                this.modalShow = false;
-                this.getData();
+                const result = (await updateMenu(this.modalData)).data.status;
+                resultCallback(
+                  result,
+                  "修改成功！",
+                  () => {
+                    this.getData();
+                    this.buttonLoading = false;
+                  },
+                  () => {
+                    this.buttonLoading = false;
+                  }
+                );
               } else {
                 // mock时
-                // 按"id"升序
-                this.menuSelectList.sort(arraySort("functionId", "asc"));
                 // 判断重复
                 if (
                   this.tableDataOrg.some(
@@ -472,15 +370,9 @@ export default {
                   this.$Message.error("该角色已存在！");
                   this.buttonLoading = false;
                 } else {
-                  this.$set(
-                    this.tableDataOrg,
-                    (this.pageNum - 1) * this.pageSize + this.modalData._index,
-                    JSON.parse(JSON.stringify(this.modalData))
-                  );
                   resultCallback(200, "修改成功！", () => {
                     this.refreshData();
                     this.buttonLoading = false;
-                    this.modalShow = false;
                   });
                 }
               }
@@ -503,16 +395,6 @@ export default {
             this.getData();
           } else {
             // mock数据
-            this.tableDataOrg
-              .slice(
-                (this.pageNum - 1) * this.pageSize,
-                this.pageNum * this.pageSize
-              )
-              .forEach((list, i) => {
-                if (row.role_id === list.role_id) {
-                  this.tableDataOrg.splice(i, 1);
-                }
-              });
             resultCallback(200, "删除成功！", () => {
               this.refreshData();
             });
@@ -527,25 +409,22 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .dooya-container /deep/ {
-  .ivu-table-body {
-    overflow: hidden;
+  .ivu-alert {
+    // .cancel {
+    //   cursor: pointer;
+    // }
   }
-  .ivu-table {
-    th {
-      text-align: center;
-    }
-    td {
-      padding: 10px 0;
-    }
-  }
-}
-.v-transfer-dom /deep/ {
-  .ivu-modal {
-    .ivu-form {
-      .menu-function,
-      .users {
-        margin-bottom: 14px;
+  .ivu-tree {
+    &-children {
+      li {
+        margin: 10px 0;
       }
+    }
+  }
+  .ivu-form {
+    .menu-type i {
+      font-size: 16px;
+      vertical-align: sub;
     }
   }
 }

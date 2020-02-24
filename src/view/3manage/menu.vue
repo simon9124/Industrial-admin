@@ -47,7 +47,7 @@
                     size="small"
                     style="margin-left:10px"
                     :disabled="menuType==='first'"
-                    @click="insert();menuType='first';modalData.parenetId='root'">新增模块</Button>
+                    @click="insert();menuType='first';modalData.parenetId='root';urlDisabled=true">新增模块</Button>
             <Button type="success"
                     icon="md-add"
                     size="small"
@@ -62,7 +62,8 @@
                    disabled
                    v-model.trim="modalData.parenetId"></Input>
             <Select v-else
-                    v-model="modalData.parenetId">
+                    v-model="modalData.parenetId"
+                    @on-change="parentOnChange">
               <Option v-for="menu in menuList"
                       :value="menu.id"
                       :key="menu.id">{{ menu.title }}</Option>
@@ -84,17 +85,22 @@
                     prop="url">
             <Input type="text"
                    v-model.trim="modalData.url"
-                   placeholder="地址栏路径"></Input>
+                   placeholder="地址栏路径"
+                   :disabled="!urlDisabled">
+            <span slot="prepend">
+              <span v-if="menuType!=='first'">/</span>
+              {{modalData.parentName}} /</span>
+            </Input>
           </FormItem>
-          <FormItem v-if="menuType!=='first'"
-                    label="组件："
+          <FormItem label="组件："
+                    v-if="menuType!=='first'"
                     prop="path">
             <Input type="text"
                    v-model.trim="modalData.path"
                    placeholder="前端组件路径"></Input>
           </FormItem>
-          <FormItem v-else
-                    label="图标："
+          <FormItem label="图标："
+                    v-else
                     prop="ico">
             <icon-choose v-model="modalData.ico"></icon-choose>
           </FormItem>
@@ -115,7 +121,12 @@
             <Button type="primary"
                     @click="handleSubmit('formModalData')"
                     :loading="buttonLoading">{{modalDataType==='insert'?'新增':'保存修改'}}</Button>
-            <Button @click="()=>{insert();if(menuType==='first'){modalData.parenetId='root'}}"
+            <Button @click="()=>{insert();
+                                  if(menuType==='first'){
+                                    modalData.parenetId='root';
+                                    urlDisabled = true
+                                  }
+                                }"
                     style="margin-left: 8px">{{modalDataType==='insert'?'清空':'新增'}}
             </Button>
             <Button v-if="modalDataType!=='insert'"
@@ -135,22 +146,24 @@
 </template>
 
 <script>
+// component
+import IconChoose from "@/components/icons/icon-choose";
 // mockData
 import { menuList } from "./mockData/role"; // 菜单列表
 // function
 import {
   computedMenuData, // 菜单数据转换成iview树形数据结构(2层)
   arraySort, // 对象数组根据key排序
-  resultCallback // 根据请求的status执行回调函数
-  // getValueByKey // 根据对象数组某个key的value，查询另一个key的value
+  resultCallback, // 根据请求的status执行回调函数
+  getValueByKey // 根据对象数组某个key的value，查询另一个key的value
 } from "@/libs/dataHanding";
+// api
 import {
   getAllMenus, // 获取全部菜单
   addMenu, // 新增菜单
   updateMenu, // 更新菜单
   removeMenu // 删除菜单
 } from "@/api/menu/index";
-import IconChoose from "@/components/icons/icon-choose";
 
 export default {
   components: {
@@ -160,7 +173,7 @@ export default {
     return {
       /* 全局 */
       menuList: [], // 全部菜单列表 - 渲染后的tree
-      /* 每页 */
+      /* 页面 */
       tableDataOrg: [], // 原始数据
       /* loading */
       treeLoading: false, // tree
@@ -172,8 +185,9 @@ export default {
         url: "",
         path: "",
         sort: 0,
-        parenetId: "",
+        parenetId: "root",
         parenetPath: "",
+        parentName: "",
         ico: "",
         description: "",
         children: []
@@ -203,7 +217,8 @@ export default {
         ]
       }, // form规则
       modalDataType: "insert", // 类型：insert/edit
-      menuType: "notFirst" // 菜单级别：first/notFirst
+      menuType: "notFirst", // 菜单级别：first/notFirst
+      urlDisabled: false // 路径是否可编辑
     };
   },
   async created() {
@@ -273,20 +288,29 @@ export default {
         sort: 0,
         parenetId: "",
         parenetPath: "",
+        parentName: "",
         ico: "",
         description: "",
         children: []
       };
       this.$refs.formModalData.resetFields();
+      this.urlDisabled = false;
     },
     // 选中菜单
     menuOnSelect(value) {
       this.modalDataType = "edit";
       // console.log(value);
       this.modalDataOrg = value;
+      this.modalDataOrg.parentName = getValueByKey(
+        this.menuList,
+        "id",
+        this.modalDataOrg.parenetId,
+        "url"
+      );
       this.modalData = JSON.parse(JSON.stringify(value));
       this.menuType =
         this.modalData.parenetId === "root" ? "first" : "notFirst";
+      this.urlDisabled = true;
     },
     // 数量校验 - 禁止输入e和E和-和.
     taskCountOnPress(event) {
@@ -303,6 +327,18 @@ export default {
     taskCountOnUp(event) {
       if (event.srcElement.value.slice(0, 1) === "0" && event.key === "0") {
         event.srcElement.value = parseInt(event.srcElement.value);
+      }
+    },
+    // 上级select框选择发生改变
+    parentOnChange(value) {
+      if (value) {
+        this.modalData.parentName = getValueByKey(
+          this.menuList,
+          "id",
+          this.modalData.parenetId,
+          "url"
+        );
+        this.urlDisabled = true;
       }
     },
     // 点击表单按钮 - 确定
@@ -322,7 +358,6 @@ export default {
                   "新增成功！",
                   () => {
                     this.getData();
-                    this.insert();
                     this.buttonLoading = false;
                   },
                   () => {
@@ -404,6 +439,7 @@ export default {
               resultCallback(result, "删除成功！", () => {
                 this.getData();
                 this.insert();
+                this.menuType = "notFirst";
               });
             } else {
               // mock数据

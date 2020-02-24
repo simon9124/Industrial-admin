@@ -12,7 +12,12 @@
           <span class="cancel"
                 v-if="modalData.title!==''"
                 style="color:#2d8cf0;cursor: pointer"
-                @click="()=>{insert();if(menuType==='first'){modalData.parenetId='root'}}">取消选择</span>
+                @click="()=>{insert();
+                             if(menuType==='first'){
+                               modalData.parenetId='root';
+                               urlDisabled = true
+                             }
+                            }">取消选择</span>
         </Alert>
 
         <!-- tree -->
@@ -122,10 +127,10 @@
                     @click="handleSubmit('formModalData')"
                     :loading="buttonLoading">{{modalDataType==='insert'?'新增':'保存修改'}}</Button>
             <Button @click="()=>{insert();
-                                  if(menuType==='first'){
-                                    modalData.parenetId='root';
+                                 if(menuType==='first'){
+                                   modalData.parenetId='root';
                                     urlDisabled = true
-                                  }
+                                 }
                                 }"
                     style="margin-left: 8px">{{modalDataType==='insert'?'清空':'新增'}}
             </Button>

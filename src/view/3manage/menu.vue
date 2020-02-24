@@ -7,18 +7,12 @@
         <Col :span="6">
 
         <!-- 操作 -->
-        <!-- <div style="margin-bottom: 10px">
-          <Button type="success"
-                  icon="md-add"
-                  @click="insert">新增菜单</Button>
-        </div> -->
-
         <Alert show-icon>当前选择：
           <span style="color:#2d8cf0;font-weight:bold;margin-right:10px">{{modalData.title}}</span>
           <span class="cancel"
                 v-if="modalData.title!==''"
                 style="color:#2d8cf0;cursor: pointer"
-                @click="insert">取消选择</span>
+                @click="()=>{insert();if(menuType==='first'){modalData.parenetId='root'}}">取消选择</span>
         </Alert>
 
         <!-- tree -->
@@ -150,13 +144,6 @@ import {
   resultCallback // 根据请求的status执行回调函数
   // getValueByKey // 根据对象数组某个key的value，查询另一个key的value
 } from "@/libs/dataHanding";
-// api
-// import // getUserList,
-// insertUser
-// updateUser
-// deleteUser
-// "@/api/user/index";
-// import { getUseGroupList } from "@/api/userGroup/index";
 import {
   getAllMenus, // 获取全部菜单
   addMenu, // 新增菜单
@@ -186,8 +173,10 @@ export default {
         path: "",
         sort: 0,
         parenetId: "",
+        parenetPath: "",
         ico: "",
-        description: ""
+        description: "",
+        children: []
       }, // 数据 - 获取或提交
       modalDataOrg: {}, // 数据 - 行内原始
       formModalRule: {
@@ -275,6 +264,19 @@ export default {
     // 点击按钮 - 新增
     insert() {
       this.modalDataType = "insert";
+      // 强行重置表单
+      this.modalData = {
+        name: "",
+        title: "",
+        url: "",
+        path: "",
+        sort: 0,
+        parenetId: "",
+        parenetPath: "",
+        ico: "",
+        description: "",
+        children: []
+      };
       this.$refs.formModalData.resetFields();
     },
     // 选中菜单
@@ -305,10 +307,10 @@ export default {
     },
     // 点击表单按钮 - 确定
     handleSubmit() {
-      console.log(this.modalData);
+      // console.log(this.modalData);
       this.$refs.formModalData.validate(async valid => {
         if (valid) {
-          // this.buttonLoading = true;
+          this.buttonLoading = true;
           this.modalData.sort = parseInt(this.modalData.sort);
           switch (this.modalDataType) {
             case "insert":
@@ -320,6 +322,7 @@ export default {
                   "新增成功！",
                   () => {
                     this.getData();
+                    this.insert();
                     this.buttonLoading = false;
                   },
                   () => {

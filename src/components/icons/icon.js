@@ -1,4 +1,4 @@
-export const icons = [
+export const iconList = [
   {
     icons: ["ios-add-circle-outline"],
     tags: ["circle"]

@@ -1,5 +1,7 @@
 <template>
   <div>
+
+    <!-- input & button -->
     <div style="display:flex">
       <Input v-model="currentValue"
              @on-change="handleChange"
@@ -16,12 +18,16 @@
               style="margin-left:10px">选择图标</Button>
     </div>
 
+    <!-- modal -->
     <Modal title="选择图标"
            v-model="iconModalVisible"
            :width="950"
-           :styles="{top: '30px'}"
+           :styles="{top: '10%'}"
            footer-hide
            :z-index="1060">
+      <!-- :styles="{top: '30px'}" -->
+
+      <!-- 搜索框 -->
       <div class="icon-search">
         <input type="text"
                v-model="key"
@@ -30,33 +36,38 @@
                @focus="handleFocus"
                @blur="handleBlur">
       </div>
+
+      <!-- icon列表 -->
       <div class="icon-block icon-bar">
         <div class="icon-wrap"
-             v-for="(item, i) in iconData"
+             v-for="(icon, i) in iconData"
              :key="i"
-             @click="hanleChoose(item)">
+             @click="hanleChoose(icon)">
           <div class="icons-item">
-            <Icon :type="item"
+            <Icon :type="icon"
                   style="font-size: 32px;" />
-            <p>{{item}}</p>
+            <p>{{icon}}</p>
           </div>
         </div>
       </div>
+
     </Modal>
   </div>
 </template>
 
 <script>
-// import { icons } from "@/libs/icon";
-import { icons } from "./icon";
+// mockData
+import { iconList } from "./icon"; // icon列表
+
 export default {
   name: "iconChoose",
   props: {
+    // 绑定值输入框绑定值 & 尾部图标
     value: {
       type: String,
       default: ""
     },
-    size: String,
+    size: String, // 尺寸：input & button
     placeholder: {
       type: String,
       default: "输入图标名或选择图标"
@@ -70,6 +81,7 @@ export default {
       default: false
     },
     maxlength: Number,
+    // 按钮 "选择图标" 里面的icon
     icon: {
       type: String,
       default: "md-ionic"
@@ -77,75 +89,74 @@ export default {
   },
   data() {
     return {
-      iconModalVisible: false,
-      currentValue: this.value,
-      iconData: [],
-      key: "",
-      tip: "输入英文关键词搜索，比如 success"
+      /* input和button */
+      currentValue: this.value, // 输入框绑定值 & 尾部图标
+      /* modal弹框 */
+      iconModalVisible: false, // 是否可见
+      iconData: [], // icon列表
+      key: "", // 搜索框关键词
+      tip: "输入英文关键词搜索，比如 success" // 搜索框placeholder
     };
   },
+  created() {
+    this.getData(this.key);
+  },
   methods: {
-    init() {
-      let re = [];
-      icons.forEach(e => {
-        e.icons.forEach(item => {
-          re.push(item);
+    // 根据关键词获取icon列表数据
+    getData(key) {
+      let iconData = [];
+      iconList.forEach(icon => {
+        icon.tags.forEach(tag => {
+          if (tag.indexOf(this.key) >= 0) {
+            icon.icons.forEach(item => {
+              iconData.push(item);
+            });
+          }
         });
       });
-      this.iconData = re;
+      this.iconData = iconData;
+      // console.log(this.iconData);
     },
+    // 搜索框输入关键词
     handleInput() {
-      if (this.key) {
-        // 搜索
-        let re = [];
-        icons.forEach(e => {
-          e.tags.forEach(item => {
-            if (item.indexOf(this.key) >= 0) {
-              e.icons.forEach(r => {
-                re.push(r);
-              });
-            }
-          });
-        });
-        this.iconData = re;
-      } else {
-        this.init();
-      }
+      this.getData(this.key);
     },
+    // 搜索框获得焦点
     handleFocus() {
       if (!this.key) {
         this.tip = "";
       }
     },
+    // 搜索框失去焦点
     handleBlur() {
       if (!this.key) {
         this.tip = "输入英文关键词搜索，比如 success";
       }
     },
-    handleChange(v) {
+    // modal输入框数据发生改变
+    handleChange(value) {
+      // 向父组件传递事件
       this.$emit("input", this.currentValue);
       this.$emit("on-change", this.currentValue);
     },
-    setCurrentValue(value) {
-      if (value === this.currentValue) {
-        return;
-      }
+    // modal选择icon并点击
+    hanleChoose(value) {
       this.currentValue = value;
-    },
-    hanleChoose(v) {
-      this.currentValue = v;
+      this.iconModalVisible = false;
+      // 向父组件传递事件
       this.$emit("input", this.currentValue);
       this.$emit("on-change", this.currentValue);
-      this.iconModalVisible = false;
+    },
+    // value绑定值更新 -> input框 和 button 的 currentValue值 也更新
+    setCurrentValue(value) {
+      this.currentValue = value;
     }
   },
   watch: {
+    // 检测value绑定值更新
     value(val) {
       this.setCurrentValue(val);
     }
-  },
-  created() {
-    this.init();
   }
 };
 </script>
@@ -171,7 +182,8 @@ export default {
 .icon-block {
   display: flex;
   flex-wrap: wrap;
-  max-height: 500px;
+  // max-height: 500px;
+  max-height: calc(60vh);
   overflow: auto;
 }
 .icon-bar {

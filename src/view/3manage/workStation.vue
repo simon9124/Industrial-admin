@@ -59,11 +59,12 @@
           <Input v-model.trim="modalData.decripttion"
                  placeholder="请输入工位描述"></Input>
         </FormItem>
-        <Button type="primary"
-                @click="handleSubmit('formModalData')"
-                :loading="buttonLoading">确定</Button>
-        <Button @click="modalShow=false"
-                style="margin-left: 8px">取消</Button>
+        <FormItem>
+          <Button type="primary"
+                  @click="handleSubmit('formModalData')"
+                  :loading="buttonLoading">确定</Button>
+          <Button @click="modalShow=false"
+                  style="margin-left: 8px">取消</Button>
         </FormItem>
       </Form>
     </Modal>

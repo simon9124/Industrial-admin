@@ -50,7 +50,7 @@ class HttpRequest {
         // }
         config.headers.Authorization =
           "Bearer " +
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmltYXJ5c2lkIjoiZWVjMTE5MjktM2M2MC00OTdiLTk0MmMtOTJhM2RkM2VlZWI1IiwidW5pcXVlX25hbWUiOiJjZXN0YyIsImNlcnRzZXJpYWxudW1iZXIiOiIyMiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvZXhwaXJhdGlvbiI6IjAxLzI0LzIwMjAgMDI6MjA6NDciLCJuYmYiOjE1Nzk1NzMyNDcsImV4cCI6MTU3OTgzMjQ0NywiaWF0IjoxNTc5NTczMjQ3LCJpc3MiOiJ5dWl0ZXIuY29tIiwiYXVkIjoieXVpdGVyLmNvbSJ9.4dAXjRHmE-cpvGfEgWUzaobJwv849-hF2U2QE0zMXP8";
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmltYXJ5c2lkIjoib2RvbyIsInVuaXF1ZV9uYW1lIjoiYWRtaW5Ab2RvbyIsImNlcnRzZXJpYWxudW1iZXIiOiIwIiwicm9sZSI6Im51bGwiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL2V4cGlyYXRpb24iOiIyMDIwLzIvMjcgMTQ6Mzc6NTQiLCJuYmYiOjE1ODI3NzEwNzQsImV4cCI6MTU4MjgxNDI3NCwiaWF0IjoxNTgyNzcxMDc0LCJpc3MiOiJjZXN0Yy5jZWMuY29tIiwiYXVkIjoiY2VzdGMuY2VjLmNvbSJ9.28bxBU-E1J4jlA3XFUbg8rnp0CfDal2x5rjQWZX3zVY";
 
         // 添加全局的loading...
         if (!Object.keys(this.queue).length) {

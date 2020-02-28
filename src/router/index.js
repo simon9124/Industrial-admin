@@ -24,6 +24,26 @@ const turnTo = (to, access, next) => {
   if (canTurnTo(to.name, access, routes)) {
     // 有权限，可访问
     next();
+  } else if (to.name === "home") {
+    // console.log("准备跳转到首页");
+    // console.log(access[0]);
+    // 已经登陆并且 "没有home页权限" 的用户新打开首页概览 -> 跳回该用户登录后的首页
+    if (access[0] === "workshop_manager") {
+      // 车间主管 -> 直接进入驾驶舱-车间
+      next({
+        name: "control-leader-shop"
+      });
+    } else if (access[0] === "examine") {
+      // 检测员 -> 直接进入追溯查询
+      next({
+        name: "checkSearch"
+      });
+    } else if (access[0] === "cestc") {
+      // 工程师 -> 直接进入SOP配置
+      next({
+        name: "sop"
+      });
+    }
   } else {
     // 无权限，重定向到401页面
     next({

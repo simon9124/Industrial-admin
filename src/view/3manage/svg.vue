@@ -53,9 +53,11 @@ export default {
           ? now.getMonth() + 1
           : "0" + (now.getMonth() + 1);
       var day = now.getDate() >= 10 ? now.getDate() : "0" + now.getDate();
-      var hour = now.getHours();
-      var minute = now.getMinutes();
-      var second = now.getSeconds();
+      var hour = now.getHours() >= 10 ? now.getHours() : "0" + now.getHours();
+      var minute =
+        now.getMinutes() >= 10 ? now.getMinutes() : "0" + now.getMinutes();
+      var second =
+        now.getSeconds() >= 10 ? now.getSeconds() : "0" + now.getSeconds();
       this.nowTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
       // console.log(this.nowTime);
     },

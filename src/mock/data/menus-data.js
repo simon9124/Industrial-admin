@@ -231,7 +231,7 @@ export default [
     meta: {
       hideInBread: true,
       title: "异常确认",
-      icon: "md-options",
+      icon: "md-bug",
       access: ["admin", "proline_leader"]
     },
     component: "Main",
@@ -379,6 +379,24 @@ export default [
           access: ["admin", "cestc"]
         },
         component: "3manage/proLine"
+      },
+      // {
+      //   path: "handsontable",
+      //   name: "handsontable",
+      //   meta: {
+      //     title: "动态表格",
+      //     access: ["admin", "cestc"]
+      //   },
+      //   component: "3manage/hansontable/index"
+      // },
+      {
+        path: "svg",
+        name: "svg-drawing",
+        meta: {
+          title: "动态svg",
+          access: ["admin", "cestc"]
+        },
+        component: "3manage/svg"
       }
     ]
   }

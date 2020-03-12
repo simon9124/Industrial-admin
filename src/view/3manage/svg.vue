@@ -1,28 +1,32 @@
  <template>
   <div>
-    <!-- <img src="../../../public/svgs/drawing.svg"> -->
-    <div style="margin: 10px 0">
-      <Button type="success"
-              style="margin-right: 10px"
-              @click="handleResult('#19be6b')">set success</Button>
-      <Button type="error"
-              style="margin-right: 10px"
-              @click="handleResult('#ed4014')">set error</Button>
-    </div>
-    <div v-html="svgTemplate"></div>
+    <!-- <div v-html="svgTemplate"></div> -->
+    <!-- <Button type="primary"
+            id="button"
+            style="margin-right: 10px"
+            icon="md-camera"
+            v-on:click="takePhoto">拍照</Button> -->
+    <div id="svgTemplate"></div>
   </div>
 </template>
 
 <script>
-// functions
 import config from "@/config"; // 全局变量
+// mqtt
+import { mqtt, MQTT_SERVICE, options } from "@/libs/sysconstant.js";
+// import Vue from "vue";
+import Vue from "vue/dist/vue.esm.js";
+
+// window.takePhotoWindow = () => {
+//   console.log(document.getElementById("tspan6557-9-51"));
+//   // console.log(window);
+// };
 
 export default {
   name: "svg-drawing",
   data() {
     return {
-      timer: null, // 定时器
-      /* svg相关 */
+      /* 全局 */
       baseUrl:
         process.env.NODE_ENV === "development"
           ? config.pdfUrl.dev
@@ -30,99 +34,161 @@ export default {
       svgUrl: "", // svg的url
       svgDom: null, // 获取到的svg元素
       svgTemplate: null, // 要插入的svg模板
-      nowTime: "", // 变量 - 时间
-      color: "#19be6b" // 变量 - 颜色  #19be6b or #ed4014
+      client: null, // mqtt服务
+      /* svg的变量 */
+      photoResult: {
+        resultVal: 0, // 测试结果 - 值
+        resultMsg: "未检测", // 测试结果 - 字段
+        resultColor: "#dcdee2" // 测试结果 - 字段背景色
+      }
+    };
+  },
+  async mounted() {
+    // 监听浏览器的返回按钮：向历史记录中插入了当前页
+    if (window.history && window.history.pushState) {
+      history.pushState(null, null, document.URL);
+      window.addEventListener("popstate", this.goBack, false);
+    }
+    // 将takePhoto方法绑定到window下面，提供给外部调用
+    window["takePhotoWindow"] = () => {
+      this.takePhoto();
     };
   },
   created() {
-    this.getTime();
     this.getSvg();
-    if (!this.timer) {
-      this.timer = setInterval(() => {
-        this.getTime();
-      }, 1000);
-    }
+    this.$nextTick(() => {
+      // document.getElementById("button").addEventListener("click", e => {
+      //   console.log(e);
+      //   this.takePhoto();
+      // });
+      // document.getElementById("button").onclick = () => {
+      //   this.takePhoto();
+      // };
+      // console.log(document.getElementById("button"));
+    });
   },
   methods: {
-    // 当前时间
-    getTime() {
-      var now = new Date();
-      var year = now.getFullYear();
-      var month =
-        now.getMonth() + 1 >= 10
-          ? now.getMonth() + 1
-          : "0" + (now.getMonth() + 1);
-      var day = now.getDate() >= 10 ? now.getDate() : "0" + now.getDate();
-      var hour = now.getHours() >= 10 ? now.getHours() : "0" + now.getHours();
-      var minute =
-        now.getMinutes() >= 10 ? now.getMinutes() : "0" + now.getMinutes();
-      var second =
-        now.getSeconds() >= 10 ? now.getSeconds() : "0" + now.getSeconds();
-      this.nowTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-      // console.log(this.nowTime);
-    },
-    // 获取svg
+    // 初始化svg
     getSvg() {
-      // 1. 获取 dom
+      /* 创建xhr对象 */
       const xhr = new XMLHttpRequest();
-      this.svgUrl = this.baseUrl + "/svgs/" + "drawing.svg";
+      this.svgUrl = this.baseUrl + "/svgs/" + "test.svg";
       xhr.open("GET", this.svgUrl, true);
       xhr.send();
+      /* 监听xhr对象 */
       xhr.addEventListener("load", () => {
+        /* 1. 获取 dom */
         const resXML = xhr.responseXML;
         this.svgDom = resXML.documentElement.cloneNode(true);
         // console.log(this.svgDom);
 
-        // 2. 修改 dom
-        // console.log(
-        //   this.svgDom.getElementById("block-in").getAttribute("style")
-        // );
+        /* 2.SVG对象添加click事件 */
+        let btnTakePhotoDom = this.svgDom.getElementById("text6553-2-3");
+        // console.log(btnTakePhotoDom);
+
+        /*
+          尝试无数次后，此处只有 setAttribute + v-on:click 写法有效
+          setAttribute不支持@click，会报语法错误
+          addEventListener和onclick均会被vue拦截
+        */
+        // btnTakePhotoDom.addEventListener("click", e => {
+        //   console.log(e);
+        //   this.takePhoto();
+        // });
+        // btnTakePhotoDom.setAttribute("onclick", "takePhoto");
+        btnTakePhotoDom.setAttribute("v-on:click", "this.takePhotoWindow()");
+        /* ↑↑↑ 此处必须注意：原生事件takePhotoWindow此时在window层，解决办法见此文件 */
+
+        /* 3. 修改 dom */
+        this.svgDom.getElementById("tspan6557-9-51").childNodes[0].nodeValue =
+          "#" + this.photoResult.resultVal; // 测试结果值
         this.svgDom
-          .getElementById("block-in")
+          .getElementById("rect6555-4-0")
           .setAttribute(
             "style",
-            `opacity:1;fill:${this.color};fill-opacity:1;stroke:#000000;stroke-width:1.20000005;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1`
-          );
+            `display:inline;opacity:0.96799999;fill:${this.photoResult.resultColor};fill-opacity:1;fill-rule:nonzero;stroke-width:0.44862741`
+          ); // 测试结果字段边框
         this.svgDom.getElementById(
-          "time"
-        ).childNodes[0].childNodes[0].nodeValue = this.nowTime;
+          "tspan6557-9-9"
+        ).childNodes[0].nodeValue = this.photoResult.resultMsg; // 测试结果字段值
 
-        // 3. 转换 domString
-        const svgStr = new XMLSerializer().serializeToString(this.svgDom);
-
-        // 4. 转换 URL
-        // const blob = new Blob([svgStr], {
-        //   type: "image/svg+xml"
-        // });
-        // const blobStr = URL.createObjectURL(blob);
-        // this.svgTemplate = `<img src="${blobStr}">`;
-
-        const base64 = window.btoa(svgStr);
-        this.svgTemplate = `<img src="data:image/svg+xml;base64,${base64}">`;
+        /* 4.将svgDom对象转换成vue的虚拟dom（否则无法在svgDom里挂载vue的事件） */
+        var oSerializer = new XMLSerializer();
+        var sXML = oSerializer.serializeToString(this.svgDom);
+        var Profile = Vue.extend({
+          template: "<div id='svgTemplate'>" + sXML + "</div>"
+          // template: `<div>${this.svgDom}</div>`,
+          // data: function() {
+          //   return {};
+          // }
+        });
+        // 创建实例，并挂载到元素上
+        new Profile().$mount("#svgTemplate");
       });
     },
-    // 切换结果值
-    handleResult(value) {
-      this.color = value;
+    // 按钮 - 拍照
+    takePhoto() {
+      this.client = mqtt.connect(MQTT_SERVICE, options);
+
+      // mqtt连接
+      this.client.on("connect", e => {
+        console.log("mqtt连接成功");
+
+        // 再订阅消息
+        this.client.subscribe("data/svg/result", { qos: 1 }, error => {
+          if (!error) {
+            // 订阅成功
+            console.log("订阅成功：data/svg/result");
+          } else {
+            // 订阅失败
+          }
+        });
+
+        const sendMsg = {
+          name: "拍照"
+        };
+
+        // 发布消息
+        this.client.publish("data/svg/send", JSON.stringify(sendMsg), () => {
+          console.log("发布成功", JSON.stringify(sendMsg));
+
+          // 发布成功后，接收消息处理
+          /* eslint-disable */
+          this.client.on("message", (topic, message) => {
+            const msg = JSON.parse(message.toString());
+            console.log(topic, msg);
+            this.photoResult.resultVal = msg.resultVal;
+            this.photoResult.resultMsg = msg.resultMsg;
+            this.photoResult.resultColor = msg.resultColor;
+            this.client.unsubscribe("data/svg/result");
+            this.client.end();
+          });
+        });
+      });
+    },
+    // 按钮 - 按1松零测试
+    test1() {
+      console.log("2");
+    },
+    // 浏览器返回
+    goBack() {
+      this.client.unsubscribe("data/svg");
+      this.client.end();
     }
   },
+  beforeDestroy() {
+    this.svgDom = null;
+  },
+  destroyed() {
+    this.client.unsubscribe("data/svg");
+    this.client.end();
+  },
   watch: {
-    // 离开页面销毁定时器，进入页面打开定时器
-    $route(to, from) {
-      if (to.name !== "svg-drawing") {
-        clearInterval(this.timer);
-        this.timer = null;
-      } else {
-        this.timer = setInterval(() => {
-          this.getTime();
-        }, 1000);
-      }
-    },
-    nowTime(oldVal, newVal) {
-      this.getSvg();
-    },
-    color(oldVal, newVal) {
-      this.getSvg();
+    photoResult: {
+      handler(newVal, oldVal) {
+        this.getSvg();
+      },
+      deep: true
     }
   }
 };

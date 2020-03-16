@@ -1,0 +1,458 @@
+<template>
+  <div class="dooya-container">
+    <Card>
+
+      <!-- 操作 -->
+      <div style="margin: 10px 0">
+        <Button type="success"
+                icon="md-add"
+                style="margin-right: 10px"
+                @click="insert">新增模板</Button>
+      </div>
+
+      <!-- 表格 -->
+      <Table border
+             disabled-hover
+             :loading="tableLoading"
+             :data="tableData"
+             :columns="tableColumns"
+             stripe>
+      </Table>
+
+      <!-- 分页 -->
+      <div v-if="tableData.length>0"
+           style="margin: 10px;overflow: hidden">
+        <div style="float: right;">
+          <Page show-sizer
+                transfer
+                placement="top"
+                :total="total"
+                :current.sync="pageNum"
+                :page-size-opts="[10, 20, 50, 100]"
+                :page-size="pageSize"
+                @on-change="changePage"
+                @on-page-size-change="changePageSize"></Page>
+        </div>
+      </div>
+
+    </Card>
+
+    <!-- Modal -->
+    <Modal v-model="modalShow"
+           :mask-closable="false"
+           :closable="false"
+           footer-hide
+           :title="modalDataType==='edit'?'编辑模板':'新增模板'"
+           @on-ok="handleSubmit">
+      <Form ref="formModalData"
+            :model="modalData"
+            :rules="formModalRule"
+            :label-width="60"
+            @submit.native.prevent>
+        <FormItem label="名称："
+                  prop="mouldName">
+          <Input type="text"
+                 v-model.trim="modalData.mouldName"
+                 placeholder="请输入名称"></Input>
+        </FormItem>
+        <FormItem>
+          <Button type="primary"
+                  @click="handleSubmit('formModalData')"
+                  :loading="buttonLoading">确定</Button>
+          <Button @click="modalShow=false"
+                  style="margin-left: 8px">取消</Button>
+        </FormItem>
+      </Form>
+    </Modal>
+
+    <!-- ParamModal -->
+    <ParamModal ref="paramModal"></ParamModal>
+
+  </div>
+</template>
+
+<script>
+// mockData
+import {
+  mouldList // 模板列表
+} from "./mould";
+// components
+import ParamModal from "./param";
+// function
+import {
+  arraySort, // 对象数组根据key排序
+  resultCallback // 根据请求的status执行回调函数
+} from "@/libs/dataHanding";
+// api
+// import {
+//  findSopByPage,
+// addSop,
+// editSop,
+// removeSop
+// } from "@/api/process";
+
+export default {
+  components: {
+    ParamModal
+  },
+  data() {
+    return {
+      /* 全局 */
+      /* 每页 */
+      tableDataOrg: [], // tabel数据 - 全部
+      tableData: [], // table数据 - 当前页
+      tableColumns: [
+        {
+          title: "名称",
+          key: "mouldName",
+          align: "center",
+          minWidth: 100
+        },
+        {
+          title: "操作",
+          key: "action",
+          minWidth: 120,
+          align: "center",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Tooltip",
+                {
+                  props: {
+                    trigger: "hover",
+                    content: "修改",
+                    placement: "top",
+                    transfer: true
+                  }
+                },
+                [
+                  h("Button", {
+                    props: {
+                      type: "primary",
+                      size: "small",
+                      icon: "ios-create-outline"
+                    },
+                    style: {
+                      marginRight: "5px"
+                    },
+                    on: {
+                      click: () => {
+                        this.edit(params.row);
+                      }
+                    }
+                  })
+                ]
+              ),
+              h(
+                "Tooltip",
+                {
+                  props: {
+                    trigger: "hover",
+                    content: "参数",
+                    placement: "top",
+                    transfer: true
+                  }
+                },
+                [
+                  h("Button", {
+                    props: {
+                      type: "info",
+                      size: "small",
+                      icon: "ios-funnel-outline"
+                    },
+                    style: {
+                      marginRight: "5px"
+                    },
+                    on: {
+                      click: () => {
+                        this.$refs.paramModal.showModal({
+                          id: params.row.id,
+                          paramList: params.row.paramList
+                        });
+                      }
+                    }
+                  })
+                ]
+              ),
+              h(
+                "Tooltip",
+                {
+                  props: {
+                    trigger: "hover",
+                    content: "删除",
+                    placement: "top",
+                    transfer: true
+                  }
+                },
+                [
+                  h("Button", {
+                    props: {
+                      type: "error",
+                      size: "small",
+                      icon: "md-close"
+                    },
+                    on: {
+                      click: () => {
+                        this.delete(params.row);
+                      }
+                    }
+                  })
+                ]
+              )
+            ]);
+          }
+        }
+      ], // table表头
+      total: 0, // 总数
+      pageNum: 1, // 页码
+      pageSize: 10, // 每页显示数量
+      /* loading */
+      tableLoading: false, // table
+      buttonLoading: false, // button
+      /* modal */
+      modalShow: false, // 是否显示
+      modalData: {
+        mouldName: ""
+      }, // 数据 - 获取或提交
+      modalDataOrg: {}, // 数据 - 行内原始
+      formModalRule: {
+        mouldName: [
+          {
+            required: true,
+            message: "请输入模板名称",
+            trigger: "blur"
+          },
+          { type: "string", max: 15, message: "名称过长", trigger: "change" }
+        ]
+      }, // form规则
+      modalDataType: "", // 类型：insert/edit
+      /* 子组件 */
+      paramModalShow: false
+    };
+  },
+  async created() {
+    this.getData();
+  },
+  methods: {
+    // 获取数据
+    async getData() {
+      // if (!this.isMock) {
+      //   // 接口数据
+      //   this.tableLoading = true;
+      //   const dataResult = (
+      //     await findSopByPage(this.pageNum, this.pageSize, this.tabSelected)
+      //   ).data.data;
+      //   if (dataResult !== null) {
+      //     // 如果是在删除之后获取的数据 -> 若删掉的是某一页的最后项且页码不是1，则自动获取前一页的数据
+      //     if (dataResult.pageData.length === 0 && dataResult.pageIndex !== 1) {
+      //       this.pageNum--;
+      //       this.getData();
+      //     }
+      //     this.tableData = dataResult.pageData;
+      //     this.total = dataResult.dataCount;
+      //   } else {
+      //     this.tableData = [];
+      //     this.total = 0;
+      //   }
+      //   this.buttonLoading = false;
+      //   this.tableLoading = false;
+      // } else {
+      // mock数据
+      this.tableDataOrg = mouldList;
+      this.refreshData();
+      // }
+    },
+    // 根据条件刷新数据
+    refreshData() {
+      // 按"名称"升序
+      this.tableDataOrg.sort(arraySort("mouldName", "asc"));
+      // 随机生成id
+      this.tableDataOrg.forEach(row => {
+        this.$set(
+          row,
+          "id",
+          Math.random()
+            .toString(36)
+            .substr(-10)
+        );
+      });
+      // 分页 & 每页条数
+      this.tableData = this.tableDataOrg.slice(
+        (this.pageNum - 1) * this.pageSize,
+        this.pageNum * this.pageSize
+      );
+      this.total = this.tableDataOrg.length;
+      // 如果是在删除之后获取的数据 -> 若删掉的是某一页的最后项且页码不是1，则自动获取前一页的数据
+      if (this.tableData.length === 0 && this.tableDataOrg.length !== 0) {
+        this.pageNum--;
+        this.refreshData();
+      }
+    },
+    // 分页
+    changePage(pageNum) {
+      this.pageNum = pageNum;
+      this.getData();
+    },
+    // 每页条数变化
+    changePageSize(pageSize) {
+      this.pageSize = pageSize;
+      this.pageNum = 1;
+      this.getData();
+    },
+    // 点击按钮 - 新增
+    insert() {
+      this.modalDataType = "insert";
+      this.$refs.formModalData.resetFields();
+      this.modalShow = true;
+    },
+    // 点击按钮 - 详情
+    async edit(row) {
+      this.modalDataType = "edit";
+      this.modalDataOrg = row;
+      this.modalData = JSON.parse(JSON.stringify(row));
+      this.modalShow = true;
+    },
+    // 点击表单按钮 - 确定
+    handleSubmit() {
+      // console.log(this.modalData);
+      this.$refs.formModalData.validate(async valid => {
+        if (valid) {
+          this.buttonLoading = true;
+          switch (this.modalDataType) {
+            case "insert":
+              // if (!this.isMock) {
+              //   // 接口数据
+              //   const result = (await addSop(this.modalData)).data.status;
+              //   resultCallback(
+              //     result,
+              //     "添加成功！",
+              //     () => {
+              //       this.modalShow = false;
+              //       this.getData();
+              //     },
+              //     () => {
+              //       this.buttonLoading = false;
+              //     }
+              //   );
+              // } else {
+              // mock数据
+              // 生成模板的id
+              this.modalData.id = Math.random()
+                .toString(36)
+                .substr(-10);
+              if (
+                this.tableDataOrg.some(
+                  item => item.mouldName === this.modalData.mouldName
+                )
+              ) {
+                this.$Message.error("此模板已存在！");
+                this.buttonLoading = false;
+              } else {
+                this.tableDataOrg.push(
+                  JSON.parse(JSON.stringify(this.modalData))
+                );
+                resultCallback(200, "添加成功！", () => {
+                  this.refreshData();
+                  this.buttonLoading = false;
+                  this.modalShow = false;
+                });
+              }
+              // }
+              break;
+            case "edit":
+              // if (!this.isMock) {
+              //   // 接口数据
+              //   const result = (await editSop(this.modalData)).data.status;
+              //   resultCallback(
+              //     result,
+              //     "修改成功！",
+              //     () => {
+              //       this.modalShow = false;
+              //       this.getData();
+              //     },
+              //     () => {
+              //       this.buttonLoading = false;
+              //     }
+              //   );
+              // } else {
+              // mock数据
+              // 判断重复
+              if (
+                this.tableDataOrg.some(
+                  item => item.mouldName === this.modalData.mouldName
+                ) &&
+                this.modalData.mouldName !== this.modalDataOrg.mouldName
+              ) {
+                this.$Message.error("此模板已存在！");
+                this.buttonLoading = false;
+              } else {
+                this.$set(
+                  this.tableDataOrg,
+                  (this.pageNum - 1) * this.pageSize + this.modalData._index,
+                  JSON.parse(JSON.stringify(this.modalData))
+                );
+                resultCallback(200, "修改成功！", () => {
+                  this.refreshData();
+                  this.buttonLoading = false;
+                  this.modalShow = false;
+                });
+              }
+              // }
+              break;
+          }
+        }
+      });
+    },
+    // 点击按钮 - 删除
+    delete(row) {
+      this.$Modal.confirm({
+        title: "确定删除该模板？",
+        onOk: async () => {
+          // if (!this.isMock) {
+          //   // 接口数据
+          //   const result = await removeSop(row.id);
+          //   resultCallback(result.data.status, "删除成功！", () => {
+          //     this.getData();
+          //   });
+          // } else {
+          // mock数据
+          this.tableDataOrg
+            .slice(
+              (this.pageNum - 1) * this.pageSize,
+              this.pageNum * this.pageSize
+            )
+            .forEach((item, i) => {
+              if (row.mouldName === item.mouldName) {
+                this.tableDataOrg.splice(
+                  (this.pageNum - 1) * this.pageSize + i,
+                  1
+                );
+              }
+            });
+          resultCallback(200, "删除成功！", () => {
+            this.refreshData();
+          });
+          // }
+        },
+        closable: true
+      });
+    }
+  }
+};
+</script>
+
+<style rel="stylesheet/scss" lang="scss" scoped>
+.dooya-container /deep/ {
+  .ivu-table-body {
+    overflow: hidden;
+  }
+  .ivu-table {
+    th {
+      text-align: center;
+    }
+    td {
+      padding: 10px 0;
+    }
+  }
+}
+</style>

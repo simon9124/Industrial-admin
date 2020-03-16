@@ -397,6 +397,15 @@ export default [
           access: ["admin", "cestc"]
         },
         component: "3manage/svg"
+      },
+      {
+        path: "mould",
+        name: "mould",
+        meta: {
+          title: "模板配置",
+          access: ["admin", "cestc"]
+        },
+        component: "3manage/mould/index"
       }
     ]
   }

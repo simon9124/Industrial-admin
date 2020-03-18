@@ -1,5 +1,5 @@
  <template>
-  <div class="dooya-container">
+  <div>
 
     <!-- Modal - 整体数据-->
     <Modal v-model="paramModalShow"
@@ -222,6 +222,7 @@ export default {
   data() {
     return {
       /*  全局 */
+      rowId: "", // 当前行的id
       paramModalShow: false, // 参数列表整体显示与否
       dataTypeList: dataTypeList, // 数据类型列表
       elementTypeList: elementTypeList, // 显示元素列表
@@ -527,7 +528,7 @@ export default {
       this.getData(param);
       this.paramModalShow = true;
     },
-    // 表格数据 & 表单数据
+    // 数据初始化
     getData(param) {
       // if (!this.isMock) {
       //   /* 接口数据 */
@@ -538,6 +539,7 @@ export default {
       // } else {
       /* mock数据 */
       this.tableData = param.paramList;
+      this.rowId = param.id;
       this.refreshData();
       // }
     },
@@ -870,7 +872,11 @@ export default {
     },
     // 提交参数列表
     submitParamlist() {
-      console.log(this.tableData);
+      // console.log(this.tableData);
+      this.$emit("submitParamlist", {
+        id: this.rowId,
+        data: this.tableData
+      });
       this.paramModalShow = false;
     }
   }
@@ -878,19 +884,6 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.dooya-container /deep/ {
-  .ivu-table {
-    th {
-      text-align: center;
-    }
-    td {
-      padding: 10px 0;
-    }
-  }
-  .ivu-form {
-    &-item-content {
-      display: inline-block;
-    }
-  }
+.v-transfer-dom /deep/ {
 }
 </style>

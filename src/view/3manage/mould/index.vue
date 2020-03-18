@@ -66,7 +66,15 @@
     </Modal>
 
     <!-- ParamModal -->
-    <ParamModal ref="paramModal"></ParamModal>
+    <ParamModal ref="paramModal"
+                @submitParamlist="submitParamlist"></ParamModal>
+
+    <!-- upExcelModal -->
+    <UpExcelModal ref="upExcelModal"
+                  @submitTableHeader="submitTableHeader"></UpExcelModal>
+
+    <!-- reportModal -->
+    <ReportModal ref="reportModal"></ReportModal>
 
   </div>
 </template>
@@ -78,6 +86,8 @@ import {
 } from "./mould";
 // components
 import ParamModal from "./param";
+import ReportModal from "./report";
+import UpExcelModal from "./upExcel";
 // function
 import {
   arraySort, // 对象数组根据key排序
@@ -93,7 +103,9 @@ import {
 
 export default {
   components: {
-    ParamModal
+    ParamModal,
+    ReportModal,
+    UpExcelModal
   },
   data() {
     return {
@@ -107,6 +119,27 @@ export default {
           key: "mouldName",
           align: "center",
           minWidth: 100
+        },
+        {
+          title: "参数",
+          key: "paramList",
+          // align: "center",
+          render: (h, params) => {
+            return h("div", [
+              params.row.paramList.map(item => {
+                return h(
+                  "Tag",
+                  {
+                    props: {
+                      color: "blue"
+                    }
+                  },
+                  item.name
+                );
+              })
+            ]);
+          },
+          minWidth: 300
         },
         {
           title: "操作",
@@ -166,6 +199,70 @@ export default {
                     on: {
                       click: () => {
                         this.$refs.paramModal.showModal({
+                          id: params.row.id,
+                          paramList: params.row.paramList
+                        });
+                      }
+                    }
+                  })
+                ]
+              ),
+              h(
+                "Tooltip",
+                {
+                  props: {
+                    trigger: "hover",
+                    content: "模板",
+                    placement: "top",
+                    transfer: true
+                  }
+                },
+                [
+                  h("Button", {
+                    props: {
+                      type: "warning",
+                      size: "small",
+                      icon: "ios-cloud-upload-outline"
+                    },
+                    style: {
+                      marginRight: "5px"
+                    },
+                    on: {
+                      click: () => {
+                        this.$refs.upExcelModal.showModal({
+                          id: params.row.id,
+                          tableHeader: params.row.header
+                        });
+                      }
+                    }
+                  })
+                ]
+              ),
+              h(
+                "Tooltip",
+                {
+                  props: {
+                    trigger: "hover",
+                    content: "查看",
+                    placement: "top",
+                    transfer: true
+                  }
+                },
+                [
+                  h("Button", {
+                    props: {
+                      type: "info",
+                      size: "small",
+                      icon: "ios-search-outline"
+                    },
+                    style: {
+                      marginRight: "5px",
+                      backgroundColor: "#808695",
+                      borderColor: "#808695"
+                    },
+                    on: {
+                      click: () => {
+                        this.$refs.reportModal.showModal({
                           id: params.row.id,
                           paramList: params.row.paramList
                         });
@@ -435,6 +532,30 @@ export default {
           // }
         },
         closable: true
+      });
+    },
+    // 子组件事件 - 提交参数列表
+    submitParamlist(data) {
+      console.log(data);
+      this.tableData.forEach((row, i) => {
+        if (row.id === data.id) {
+          this.$set(row, "paramList", data.data);
+          resultCallback(200, "修改成功！", () => {
+            this.refreshData();
+          });
+        }
+      });
+    },
+    // 子组件事件 - 提交配置模板
+    submitTableHeader(data) {
+      console.log(data);
+      this.tableData.forEach((row, i) => {
+        if (row.id === data.id) {
+          this.$set(row, "header", data.header);
+          resultCallback(200, "修改成功！", () => {
+            this.refreshData();
+          });
+        }
       });
     }
   }

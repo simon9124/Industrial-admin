@@ -931,6 +931,35 @@ const excelHeader = {
   ]
 };
 
+// 模板表头和参数对应关系
+const excelField = [
+  {
+    title: "编号", // table表格列名
+    name: "barcode", // 对应数据源的属性名
+    colTag: "A2" // 位置
+  },
+  {
+    title: "线号",
+    name: "lineno",
+    colTag: "B2"
+  },
+  {
+    title: "检测结果",
+    name: "qc1_result",
+    colTag: "C2"
+  },
+  {
+    title: "异常原因",
+    name: "mark_reason_qc1",
+    colTag: "D2"
+  },
+  {
+    title: "日期时间",
+    name: "record_time",
+    colTag: "E2"
+  }
+];
+
 // 模板列表
 const mouldList = [
   {
@@ -1770,5 +1799,6 @@ export {
   paramList,
   dataTypeList,
   elementTypeList,
-  excelHeader
+  excelHeader,
+  excelField
 };

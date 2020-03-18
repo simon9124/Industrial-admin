@@ -13,7 +13,7 @@
             ref="filterFormData"
             :model="filterFormData"
             inline
-            label-position="left"
+            label-position="right"
             @submit.native.prevent
             style="margin:0 0 20px 10px">
         <FormItem v-for="(item,i) in paramListData"
@@ -114,7 +114,7 @@ export default {
         display: inline-block;
       }
       &-item-label {
-        padding-right: 5px;
+        padding-right: 10px;
       }
     }
   }

@@ -41,10 +41,36 @@ export const getReortConditionInfo = id => {
   });
 };
 
-// 更新模板参数信息
+// 更新参数信息
 export const addOrEditReportConditionInfo = data => {
   return axios.request({
     url: "/api/customeReport/addOrEditReportConditionInfo",
+    method: "post",
+    data
+  });
+};
+
+// 根据id获取表头信息
+export const getReortHeaderInfo = id => {
+  return axios.request({
+    url: `/api/customeReport/getReortHeaderInfo?id=${id}`,
+    method: "get"
+  });
+};
+
+// 更新表头信息
+export const addOrEditReporSorceInfo = data => {
+  return axios.request({
+    url: "/api/customeReport/addOrEditReporSorceInfo",
+    method: "post",
+    data
+  });
+};
+
+// 获取报表数据
+export const getReportData = data => {
+  return axios.request({
+    url: "/api/customeReport/getReportData",
     method: "post",
     data
   });

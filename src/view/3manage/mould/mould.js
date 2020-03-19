@@ -5,9 +5,9 @@ const dataTypeList = ["text", "int", "datetime"];
 const elementTypeList = [
   "文本框",
   "下拉单选",
-  "下拉多选",
-  "日期选择",
-  "日期-时间选择"
+  // "下拉多选",
+  "日期选择"
+  // "日期-时间选择"
 ];
 
 // 模板列表

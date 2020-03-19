@@ -56,7 +56,6 @@
 
       <!-- fieldForm -->
       <Form v-if="JSON.stringify(this.tableHeader) !== '{}'"
-            ref="fieldFormData"
             :model="{}"
             inline
             label-position="right"
@@ -73,14 +72,54 @@
         </FormItem>
       </Form>
 
+      <!-- form -->
+      <Form ref="formData"
+            :model="formData"
+            :rules="formRule"
+            inline
+            @submit.native.prevent
+            style="margin:6px 0 0 0">
+        <FormItem label="sourceType"
+                  prop="sourceType">
+          <Input type="text"
+                 v-model.trim="formData.sourceType"
+                 placeholder="请输入sourcetype"></Input>
+        </FormItem>
+        <FormItem label="sourceOrder"
+                  prop="sourceOrder">
+          <Input type="text"
+                 v-model.trim="formData.sourceOrder"
+                 placeholder="请输入sourceorder"></Input>
+        </FormItem>
+        <FormItem label="isPage"
+                  prop="isPage">
+          <Checkbox v-model="formData.isPage">isPage</Checkbox>
+        </FormItem>
+        <FormItem label="sourceSql"
+                  prop="sourceSql"
+                  style="display:block;margin-top:10px">
+          <Input type="textarea"
+                 style="width:600px"
+                 :autosize="{minRows: 4,maxRows: 8}"
+                 v-model.trim="formData.sourceSql"
+                 placeholder="请输入sourcesql"></Input>
+        </FormItem>
+      </Form>
+
       <!-- 操作 - 保存/取消 -->
-      <div style="margin:10px 0 10px 0">
+      <div style="margin:20px 0 10px 0">
         <Button type="primary"
-                @click="submitTableHeader">确定</Button>
+                @click="submitTableHeader"
+                :loading="buttonLoading">确定</Button>
         <Button type="warning"
                 style="margin-left: 8px"
                 @click="modalShow=false;showProgress=false;file=null">取消</Button>
       </div>
+
+      <!-- spin -->
+      <Spin size="large"
+            fix
+            v-if="spinShow"></Spin>
 
     </Modal>
 
@@ -91,7 +130,15 @@
 import Vue from "vue/dist/vue.esm.js";
 // function
 import excel from "@/libs/excel";
-import { setKeyFromTableHeader } from "@/libs/dataHanding";
+import {
+  setKeyFromTableHeader, // 根据上传后的原始数据，给表头最后一行（若被合并则同列向上找）每个label绑定key
+  resultCallback // 根据请求的status执行回调函数
+} from "@/libs/dataHanding";
+// api
+import {
+  getReortHeaderInfo, // 根据id获取表头信息
+  addOrEditReporSorceInfo // 更新表头信息
+} from "@/api/mould";
 
 export default {
   name: "update-excel",
@@ -100,6 +147,9 @@ export default {
       /* 全局 */
       rowId: "", // 当前行的id
       modalShow: false, // 是否显示
+      /* loading */
+      spinShow: false,
+      buttonLoading: false,
       /* update */
       uploadLoading: false, // loading
       progressPercent: 0, // 进度
@@ -107,7 +157,37 @@ export default {
       showRemoveFile: false, // 是否显示 "删除文件"
       file: null, // 上传的文件
       tableHeader: {}, // 表头数据
-      fieldArrayData: [] // 筛选参数table
+      fieldArrayData: [], // 筛选参数table
+      /* form */
+      formData: {
+        id: 0,
+        sourceType: "",
+        sourceOrder: "",
+        isPage: false,
+        sourceSql: ""
+      }, // 表单数据
+      formRule: {
+        sourceType: [
+          {
+            required: true,
+            message: "请输入sourceType",
+            trigger: "change"
+          },
+          {
+            type: "string",
+            max: 15,
+            message: "sourceType过长",
+            trigger: "change"
+          }
+        ],
+        sourceSql: [
+          {
+            required: true,
+            message: "请输入sql语句",
+            trigger: "change"
+          }
+        ]
+      } // 表单规则
     };
   },
   methods: {
@@ -118,23 +198,30 @@ export default {
       this.modalShow = true;
     },
     // 数据初始化
-    getData(param) {
-      // if (!this.isMock) {
-      //   /* 接口数据 */
-      // } else {
-      /* mock数据 */
-      this.tableHeader = param.tableHeader;
-      this.fieldArrayData = param.field;
+    async getData(param) {
+      this.rowId = param.id;
+      if (!this.isMock) {
+        /* 接口数据 */
+        this.spinShow = true;
+        this.formData = (await getReortHeaderInfo(param.id)).data.data;
+        this.tableHeader =
+          this.formData.header !== null ? JSON.parse(this.formData.header) : {};
+        this.fieldArrayData =
+          this.formData.field !== null ? JSON.parse(this.formData.field) : [];
+      } else {
+        /* mock数据 */
+        this.tableHeader = param.tableHeader;
+        this.fieldArrayData = param.field;
+      }
       if (JSON.stringify(this.tableHeader) === "{}") {
         const tableHeaderCopy = JSON.parse(JSON.stringify(this.tableHeader));
         tableHeaderCopy["!ref"] = "'':''";
         this.headerHandle(tableHeaderCopy);
+        this.$refs.formData.resetFields();
       } else {
         this.headerHandle(this.tableHeader);
       }
-      this.rowId = param.id;
-      // this.refreshData();
-      // }
+      this.spinShow = false;
     },
     // 上传初始化
     initUpload() {
@@ -229,19 +316,47 @@ export default {
       });
     },
     // 提交modal - 表头、表头参数form、sql信息等
-    submitTableHeader() {
+    async submitTableHeader() {
       // console.log(this.fieldArrayData);
       if (this.fieldArrayData.some(item => item.name.trim() === "")) {
         this.$Message.error("参数value未填写完整！");
       } else {
-        this.$emit("submitTableHeader", {
-          id: this.rowId,
-          header: this.tableHeader,
-          field: this.fieldArrayData
+        this.$refs.formData.validate(async valid => {
+          if (valid) {
+            if (!this.isMock) {
+              /* 接口数据 */
+              this.formData.header = JSON.stringify(this.tableHeader);
+              this.formData.field = this.fieldArrayData;
+              // console.log(this.formData);
+              this.$delete(this.formData, "condition");
+              this.buttonLoading = true;
+              const result = (await addOrEditReporSorceInfo(this.formData)).data
+                .status;
+              resultCallback(
+                result,
+                "配置成功！",
+                () => {
+                  this.modalShow = false;
+                  this.showProgress = false;
+                  this.file = null;
+                  this.buttonLoading = false;
+                },
+                () => {
+                  this.buttonLoading = false;
+                }
+              );
+            } else {
+              this.$emit("submitTableHeader", {
+                id: this.rowId,
+                header: this.tableHeader,
+                field: this.fieldArrayData
+              });
+              this.modalShow = false;
+              this.showProgress = false;
+              this.file = null;
+            }
+          }
         });
-        this.modalShow = false;
-        this.showProgress = false;
-        this.file = null;
       }
     }
   }
@@ -283,7 +398,7 @@ export default {
         display: inline-block;
       }
       &-item-label {
-        width: 80px;
+        width: 100px;
         padding-right: 10px;
       }
     }

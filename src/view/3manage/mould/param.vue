@@ -200,7 +200,7 @@ import {
 // api
 import {
   getReortConditionInfo, // 根据id获取参数信息
-  addOrEditReportConditionInfo // 更新模板参数信息
+  addOrEditReportConditionInfo // 更新参数信息
 } from "@/api/mould";
 
 export default {
@@ -837,6 +837,7 @@ export default {
                     typeof modalDataSubmit.data !== "string"
                       ? JSON.stringify(modalDataSubmit.data)
                       : modalDataSubmit.data;
+                // console.log(modalDataSubmit);
                 this.$set(
                   this.tableData,
                   this.modalData._index,
@@ -856,9 +857,6 @@ export default {
     // 提交参数列表
     async submitParamlist() {
       // console.log(this.tableData);
-      // this.tableData.forEach(row => {
-      //   row.data = row.data !== "" ? JSON.stringify(row.data) : row.data;
-      // });
       if (!this.isMock) {
         /* 接口数据 */
         this.buttonLoading = true;

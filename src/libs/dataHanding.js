@@ -173,6 +173,66 @@ export function getValueByKey(array, queryKey, queryValue, getKey) {
 }
 
 /**
+ * 上传excel多级表头使用
+ * 根据上传后的原始数据，给表头最后一行（若被合并则同列向上找）每个label绑定key
+ * @param {Object} tableHeader 表头原始数据
+ */
+export function setKeyFromTableHeader(tableHeader) {
+  // 1.将表头对象放进数组
+  var array = []; // 要放进的数组
+  var arrayCopy = []; // copy这个数组
+  Object.keys(tableHeader).forEach((key, i) => {
+    array.push(key);
+    arrayCopy.push(key);
+  });
+  // 2.逆循环两个数组，取出双字母索引和单字母索引的最大值，形成新的数组
+  var arrayTargetSingle = []; // 单字母excel索引list：A1、B1...
+  var arrayTargetBiliteral = []; // 双字母excel索引list：AA1、AB1...
+  var regex = /^[A-Z]+$/; // 正则判断大写字母
+  for (var i = array.length - 1; i >= 0; i--) {
+    var numBiliteral = 0;
+    var numSingle = 0;
+    for (var _i = arrayCopy.length - 1; _i >= 0; _i--) {
+      // 双字母excel索引
+      if (array[i].slice(0, 2) === arrayCopy[_i].slice(0, 2)) {
+        numBiliteral++;
+        if (
+          numBiliteral > 1 &&
+          array[i].slice(0, 1) !== "!" &&
+          arrayTargetBiliteral.every(
+            item => item.slice(0, 2) !== array[i].slice(0, 2)
+          )
+        ) {
+          arrayTargetBiliteral.push(array[i]);
+        }
+      }
+      // 单字母excel索引
+      if (
+        array[i].slice(0, 1) === arrayCopy[_i].slice(0, 1) &&
+        !regex.test(array[i][1])
+      ) {
+        numSingle++;
+        if (
+          numSingle > 1 &&
+          array[i].slice(0, 1) !== "!" &&
+          arrayTargetSingle.every(
+            item => item.slice(0, 1) !== array[i].slice(0, 1)
+          )
+        ) {
+          arrayTargetSingle.push(array[i]);
+        }
+      }
+    }
+  }
+  // 3.处理新的数组
+  arrayTargetBiliteral = [...new Set(arrayTargetBiliteral)].sort();
+  arrayTargetSingle = [...new Set(arrayTargetSingle)].sort();
+  // console.log(arrayTargetBiliteral);
+  // console.log(arrayTargetSingle);
+  return arrayTargetSingle.concat(arrayTargetBiliteral);
+}
+
+/**
  * 封装数组[{},{},{}...]，根据条件求某个对象的key的和
  * @param {Array} array 数组
  * @param {String} key 要查询的key

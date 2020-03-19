@@ -91,6 +91,7 @@
 import Vue from "vue/dist/vue.esm.js";
 // function
 import excel from "@/libs/excel";
+import { setKeyFromTableHeader } from "@/libs/dataHanding";
 
 export default {
   name: "update-excel",
@@ -123,15 +124,13 @@ export default {
       // } else {
       /* mock数据 */
       this.tableHeader = param.tableHeader;
-      this.fieldArrayData = [];
-      // console.log(this.tableHeader);
+      this.fieldArrayData = param.field;
       if (JSON.stringify(this.tableHeader) === "{}") {
         const tableHeaderCopy = JSON.parse(JSON.stringify(this.tableHeader));
         tableHeaderCopy["!ref"] = "'':''";
         this.headerHandle(tableHeaderCopy);
       } else {
         this.headerHandle(this.tableHeader);
-        this.headerField(this.tableHeader);
       }
       this.rowId = param.id;
       // this.refreshData();
@@ -190,88 +189,38 @@ export default {
         this.$Message.info("上传成功");
         const data = e.target.result;
         this.tableHeader = excel.readMergeHeader(data, "array"); // 读取表头数据json
-        this.fieldArrayData = [];
         console.log(this.tableHeader);
         this.headerHandle(this.tableHeader);
         this.headerField(this.tableHeader);
+        this.uploadLoading = false;
+        this.showRemoveFile = true;
       };
     },
     // 表头处理
     headerHandle(tableHeader) {
-      // 生成原始表格Html
+      /* 1.生成原始表格Html */
       let temp = excel.builderOriginalHtml(tableHeader["!ref"].split(":")[1]);
       // console.log(temp);
-
-      // 生成Dom元素
+      /* 2.生成Dom元素 */
       excel.builderHtml(tableHeader, temp);
-
-      // 将生成的Html写入表格
+      /* 3.将生成的Html写入表格 */
       const tableDom = excel.writeToTable("example", temp);
       // console.log(tableDom);
-
-      // 将tableDom对象转化成vue虚拟dom
+      /* 4.将tableDom对象转化成vue虚拟dom */
       var oSerializer = new XMLSerializer();
       var tableStr = oSerializer.serializeToString(tableDom);
       var Profile = Vue.extend({
         template: `<table id="example">${tableStr}</table>`
       });
-      // 创建实例，并挂载到元素上
+      /* 5.创建实例，并挂载到元素上 */
       new Profile().$mount("#example");
-
-      this.uploadLoading = false;
-      this.showRemoveFile = true;
     },
     // 表头处理 - 列对应关系 - 找到每列最下面的行 - 渲染成表单并处理
     headerField(tableHeader) {
-      var array = []; // 将对象放进数组
-      var arrayCopy = []; // copy这个数组
-      var arrayTargetSingle = []; // 单字母excel索引：A1、B1...
-      var arrayTargetBiliteral = []; // 双字母excel索引：AA1、AB1...
-      var regex = /^[A-Z]+$/; // 正则判断大写字母
-      Object.keys(tableHeader).forEach((key, i) => {
-        array.push(key);
-        arrayCopy.push(key);
-      });
-      for (var i = array.length - 1; i >= 0; i--) {
-        var numBiliteral = 0;
-        var numSingle = 0;
-        for (var _i = arrayCopy.length - 1; _i >= 0; _i--) {
-          // 双字母excel索引
-          if (array[i].slice(0, 2) === arrayCopy[_i].slice(0, 2)) {
-            numBiliteral++;
-            if (
-              numBiliteral > 1 &&
-              array[i].slice(0, 1) !== "!" &&
-              arrayTargetBiliteral.every(
-                item => item.slice(0, 2) !== array[i].slice(0, 2)
-              )
-            ) {
-              arrayTargetBiliteral.push(array[i]);
-            }
-          }
-          // 单字母excel索引
-          if (
-            array[i].slice(0, 1) === arrayCopy[_i].slice(0, 1) &&
-            !regex.test(array[i][1])
-          ) {
-            numSingle++;
-            if (
-              numSingle > 1 &&
-              array[i].slice(0, 1) !== "!" &&
-              arrayTargetSingle.every(
-                item => item.slice(0, 1) !== array[i].slice(0, 1)
-              )
-            ) {
-              arrayTargetSingle.push(array[i]);
-            }
-          }
-        }
-      }
-      arrayTargetBiliteral = [...new Set(arrayTargetBiliteral)].sort();
-      arrayTargetSingle = [...new Set(arrayTargetSingle)].sort();
-      // console.log(arrayTargetBiliteral);
-      // console.log(arrayTargetSingle);
-      arrayTargetSingle.concat(arrayTargetBiliteral).forEach(item => {
+      this.fieldArrayData = []; // 清空fieldArrayData
+      const resultArray = setKeyFromTableHeader(tableHeader); // 获取表头末行的key(若合并则同列向上)
+      // console.log(resultArray);
+      resultArray.forEach(item => {
         this.fieldArrayData.push({
           title: tableHeader[item].v,
           name: "",

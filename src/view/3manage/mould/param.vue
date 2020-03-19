@@ -30,7 +30,8 @@
       <!-- 操作 - 保存/取消 -->
       <div style="margin:20px 0 10px 0">
         <Button type="primary"
-                @click="submitParamlist">确定</Button>
+                @click="submitParamlist"
+                :loading="buttonLoading">确定</Button>
         <Button type="warning"
                 style="margin-left: 8px"
                 @click="paramModalShow=false">取消</Button>
@@ -182,26 +183,6 @@
       </Form>
     </Modal>
 
-    <!-- form - 筛选项 -->
-    <!-- <Form ref="screenFormData"
-          :model="screenFormData"
-          inline
-          label-position="left"
-          @submit.native.prevent
-          style="margin:20px 0 0 10px">
-      <FormItem v-for="(item,i) in tableData"
-                :key='i'
-                :label="item.title+'：'"
-                :prop="item.name">
-        <Input type="text"
-               v-model.trim="screenFormData[item.name]"></Input>
-      </FormItem>
-      <FormItem>
-        <Button type="primary"
-                @click="screenFormSearch('screenFormData')">搜索</Button>
-      </FormItem>
-    </Form> -->
-
   </div>
 </template>
 
@@ -216,6 +197,11 @@ import {
   arraySort, // 对象数组根据key排序
   resultCallback // 根据请求的status执行回调函数
 } from "@/libs/dataHanding";
+// api
+import {
+  getReortConditionInfo, // 根据id获取参数信息
+  addOrEditReportConditionInfo // 更新模板参数信息
+} from "@/api/mould";
 
 export default {
   name: "param-setting",
@@ -257,9 +243,22 @@ export default {
           key: "data",
           // align: "center",
           render: (h, params) => {
-            if (typeof params.row.data === "string") {
-              if (params.row.data !== "") {
-                return h("Tag", params.row.data);
+            if (!this.isMock) {
+              if (params.row.data === "") {
+              } else {
+                return h("div", [
+                  JSON.parse(params.row.data).map(item => {
+                    return h(
+                      "Tag",
+                      {
+                        props: {
+                          color: "blue"
+                        }
+                      },
+                      item[params.row.valueName]
+                    );
+                  })
+                ]);
               }
             } else {
               return h("div", [
@@ -409,7 +408,7 @@ export default {
           {
             required: true,
             validator: (rule, value, callback) => {
-              if (value !== undefined) {
+              if (value !== undefined && value !== null) {
                 if (value === "") {
                   callback(new Error("请输入数据源key"));
                 } else if (value.length > 20) {
@@ -421,14 +420,14 @@ export default {
                 callback();
               }
             },
-            trigger: "blur,change"
+            trigger: "blur"
           }
         ],
         valueName: [
           {
             required: true,
             validator: (rule, value, callback) => {
-              if (value !== undefined) {
+              if (value !== undefined && value !== null) {
                 if (value === "") {
                   callback(new Error("请输入数据源value"));
                 } else if (value.length > 20) {
@@ -440,16 +439,19 @@ export default {
                 callback();
               }
             },
-            trigger: "blur,change"
+            trigger: "blur"
           }
         ],
         data: [
           {
             required: true,
             validator: (rule, value, callback) => {
-              if (this.modalData.labelName !== undefined) {
+              if (
+                this.modalData.labelName !== undefined &&
+                this.modalData.labelName !== null
+              ) {
                 if (value.length === 0) {
-                  callback(new Error("添加可选值"));
+                  callback(new Error("请添加可选值"));
                 } else {
                   callback();
                 }
@@ -457,7 +459,7 @@ export default {
                 callback();
               }
             },
-            trigger: "blur,change"
+            trigger: "blur"
           }
         ],
         discription: [
@@ -516,9 +518,7 @@ export default {
             trigger: "blur,change"
           }
         ]
-      }, // form规则
-      /* 配置信息 - 筛选表单 */
-      screenFormData: {}
+      } // form规则
     };
   },
   methods: {
@@ -529,27 +529,26 @@ export default {
       this.paramModalShow = true;
     },
     // 数据初始化
-    getData(param) {
-      // if (!this.isMock) {
-      //   /* 接口数据 */
-      //   this.tableData = tableData; // 表格
-      //   this.tableData.forEach(item => {
-      //     this.screenFormData[item.name] = ""; // 动态表单
-      //   });
-      // } else {
-      /* mock数据 */
-      this.tableData = param.paramList;
+    async getData(param) {
       this.rowId = param.id;
-      this.refreshData();
-      // }
+      if (!this.isMock) {
+        /* 接口数据 */
+        this.tableLoading = true;
+        this.tableData =
+          JSON.parse(
+            (await getReortConditionInfo(param.id)).data.data.condition
+          ) || [];
+        this.tableLoading = false;
+      } else {
+        /* mock数据 */
+        this.tableData = param.paramList;
+        this.refreshData();
+      }
     },
     // 根据条件刷新配置信息数据
     refreshData() {
       // 按name升序
       this.tableData.sort(arraySort("name", "asc"));
-      this.tableData.forEach(item => {
-        this.screenFormData[item.name] = ""; // 动态表单
-      });
     },
     // 新增参数
     insert() {
@@ -562,7 +561,10 @@ export default {
     async edit(row) {
       this.modalType = "edit";
       this.modalData = JSON.parse(JSON.stringify(row));
-      console.log(this.modalData);
+      /* eslint-disable */
+      if (this.modalData.data.indexOf('"') > -1) {
+        this.modalData.data = JSON.parse(this.modalData.data);
+      }
       this.modalDataOrg = JSON.parse(JSON.stringify(this.modalData));
       this.modalShow = true;
     },
@@ -596,10 +598,11 @@ export default {
       if (value === "下拉单选" || value === "下拉多选") {
         this.$set(this.modalData, "labelName", "");
         this.$set(this.modalData, "valueName", "");
+        this.$set(this.modalData, "data", []);
       } else {
         this.$delete(this.modalData, "labelName");
         this.$delete(this.modalData, "valueName");
-        this.$set(this.modalData, "data", []);
+        this.$set(this.modalData, "data", "");
       }
     },
     // modal弹框 - 数据源key发生改变
@@ -661,18 +664,18 @@ export default {
     // modal弹框 - 删除可选值
     deleteOptional(i) {
       this.modalData.data.splice(i, 1);
+      // this.$refs.formModalDataOptional.validate();
     },
     // 可选值表单提交
     handleSubmitOptional() {
       this.$refs.formModalDataOptional.validate(valid => {
         if (valid) {
-          this.buttonLoadingOptional = true;
+          // this.buttonLoadingOptional = true;
           this.$set(
             this.modalDataOptional,
             this.modalData.valueName,
             this.modalDataOptional.value
           );
-          // console.log(this.modalDataOptional);
           switch (this.modalTypeOptional) {
             case "insert":
               if (
@@ -788,57 +791,33 @@ export default {
       console.log(this.modalData);
       this.$refs.formModalData.validate(async valid => {
         if (valid) {
-          // this.buttonLoading = true;
+          this.buttonLoading = true;
           switch (this.modalType) {
             case "insert":
-              // if (!this.isMock) {
-              /* 接口数据 */
-              // const result = (await addSop(this.modalData)).data.status;
-              // resultCallback(
-              //   result,
-              //   "添加成功！",
-              //   () => {
-              //     this.modalShow = false;
-              //     this.getData();
-              //   },
-              //   () => {
-              //     this.buttonLoading = false;
-              //   }
-              // );
-              // } else {
-              /* mock数据 */
               if (
                 this.tableData.some(item => item.name === this.modalData.name)
               ) {
                 this.$Message.error("该参数已存在！");
                 this.buttonLoading = false;
               } else {
-                this.tableData.push(JSON.parse(JSON.stringify(this.modalData)));
+                const modalDataSubmit = JSON.parse(
+                  JSON.stringify(this.modalData)
+                );
+                if (!this.isMock)
+                  // 非mock数据时需进行格式转换
+                  modalDataSubmit.data =
+                    typeof modalDataSubmit.data !== "string"
+                      ? JSON.stringify(modalDataSubmit.data)
+                      : modalDataSubmit.data;
+                this.tableData.push(modalDataSubmit);
                 resultCallback(200, "添加成功！", () => {
                   this.refreshData();
                   this.buttonLoading = false;
                   this.modalShow = false;
                 });
               }
-              // }
               break;
             case "edit":
-              // if (!this.isMock) {
-              /* 接口数据 */
-              // const result = (await editSop(this.modalData)).data.status;
-              //   resultCallback(
-              //     result,
-              //     "修改成功！",
-              //     () => {
-              //       this.modalShow = false;
-              //       this.getData();
-              //     },
-              //     () => {
-              //       this.buttonLoading = false;
-              //     }
-              //   );
-              // } else {
-              /* mock数据 */
               // 判断重复
               if (
                 this.tableData.some(
@@ -849,10 +828,19 @@ export default {
                 this.$Message.error("该参数已存在！");
                 this.buttonLoading = false;
               } else {
+                const modalDataSubmit = JSON.parse(
+                  JSON.stringify(this.modalData)
+                );
+                if (!this.isMock)
+                  // 非mock数据时需进行格式转换
+                  modalDataSubmit.data =
+                    typeof modalDataSubmit.data !== "string"
+                      ? JSON.stringify(modalDataSubmit.data)
+                      : modalDataSubmit.data;
                 this.$set(
                   this.tableData,
                   this.modalData._index,
-                  JSON.parse(JSON.stringify(this.modalData))
+                  modalDataSubmit
                 );
                 resultCallback(200, "修改成功！", () => {
                   this.refreshData();
@@ -860,24 +848,44 @@ export default {
                   this.modalShow = false;
                 });
               }
-              // }
               break;
           }
         }
       });
     },
-    // 筛选表单搜索
-    screenFormSearch() {
-      console.log(this.screenFormData);
-    },
     // 提交参数列表
-    submitParamlist() {
+    async submitParamlist() {
       // console.log(this.tableData);
-      this.$emit("submitParamlist", {
-        id: this.rowId,
-        data: this.tableData
-      });
-      this.paramModalShow = false;
+      // this.tableData.forEach(row => {
+      //   row.data = row.data !== "" ? JSON.stringify(row.data) : row.data;
+      // });
+      if (!this.isMock) {
+        /* 接口数据 */
+        this.buttonLoading = true;
+        const result = (
+          await addOrEditReportConditionInfo({
+            id: this.rowId,
+            condition: this.tableData
+          })
+        ).data.status;
+        resultCallback(
+          result,
+          "配置成功！",
+          () => {
+            this.paramModalShow = false;
+            this.buttonLoading = false;
+          },
+          () => {
+            this.buttonLoading = false;
+          }
+        );
+      } else {
+        this.$emit("submitParamlist", {
+          id: this.rowId,
+          data: this.tableData
+        });
+        this.paramModalShow = false;
+      }
     }
   }
 };

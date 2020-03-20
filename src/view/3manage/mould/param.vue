@@ -129,7 +129,7 @@
                   v-show="modalData.elementType==='下拉单选'||modalData.elementType==='下拉多选'"
                   placeholder="请选择">
             <Option v-for="(item,i) in modalData.data"
-                    :value="item[modalData.valueName]"
+                    :value="item[modalData.labelName]"
                     :key="i">{{ item[modalData.valueName] }}</Option>
           </Select>
         </FormItem>

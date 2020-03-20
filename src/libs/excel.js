@@ -233,6 +233,7 @@ export const builderOriginalHtml = maxCellId => {
     }
     jqTrDom[`r${r + 1}`] = trDomArray;
   }
+  // console.log(jqTrDom);
   return jqTrDom;
 };
 
@@ -357,8 +358,10 @@ export const writeToTable = (contentId, jqTrDom) => {
         /* 将字符串转换为dom节点 */
         let thDoc = new DOMParser().parseFromString(o, "text/xml");
         let thNode = thDoc.getElementsByTagName("th")[0];
-        // console.log(thNode);
+        // console.log(thNode.firstChild);
+        // if (thNode.firstChild !== null) {
         trDom.append(thNode);
+        // }
       }
     });
     theadDom.append(trDom);

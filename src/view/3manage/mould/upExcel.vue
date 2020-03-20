@@ -119,7 +119,8 @@
       <!-- spin -->
       <Spin size="large"
             fix
-            v-if="spinShow"></Spin>
+            v-if="spinShow">
+      </Spin>
 
     </Modal>
 

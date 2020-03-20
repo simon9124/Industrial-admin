@@ -27,7 +27,7 @@
                   placeholder="请选择"
                   style="width:fit-content;min-width:160px">
             <Option v-for="_item in isMock?item.data:JSON.parse(item.data)"
-                    :value="_item[item.valueName]"
+                    :value="_item[item.labelName]"
                     :key="_item[item.labelName]">{{ _item[item.valueName] }}</Option>
           </Select>
 
@@ -47,14 +47,22 @@
         </FormItem>
         <FormItem>
           <Button type="primary"
+                  :disabled="JSON.stringify(tableHeader) === '{}'"
                   @click="submitFilter('filterFormData')">搜索</Button>
         </FormItem>
       </Form>
 
       <!-- 表格 -->
       <table id="report"></table>
-      <Table border
+      <Table v-if="JSON.stringify(tableHeader) === '{}'"
+             style="margin-bottom:10px"
+             :columns="[]"
+             :data="[]"
+             no-data-text="未配置模板"></Table>
+      <Table v-else
+             border
              :style="{borderTop:JSON.stringify(tableHeader) === '{}'?'1px solid #e8eaec':'none'}"
+             :show-header="false"
              disabled-hover
              :loading="tableLoading"
              :data="tableData"
@@ -112,13 +120,36 @@ export default {
       paramListData: [], // 筛选数据 - 父组件传递
       filterFormData: {}, // 筛选数据 - 呈现在表单
       /* table */
-      tableHeader: {},
-      tableData: [],
-      tableColumns: [],
+      tableHeader: {}, // 表头数据
+      tableData: [], // 页面要展示的数据
+      tableDataOrg: [], // 原始数据
+      tableColumns: [], // 表列项
       tableLoading: false,
       total: 0, // 总数
       pageNum: 1, // 页码
       pageSize: 10 // 每页显示数量
+    };
+  },
+  mounted() {
+    // 如果已配置表头且表格数据不为空 -> 监听屏幕缩放，动态设置表格列宽
+    window.onresize = () => {
+      return (() => {
+        if (JSON.stringify(this.tableHeader) !== "{}") {
+          const tableHeaderThArray = document
+            .getElementById("report")
+            .getElementsByTagName("thead")[0]
+            .lastElementChild.getElementsByTagName("th");
+          this.tableColumns.forEach((column, i) => {
+            this.$set(
+              column,
+              "width",
+              i === 0
+                ? tableHeaderThArray[i].offsetWidth - 1
+                : tableHeaderThArray[i].offsetWidth
+            );
+          });
+        }
+      })();
     };
   },
   methods: {
@@ -132,6 +163,8 @@ export default {
     async getData(param) {
       this.rowId = param.id;
       this.filterFormData = {}; // 清空表单
+      this.tableData = []; // 清空表格
+      this.tableColumns = []; // 清空表列项
       document.getElementById("report").innerHTML = ""; // 清空动态表头
       if (!this.isMock) {
         /* 接口数据 */
@@ -144,18 +177,40 @@ export default {
         this.paramListData.forEach(item => {
           this.filterFormData[item.name] = item.defaultData;
         });
-        // 动态表头
-        this.tableHeader = (
-          await getReortHeaderInfo(param.id)
-        ).data.data.header;
+        // 动态多级表头 & 动态表列项 & 动态表数据
+        const result = (await getReortHeaderInfo(param.id)).data.data;
+        this.tableHeader = result.header;
         this.tableHeader =
           this.tableHeader !== null ? JSON.parse(this.tableHeader) : {};
+        const field = result.field || [];
         if (JSON.stringify(this.tableHeader) === "{}") {
+          // 未配置表头
           const tableHeaderCopy = JSON.parse(JSON.stringify(this.tableHeader));
           tableHeaderCopy["!ref"] = "'':''";
-          this.headerHandle(tableHeaderCopy);
+          this.headerHandle(tableHeaderCopy); // 处理空表头
+          this.spinShow = false;
         } else {
-          this.headerHandle(this.tableHeader);
+          // 配置了表头
+          this.headerHandle(this.tableHeader); // 处理表头
+          // this.submitFilter(); // 生成数据
+          const tableHeaderThArray = document
+            .getElementById("report")
+            .getElementsByTagName("thead")[0]
+            .lastElementChild.getElementsByTagName("th");
+          JSON.parse(field).forEach((item, i) => {
+            this.tableColumns.push({
+              title: item.title,
+              key: item.name,
+              align: "center",
+              width:
+                i === 0
+                  ? tableHeaderThArray[i].offsetWidth - 1
+                  : tableHeaderThArray[i].offsetWidth
+            });
+          }); // 生成表列项
+          // console.log(this.tableColumns);
+
+          this.spinShow = false;
         }
       } else {
         /* mock数据 */
@@ -184,31 +239,46 @@ export default {
       });
       /* 5.创建实例，并挂载到元素上 */
       new Profile().$mount("#report");
-
-      this.spinShow = false;
     },
     // 点击搜索
     async submitFilter() {
       console.log(this.filterFormData);
+      this.tableLoading = true;
       const form = {
         id: this.rowId,
         pageIndex: this.pageNum,
         pageSize: this.pageSize,
-        // condition: JSON.stringify(this.filterFormData)
         condition: this.filterFormData
+        // condition: null
       };
-      console.log(await getReportData(form));
+      const result = (await getReportData(form)).data.data;
+      this.tableData = result.pageData;
+      this.total = result.dataCount;
+      if (this.isMock) {
+        this.tableDataOrg = (await getReportData(form)).data.data;
+        this.refreshData();
+      }
+      this.tableLoading = false;
+    },
+    // 根据条件刷新数据
+    refreshData() {
+      // 分页 & 每页条数
+      this.tableData = this.tableDataOrg.slice(
+        (this.pageNum - 1) * this.pageSize,
+        this.pageNum * this.pageSize
+      );
+      this.total = this.tableDataOrg.length;
     },
     // 分页
     changePage(pageNum) {
       this.pageNum = pageNum;
-      this.getData();
+      this.submitFilter();
     },
     // 每页条数变化
     changePageSize(pageSize) {
       this.pageSize = pageSize;
       this.pageNum = 1;
-      this.getData();
+      this.submitFilter();
     }
   }
 };

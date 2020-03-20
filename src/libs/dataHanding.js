@@ -185,6 +185,8 @@ export function setKeyFromTableHeader(tableHeader) {
     array.push(key);
     arrayCopy.push(key);
   });
+  // console.log(array);
+  // console.log(arrayCopy);
   // 2.逆循环两个数组，取出双字母索引和单字母索引的最大值，形成新的数组
   var arrayTargetSingle = []; // 单字母excel索引list：A1、B1...
   var arrayTargetBiliteral = []; // 双字母excel索引list：AA1、AB1...
@@ -194,10 +196,13 @@ export function setKeyFromTableHeader(tableHeader) {
     var numSingle = 0;
     for (var _i = arrayCopy.length - 1; _i >= 0; _i--) {
       // 双字母excel索引
-      if (array[i].slice(0, 2) === arrayCopy[_i].slice(0, 2)) {
+      if (
+        array[i].slice(0, 2) === arrayCopy[_i].slice(0, 2) &&
+        regex.test(array[i][1])
+      ) {
         numBiliteral++;
         if (
-          numBiliteral > 1 &&
+          numBiliteral > 0 &&
           array[i].slice(0, 1) !== "!" &&
           arrayTargetBiliteral.every(
             item => item.slice(0, 2) !== array[i].slice(0, 2)
@@ -213,7 +218,7 @@ export function setKeyFromTableHeader(tableHeader) {
       ) {
         numSingle++;
         if (
-          numSingle > 1 &&
+          numSingle > 0 &&
           array[i].slice(0, 1) !== "!" &&
           arrayTargetSingle.every(
             item => item.slice(0, 1) !== array[i].slice(0, 1)

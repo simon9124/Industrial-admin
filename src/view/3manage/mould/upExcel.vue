@@ -79,30 +79,37 @@
             inline
             @submit.native.prevent
             style="margin:6px 0 0 0">
-        <FormItem label="sourceType"
+        <FormItem label="数据源类型"
                   prop="sourceType">
-          <Input type="text"
-                 v-model.trim="formData.sourceType"
-                 placeholder="请输入sourcetype"></Input>
+          <Select v-model="formData.sourceType"
+                  placeholder="请选择"
+                  style="width:200px">
+            <Option v-for="(item,i) in sourceTypeList"
+                    :value="item"
+                    :key="i">{{ item }}</Option>
+          </Select>
         </FormItem>
-        <FormItem label="sourceOrder"
-                  prop="sourceOrder">
-          <Input type="text"
-                 v-model.trim="formData.sourceOrder"
-                 placeholder="请输入sourceorder"></Input>
-        </FormItem>
-        <FormItem label="isPage"
+        <FormItem label="分页查询"
                   prop="isPage">
           <Checkbox v-model="formData.isPage">isPage</Checkbox>
         </FormItem>
-        <FormItem label="sourceSql"
+        <FormItem label="Sql语句"
                   prop="sourceSql"
                   style="display:block;margin-top:10px">
           <Input type="textarea"
                  style="width:600px"
                  :autosize="{minRows: 4,maxRows: 8}"
                  v-model.trim="formData.sourceSql"
-                 placeholder="请输入sourcesql"></Input>
+                 placeholder="请输入"></Input>
+        </FormItem>
+        <FormItem label="排序规则"
+                  prop="sourceOrder"
+                  style="display:block;margin-top:20px">
+          <Input type="textarea"
+                 style="width:600px"
+                 :autosize="{minRows: 4,maxRows: 8}"
+                 v-model.trim="formData.sourceOrder"
+                 placeholder="请输入"></Input>
         </FormItem>
       </Form>
 
@@ -129,6 +136,8 @@
 
 <script>
 import Vue from "vue/dist/vue.esm.js";
+// mockData
+import { sourceTypeList } from "./mould"; // 数据源类型
 // function
 import excel from "@/libs/excel";
 import {
@@ -159,6 +168,7 @@ export default {
       file: null, // 上传的文件
       tableHeader: {}, // 表头数据
       fieldArrayData: [], // 筛选参数table
+      sourceTypeList: sourceTypeList, // 数据源类型
       /* form */
       formData: {
         id: 0,
@@ -171,13 +181,7 @@ export default {
         sourceType: [
           {
             required: true,
-            message: "请输入sourceType",
-            trigger: "change"
-          },
-          {
-            type: "string",
-            max: 15,
-            message: "sourceType过长",
+            message: "请选择数据源类型",
             trigger: "change"
           }
         ],

@@ -1,14 +1,45 @@
 // 数据类型列表
-const dataTypeList = ["text", "int", "datetime"];
+const dataTypeList = ["text", "int", "date", "dateTime"];
+
+// 参数操作符列表
+const operatorList = [
+  {
+    opKey: "1",
+    opLabel: "等于"
+  },
+  {
+    opKey: "2",
+    opLabel: "大于"
+  },
+  {
+    opKey: "3",
+    opLabel: "大于等于"
+  },
+  {
+    opKey: "4",
+    opLabel: "小于"
+  },
+  {
+    opKey: "5",
+    opLabel: "小于等于"
+  },
+  {
+    opKey: "6",
+    opLabel: "包含"
+  }
+];
 
 // 显示元素列表
 const elementTypeList = [
   "文本框",
   "下拉单选",
   // "下拉多选",
-  "日期选择"
-  // "日期-时间选择"
+  "日期选择",
+  "日期-时间选择"
 ];
+
+// 数据源类型
+const sourceTypeList = ["Sql语句"];
 
 // 模板列表
 const mouldList = [
@@ -1006,4 +1037,10 @@ const mouldList = [
   }
 ];
 
-export { dataTypeList, elementTypeList, mouldList };
+export {
+  dataTypeList,
+  operatorList,
+  elementTypeList,
+  sourceTypeList,
+  mouldList
+};

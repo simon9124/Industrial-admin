@@ -24,7 +24,7 @@
           <!-- 下拉单选 -->
           <Select v-if="item.elementType==='下拉单选'"
                   v-model="filterFormData[item.name]"
-                  placeholder="请选择"
+                  :placeholder="'当前操作符：'+getValueByKey(operatorList,'opKey',item.op.toString(),'opLabel')"
                   style="width:fit-content;min-width:160px">
             <Option v-for="_item in isMock?item.data:JSON.parse(item.data)"
                     :value="_item[item.labelName]"
@@ -34,18 +34,32 @@
           <!-- 文本框 -->
           <Input v-if="item.elementType==='文本框'"
                  type="text"
+                 :placeholder="'当前操作符：'+getValueByKey(operatorList,'opKey',item.op.toString(),'opLabel')"
                  v-model.trim="filterFormData[item.name]">
           </Input>
 
           <!-- 日期选择 -->
           <DatePicker v-if="item.elementType==='日期选择'"
+                      v-model="filterFormData[item.name]"
                       type="date"
-                      placeholder="请选择"
+                      :placeholder="'当前操作符：'+getValueByKey(operatorList,'opKey',item.op.toString(),'opLabel')"
+                      style="width:fit-content;min-width:160px">
+          </DatePicker>
+
+          <!-- 日期-时间选择 -->
+          <DatePicker v-if="item.elementType==='日期-时间选择'"
+                      v-model="filterFormData[item.name]"
+                      type="datetime"
+                      :placeholder="'当前操作符：'+getValueByKey(operatorList,'opKey',item.op.toString(),'opLabel')"
                       style="width:fit-content;min-width:160px">
           </DatePicker>
 
         </FormItem>
         <FormItem>
+          <Button type="warning"
+                  style="margin-right:10px"
+                  :disabled="JSON.stringify(tableHeader) === '{}'"
+                  @click="filterFormData={}">清空</Button>
           <Button type="primary"
                   :disabled="JSON.stringify(tableHeader) === '{}'"
                   @click="submitFilter('filterFormData')">搜索</Button>
@@ -99,8 +113,15 @@
 
 <script>
 import Vue from "vue/dist/vue.esm.js";
+// mockData
+import {
+  operatorList // 参数操作符列表
+} from "./mould";
 // function
 import excel from "@/libs/excel";
+import {
+  getValueByKey // 根据对象数组某个key的value，查询另一个key的value
+} from "@/libs/dataHanding";
 // api
 import {
   getReortConditionInfo, // 根据id获取参数信息
@@ -116,6 +137,10 @@ export default {
       rowId: "", // 当前行的id
       modalShow: false, // 是否显示
       spinShow: false,
+      operatorList: operatorList, // 参数操作符列表
+      getValueByKey: (array, queryKey, queryValue, getKey) => {
+        return getValueByKey(array, queryKey, queryValue, getKey);
+      }, // getValueByKey通用方法
       /* filterForm */
       paramListData: [], // 筛选数据 - 父组件传递
       filterFormData: {}, // 筛选数据 - 呈现在表单
@@ -177,6 +202,8 @@ export default {
         this.paramListData.forEach(item => {
           this.filterFormData[item.name] = item.defaultData;
         });
+        console.log(this.paramListData);
+
         // 动态多级表头 & 动态表列项 & 动态表数据
         const result = (await getReortHeaderInfo(param.id)).data.data;
         this.tableHeader = result.header;
@@ -192,7 +219,6 @@ export default {
         } else {
           // 配置了表头
           this.headerHandle(this.tableHeader); // 处理表头
-          // this.submitFilter(); // 生成数据
           const tableHeaderThArray = document
             .getElementById("report")
             .getElementsByTagName("thead")[0]
@@ -209,7 +235,7 @@ export default {
             });
           }); // 生成表列项
           // console.log(this.tableColumns);
-
+          this.submitFilter(); // 生成数据
           this.spinShow = false;
         }
       } else {
@@ -242,14 +268,18 @@ export default {
     },
     // 点击搜索
     async submitFilter() {
-      console.log(this.filterFormData);
+      Object.keys(this.filterFormData).forEach(key => {
+        if (this.filterFormData[key] === "null") {
+          this.filterFormData[key] = null;
+        }
+      });
+      // console.log(this.filterFormData);
       this.tableLoading = true;
       const form = {
         id: this.rowId,
         pageIndex: this.pageNum,
         pageSize: this.pageSize,
         condition: this.filterFormData
-        // condition: null
       };
       const result = (await getReportData(form)).data.data;
       this.tableData = result.pageData;

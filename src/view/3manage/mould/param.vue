@@ -81,6 +81,19 @@
                     :key="i">{{ item }}</Option>
           </Select>
         </FormItem>
+        <FormItem label="操作符"
+                  prop="op">
+          <Select v-model="modalData.op"
+                  placeholder="请选择">
+            <Option v-for="(item,i) in operatorList"
+                    :value="item.opKey.toString()"
+                    :key="i"
+                    :disabled="(modalData.dataType==='text' && ['2','3','4','5'].indexOf(item.opKey)>-1)
+                            || (modalData.dataType!=='text' && item.opKey==='6')">
+              {{ item.opLabel }}
+            </Option>
+          </Select>
+        </FormItem>
         <FormItem label="数据源key"
                   prop="labelName"
                   v-show="modalData.elementType==='下拉单选'
@@ -190,7 +203,8 @@
 // mockData
 import {
   dataTypeList, // 数据类型列表
-  elementTypeList // 显示元素列表
+  elementTypeList, // 显示元素列表
+  operatorList // 参数操作符列表
 } from "./mould";
 // function
 import {
@@ -212,6 +226,7 @@ export default {
       paramModalShow: false, // 参数列表整体显示与否
       dataTypeList: dataTypeList, // 数据类型列表
       elementTypeList: elementTypeList, // 显示元素列表
+      operatorList: operatorList, // 参数操作符列表
       tableData: [], // table数据
       tableColumns: [
         {
@@ -366,6 +381,7 @@ export default {
         title: "", // 查询条件展现名
         dataType: "", // 数据类型
         elementType: "", // 显示元素
+        op: "", // 参数操作符
         data: [], // 可选值
         labelName: "", // 数据源key
         valueName: "", // 数据源value
@@ -401,6 +417,13 @@ export default {
           {
             required: true,
             message: "请选择显示元素",
+            trigger: "change"
+          }
+        ],
+        op: [
+          {
+            required: true,
+            message: "请选择参数操作符",
             trigger: "change"
           }
         ],
@@ -561,6 +584,7 @@ export default {
     async edit(row) {
       this.modalType = "edit";
       this.modalData = JSON.parse(JSON.stringify(row));
+      this.modalData.op = this.modalData.op.toString() || "";
       /* eslint-disable */
       if (this.modalData.data.indexOf('"') > -1) {
         this.modalData.data = JSON.parse(this.modalData.data);

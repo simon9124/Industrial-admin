@@ -9,7 +9,7 @@ import {
 } from "@/api/login";
 import { getUserInfo } from "@/api/user/index";
 import { setToken, getToken, localSave } from "@/libs/util";
-import { initRouter, dynamicRouterAdd } from "@/libs/router-util"; // ①添 引入加载菜单
+import { initRouter } from "@/libs/router-util"; // ①添 引入加载菜单
 
 export default {
   state: {
@@ -86,7 +86,7 @@ export default {
           lineNo
         })
           .then(async res => {
-            initRouter(); // ①新增 调用方法，动态生成路由
+            initRouter(); // (首次)登录，动态生成路由
             const data = res.data;
             commit("setToken", data.data);
             resolve();
@@ -111,7 +111,6 @@ export default {
         commit("setAccess", []);
         localSave("dynamicRouter", []); // 清空本地存储localStorage中的dynamicRouter
         localSave("tagNaveList", []); // 清空localStorage中的tagNaveList记录
-        dynamicRouterAdd();
         resolve();
       });
     },

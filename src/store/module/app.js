@@ -14,9 +14,9 @@ import {
 import { saveErrorLogger } from "@/api/data";
 import router from "@/router";
 // import routers from "@/router/routers";
-import { dynamicRouterAdd } from "@/libs/router-util"; // ①添 引入加载菜单
-import config from "@/config";
+import { dynamicRouterAdd } from "@/libs/router-util"; // ①添 引入加载菜单(仅mock时用)
 
+import config from "@/config";
 const { homeName } = config;
 
 const closePage = (state, route) => {
@@ -40,8 +40,7 @@ export default {
   getters: {
     menuList: (state, getters, rootState) =>
       // getMenuByRouter(routers, rootState.user.access), // 原始方法
-      // getMenuByRouter(state.menuList, rootState.user.access), // ①改 通过路由列表得到菜单列表
-      getMenuByRouter(dynamicRouterAdd(), rootState.user.access), // ①改 通过路由列表得到菜单列表
+      getMenuByRouter(dynamicRouterAdd("app.js"), rootState.user.access), // 根据路由加载菜单(仅mock时用)
     errorCount: state => state.errorList.length
   },
   mutations: {
@@ -92,15 +91,9 @@ export default {
     setHasReadErrorLoggerStatus(state, status = true) {
       state.hasReadErrorPage = status;
     },
-    // 添接受前台数组，刷新菜单
-    updateMenuList(state, routes) {
-      // 动态添加路由 - 真正添加路由（不会立刻刷新，需要手动往router.options.routes里添加数据）
-      router.addRoutes(routes);
-      // 手动添加路由数据
-      routes.forEach(route => {
-        router.options.routes.push(route);
-      });
-      state.menuList = routes; // 动态添加左侧菜单
+    // 根据路由和权限，生成左侧菜单
+    setMenuList(state, data) {
+      state.menuList = getMenuByRouter(data.menuList, data.access);
     }
   },
   actions: {
@@ -120,6 +113,22 @@ export default {
       };
       saveErrorLogger(info).then(() => {
         commit("addError", data);
+      });
+    },
+    updateMenuList({ commit, rootState }, routes) {
+      console.log("动态添加路由：", routes);
+      // 动态添加路由 - 真正添加路由（不会立刻刷新，需要手动往router.options.routes里添加数据）
+      router.addRoutes(routes);
+      // 手动添加路由数据
+      routes.forEach(route => {
+        if (!router.options.routes.some(_route => _route.path === route.path)) {
+          router.options.routes.push(route);
+        }
+      });
+      // 动态渲染菜单数据
+      commit("setMenuList", {
+        menuList: routes,
+        access: rootState.user.access
       });
     }
   }

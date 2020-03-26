@@ -25,9 +25,6 @@ import VCharts from "v-charts";
 // iview
 import iView from "iview";
 
-// ①新增  引入动态菜单渲染
-// import { initRouter } from "@/libs/router-util";
-
 // isMock时，引入一些mockjs接口
 if (config.isMock) require("@/mock");
 
@@ -72,7 +69,4 @@ new Vue({
   i18n,
   store,
   render: h => h(App)
-  // mounted() {
-  //   initRouter(this); // ①新增 调用方法,动态生成路由
-  // }
 });

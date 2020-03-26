@@ -122,7 +122,7 @@ export const mainRouter = [
 ];
 
 // 作为Main组件的子页面展示并且在左侧菜单显示的路由写在appRouter里
-export const appRouter = [...dynamicRouterAdd()];
+export const appRouter = [...dynamicRouterAdd("router.js")];
 
 export const routes = [...otherRouter, ...mainRouter, ...appRouter];
 

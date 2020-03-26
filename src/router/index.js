@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
-import { routes, otherRouter, mainRouter, appRouter } from "./routers";
+import { routes, otherRouter, mainRouter } from "./routers";
 import store from "@/store";
 import iView from "iview";
 import { setToken, getToken, canTurnTo, setTitle } from "@/libs/util";
@@ -53,6 +53,11 @@ const turnTo = (to, access, next) => {
   }
 };
 
+export const refreshRoute = () => {
+  const routes = [...otherRouter, ...mainRouter];
+  router.matcher = new Router({ routes }).matcher;
+};
+
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start();
   const token = getToken();
@@ -65,9 +70,10 @@ router.beforeEach((to, from, next) => {
       name: LOGIN_PAGE_NAME // 跳转到登录页
     });
   } else if (!token && to.name === LOGIN_PAGE_NAME) {
-    // 未登陆且要跳转的页面是登录页 -> 重新加载不含动态数据的原始路由
-    const routes = [...otherRouter, ...mainRouter, ...appRouter];
-    router.matcher = new Router({ routes }).matcher;
+    // 未登陆且要跳转的页面是登录页（或退出登录） -> 重新加载不含动态数据的原始路由
+    // const routes = [...otherRouter, ...mainRouter];
+    // router.matcher = new Router({ routes }).matcher;
+    refreshRoute();
     next(); // 跳转
   } else if (token && to.name === LOGIN_PAGE_NAME) {
     // 已登录且要跳转的页面是登录页
@@ -75,14 +81,16 @@ router.beforeEach((to, from, next) => {
       name: homeName // 跳转到homeName页
     });
   } else {
-    // 已登录且要跳转的页面不是登录页 -> 添加动态路由
-    initRouter();
+    // 已登录且要跳转的页面不是登录页
     if (store.state.user.hasGetInfo) {
+      // 首次登录
       turnTo(to, store.state.user.access, next);
     } else {
+      // 刷新页面 -> 重新获取用户信息 & 重新添加动态路由
       store
         .dispatch("getUserInfo")
         .then(user => {
+          initRouter();
           // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
           turnTo(to, user.data.user_access, next);
         })

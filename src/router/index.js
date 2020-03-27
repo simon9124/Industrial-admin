@@ -53,6 +53,7 @@ const turnTo = (to, access, next) => {
   }
 };
 
+// 方法：初始化路由表刷新
 export const refreshRoute = () => {
   const routes = [...otherRouter, ...mainRouter];
   router.matcher = new Router({ routes }).matcher;
@@ -71,8 +72,6 @@ router.beforeEach((to, from, next) => {
     });
   } else if (!token && to.name === LOGIN_PAGE_NAME) {
     // 未登陆且要跳转的页面是登录页（或退出登录） -> 重新加载不含动态数据的原始路由
-    // const routes = [...otherRouter, ...mainRouter];
-    // router.matcher = new Router({ routes }).matcher;
     refreshRoute();
     next(); // 跳转
   } else if (token && to.name === LOGIN_PAGE_NAME) {

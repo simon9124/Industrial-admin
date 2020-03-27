@@ -35,7 +35,8 @@ export default [
       // hideInMenu: true,
       access: ["admin", "workshop_manager"]
     },
-    component: "6inspector/controlCabin"
+    component: "6inspector/controlCabin",
+    children: []
   },
 
   // 检测驾驶舱 - 产线（非管理员或车间主管）

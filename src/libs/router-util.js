@@ -59,22 +59,60 @@ export const routerDataHanding = apiRouterData => {
   // 外层节点
   apiRouterData.forEach(route => {
     if (route.parenetId === "root") {
-      asyncRouterMap.push({
-        path: route.url === "/" ? route.url : "/" + route.url,
-        name: route.name,
-        component: "Main",
-        meta: {
-          icon: route.ico,
-          title: route.title,
-          hideInBread: true,
-          id: route.id // 根据id确定子组件
-        },
-        children: []
-      });
+      console.log(route);
+      if (route.path === "") {
+        // 有子节点的父级路由
+        asyncRouterMap.push({
+          path: route.url === "/" ? route.url : "/" + route.url,
+          name: route.name,
+          component: "Main",
+          meta: {
+            icon: route.ico,
+            title: route.title,
+            hideInBread: true,
+            id: route.id // 根据id确定子组件
+          },
+          children: []
+        });
+      } else {
+        // 无子节点 -> 根据url和name创建父子结构的路由
+        asyncRouterMap.push({
+          path: "/" + route.url.split("/")[0],
+          name: route.name.split("/")[0],
+          component: "Main",
+          meta: {
+            icon: route.ico,
+            title: route.title,
+            hideInBread: true
+          },
+          children: [
+            {
+              path: route.url
+                .split("/")
+                .filter((val, index) => {
+                  return index !== 0;
+                })
+                .join("/"),
+              name: route.name
+                .split("/")
+                .filter((val, index) => {
+                  return index !== 0;
+                })
+                .join("/"),
+              meta: {
+                icon: route.ico,
+                title: route.title
+              },
+              component: route.path,
+              children: []
+            }
+          ]
+        });
+      }
     }
   });
 
-  // 内层节点 - 递归
+  // 内层子路由 - 递归
   const handleRecurrence = recurrenceData => {
     recurrenceData.forEach(data => {
       apiRouterData.forEach(route => {

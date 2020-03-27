@@ -69,7 +69,7 @@
             <Select v-else
                     v-model="modalData.parenetId"
                     @on-change="parentOnChange">
-              <Option v-for="menu in menuList"
+              <Option v-for="menu in rootSelectList"
                       :value="menu.id"
                       :key="menu.id">{{ menu.title }}</Option>
             </Select>
@@ -92,9 +92,10 @@
                    v-model.trim="modalData.url"
                    placeholder="地址栏路径"
                    :disabled="!urlDisabled">
-            <span slot="prepend">
+            <!-- <span slot="prepend">
               <span v-if="menuType!=='first'">/</span>
-              {{modalData.parentName}} /</span>
+              {{modalData.parentName}} /
+            </span> -->
             </Input>
           </FormItem>
           <FormItem label="组件："
@@ -105,7 +106,7 @@
                    placeholder="前端组件路径"></Input>
           </FormItem>
           <FormItem label="图标："
-                    v-else
+                    v-if="menuType==='first' || modalData.parenetId==='root'"
                     prop="ico">
             <icon-choose v-model="modalData.ico"></icon-choose>
           </FormItem>
@@ -162,6 +163,8 @@ import {
   resultCallback, // 根据请求的status执行回调函数
   getValueByKey // 根据对象数组某个key的value，查询另一个key的value
 } from "@/libs/dataHanding";
+import { refreshRoute } from "@/router"; // 路由初始化，清空动态路由
+import { initRouter } from "@/libs/router-util"; // 动态路由渲染
 // api
 import {
   getAllMenus, // 获取全部菜单
@@ -178,6 +181,7 @@ export default {
     return {
       /* 全局 */
       menuList: [], // 全部菜单列表 - 渲染后的tree
+      rootSelectList: [],
       /* 页面 */
       tableDataOrg: [], // 原始数据
       /* loading */
@@ -201,7 +205,7 @@ export default {
       formModalRule: {
         name: [
           { required: true, message: "请输入系统名", trigger: "change" },
-          { type: "string", max: 20, message: "系统名过长", trigger: "change" }
+          { type: "string", max: 40, message: "系统名过长", trigger: "change" }
         ],
         title: [
           { required: true, message: "请输入展现名", trigger: "change" },
@@ -236,6 +240,9 @@ export default {
         // 接口数据
         this.treeLoading = true;
         this.menuList = computedMenuData((await getAllMenus()).data.data || []);
+        this.rootSelectList = [{ id: "root", title: "根目录" }].concat(
+          this.menuList
+        );
         this.buttonLoading = false;
         this.treeLoading = false;
       } else {
@@ -314,7 +321,9 @@ export default {
       );
       this.modalData = JSON.parse(JSON.stringify(value));
       this.menuType =
-        this.modalData.parenetId === "root" ? "first" : "notFirst";
+        this.modalData.parenetId === "root" && this.modalData.path === ""
+          ? "first"
+          : "notFirst";
       this.urlDisabled = true;
     },
     // 数量校验 - 禁止输入e和E和-和.
@@ -363,6 +372,7 @@ export default {
                   "新增成功！",
                   () => {
                     this.getData();
+                    this.refreshRouteData();
                     this.buttonLoading = false;
                   },
                   () => {
@@ -387,6 +397,7 @@ export default {
                   );
                   resultCallback(200, "添加成功！", () => {
                     this.refreshData();
+                    this.refreshRouteData();
                     this.buttonLoading = false;
                   });
                 }
@@ -401,6 +412,7 @@ export default {
                   "修改成功！",
                   () => {
                     this.getData();
+                    this.refreshRouteData();
                     this.buttonLoading = false;
                   },
                   () => {
@@ -421,6 +433,7 @@ export default {
                 } else {
                   resultCallback(200, "修改成功！", () => {
                     this.refreshData();
+                    this.refreshRouteData();
                     this.buttonLoading = false;
                   });
                 }
@@ -443,12 +456,14 @@ export default {
               const result = (await removeMenu(data.id)).data.status;
               resultCallback(result, "删除成功！", () => {
                 this.getData();
+                this.refreshRouteData();
                 this.insert();
                 this.menuType = "notFirst";
               });
             } else {
               // mock数据
               resultCallback(200, "删除成功！", () => {
+                this.refreshRouteData();
                 this.refreshData();
               });
             }
@@ -456,6 +471,12 @@ export default {
           closable: true
         });
       }
+    },
+    // 刷新左侧菜单数据
+    refreshRouteData() {
+      localStorage.setItem("dynamicRouter", []);
+      refreshRoute();
+      initRouter();
     }
   }
 };

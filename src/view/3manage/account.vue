@@ -67,10 +67,10 @@
         </FormItem>
         <FormItem label="角色："
                   prop="userAccess">
-          <Select v-model="modalData.user_access"
+          <!-- <Select v-model="modalData.user_access"
                   @on-change="accessOnChange">
-            <!-- multiple -->
-            <!-- :max-tag-count="3" -->
+            multiple
+            :max-tag-count="3"
             <Option value="admin"
                     :disabled="userAccess[0]!=='admin'">管理员</Option>
             <Option value="cestc"
@@ -80,6 +80,14 @@
             <Option value="proline_leader"
                     :disabled="userAccess[0]==='examine'">产线线长</Option>
             <Option value="examine">检测员</Option>
+          </Select> -->
+          <Select v-model="modalData.user_access"
+                  @on-change="accessOnChange">
+            <Option v-for="(role,i) in roleList"
+                    :value="role.name"
+                    :key="i">
+              {{ role.title }}
+            </Option>
           </Select>
         </FormItem>
         <FormItem>
@@ -96,21 +104,31 @@
 
 <script>
 // import list from './mockData/account';
+// import {
+//   roleList // 角色列表
+// } from "./mockData/role";
+// api
 import {
   getUserList,
   insertUser,
   updateUser,
   deleteUser
 } from "@/api/user/index";
-import { getUseGroupList } from "@/api/userGroup/index";
+import { getUseGroupList } from "@/api/userGroup/index"; // 获取用户组列表
+import { getRolelist } from "@/api/role/index"; // 获取角色列表
 // function
 import { validateTel } from "@/libs/validate";
+import {
+  getValueByKey // 根据对象数组某个key的value，查询另一个key的value
+} from "@/libs/dataHanding";
 // vuex
 import { mapGetters } from "vuex";
 
 export default {
   data() {
     return {
+      /* 全局 */
+      roleList: [], // 全部角色列表 - select用
       // 原始数据
       tableDataOrg: [],
       // 处理后的当页数据
@@ -135,29 +153,19 @@ export default {
           align: "center",
           minWidth: 120
         },
-        // {
-        //   title: "用户组",
-        //   key: "group_name",
-        //   align: "center",
-        //   minWidth: 120
-        // },
         {
           title: "角色",
           key: "userAccess",
           align: "center",
           render: (h, params) => {
-            /* eslint-disable */
             return h(
               "div",
-              params.row.userAccess === "admin"
-                ? "管理员"
-                : params.row.userAccess === "cestc"
-                ? "工程师"
-                : params.row.userAccess === "workshop_manager"
-                ? "车间主管"
-                : params.row.userAccess === "proline_leader"
-                ? "产线线长"
-                : "检测员"
+              getValueByKey(
+                this.roleList,
+                "name",
+                params.row.userAccess,
+                "title"
+              )
             );
           },
           minWidth: 120
@@ -340,6 +348,7 @@ export default {
     async getData() {
       this.tableLoading = true;
       this.tableDataOrg = (await getUserList()).data.data;
+      this.roleList = (await getRolelist()).data.data;
       // 车间主管只能看检测员、产线线长和自己信息
       if (this.userAccess[0] === "workshop_manager") {
         for (let i = this.tableDataOrg.length - 1; i >= 0; i--) {
@@ -418,8 +427,9 @@ export default {
               if (!this.isMock) {
                 // 非mock时
                 this.modalData.user_avator = "";
-                if (this.modalData.user_phone === undefined)
+                if (this.modalData.user_phone === undefined) {
                   this.modalData.user_phone = "";
+                }
                 const result = (await insertUser(this.modalData)).data.status;
                 if (result === 200) {
                   this.$refs.formModalData.resetFields();

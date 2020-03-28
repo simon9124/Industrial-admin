@@ -40,6 +40,11 @@
             :rules="formModalRule"
             :label-width="100"
             @submit.native.prevent>
+        <FormItem label="标识："
+                  prop="name">
+          <Input type="text"
+                 v-model.trim="modalDataRole.name"></Input>
+        </FormItem>
         <FormItem label="名称："
                   prop="title">
           <Input type="text"
@@ -86,7 +91,8 @@
             <Option v-for="(user,i) in userList"
                     :value="user.user_id"
                     :key="i"
-                    :disabled="JSON.stringify(tableDataOrg).indexOf(user.display_name)>-1">
+                    :disabled="JSON.stringify(userSelectList).indexOf(user.display_name)>-1">
+              <!-- :disabled="JSON.stringify(tableDataOrg).indexOf(user.display_name)>-1" -->
               {{ user.display_name }}
             </Option>
           </Select>
@@ -352,6 +358,7 @@ export default {
       modalShowUser: false, // 是否显示 - user
       modalShowMenu: false, // 是否显示 - menu
       modalDataRole: {
+        name: "",
         title: "",
         description: ""
         // menus: [],
@@ -371,6 +378,19 @@ export default {
       menuSelectedId: [], // tree提交的menu - id
       // menuSelectedData: [], // tree里选择的menu - 整个data
       formModalRule: {
+        name: [
+          {
+            required: true,
+            message: "请输入角色标识",
+            trigger: "change"
+          },
+          {
+            type: "string",
+            max: 30,
+            message: "角色标识过长",
+            trigger: "change"
+          }
+        ],
         title: [
           {
             required: true,
@@ -705,7 +725,8 @@ export default {
       this.menuList.forEach((menu, i) => {
         let menuRef = "menu" + i;
         menuSelected = menuSelected.concat(
-          this.$refs[menuRef][0].getCheckedNodes()
+          // this.$refs[menuRef][0].getCheckedNodes()
+          this.$refs[menuRef][0].getCheckedAndIndeterminateNodes()
         );
       });
       // console.log(menuSelected);

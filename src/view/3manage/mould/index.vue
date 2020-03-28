@@ -115,6 +115,12 @@ export default {
       tableData: [], // table数据 - 当前页
       tableColumns: [
         {
+          title: "id",
+          key: "id",
+          align: "center",
+          minWidth: 100
+        },
+        {
           title: "名称",
           key: "name",
           align: "center",

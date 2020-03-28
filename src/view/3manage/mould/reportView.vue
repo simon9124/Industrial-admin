@@ -1,11 +1,7 @@
 <template>
-  <div>
-    <!-- Modal - 整体数据-->
-    <Modal v-model="modalShow"
-           :mask-closable="false"
-           footer-hide
-           width="80%"
-           title="查看报表">
+  <div class="dooya-container">
+    <Card>
+
       <!-- form - 筛选项 -->
       <Form v-if="paramListData.length!==0"
             ref="filterFormData"
@@ -15,9 +11,10 @@
             @submit.native.prevent
             style="margin:0 0 10px 10px">
         <FormItem v-for="(item,i) in paramListData"
-                  :key="i"
+                  :key='i'
                   :label="item.title"
                   :prop="item.name">
+
           <!-- 下拉单选 -->
           <Select v-if="item.elementType==='下拉单选'"
                   v-model="filterFormData[item.name]"
@@ -32,21 +29,25 @@
           <Input v-if="item.elementType==='文本框'"
                  type="text"
                  :placeholder="'当前操作符：'+getValueByKey(operatorList,'opKey',item.op.toString(),'opLabel')"
-                 v-model.trim="filterFormData[item.name]"></Input>
+                 v-model.trim="filterFormData[item.name]">
+          </Input>
 
           <!-- 日期选择 -->
           <DatePicker v-if="item.elementType==='日期选择'"
                       v-model="filterFormData[item.name]"
                       type="date"
                       :placeholder="'当前操作符：'+getValueByKey(operatorList,'opKey',item.op.toString(),'opLabel')"
-                      style="width:fit-content;min-width:160px"></DatePicker>
+                      style="width:fit-content;min-width:160px">
+          </DatePicker>
 
           <!-- 日期-时间选择 -->
           <DatePicker v-if="item.elementType==='日期-时间选择'"
                       v-model="filterFormData[item.name]"
                       type="datetime"
                       :placeholder="'当前操作符：'+getValueByKey(operatorList,'opKey',item.op.toString(),'opLabel')"
-                      style="width:fit-content;min-width:160px"></DatePicker>
+                      style="width:fit-content;min-width:160px">
+          </DatePicker>
+
         </FormItem>
         <FormItem>
           <Button type="warning"
@@ -78,7 +79,8 @@
              :loading="tableLoading"
              :data="tableData"
              :columns="tableColumns"
-             stripe></Table>
+             stripe>
+      </Table>
 
       <!-- 分页 -->
       <div v-if="tableData.length>0"
@@ -99,8 +101,10 @@
       <!-- spin -->
       <Spin size="large"
             fix
-            v-if="spinShow"></Spin>
-    </Modal>
+            v-if="spinShow">
+      </Spin>
+
+    </Card>
   </div>
 </template>
 
@@ -108,6 +112,7 @@
 import Vue from "vue/dist/vue.esm.js";
 // mockData
 import {
+  mouldList, // 模板列表
   operatorList // 参数操作符列表
 } from "./mould";
 // function
@@ -128,8 +133,8 @@ export default {
     return {
       /* 全局 */
       rowId: "", // 当前行的id
-      modalShow: false, // 是否显示
       spinShow: false,
+      mouldList: mouldList, // 模板列表
       operatorList: operatorList, // 参数操作符列表
       getValueByKey: (array, queryKey, queryValue, getKey) => {
         return getValueByKey(array, queryKey, queryValue, getKey);
@@ -170,16 +175,18 @@ export default {
       })();
     };
   },
+  created() {
+    // console.log(this.$route);
+    const pathArray = this.$route.path.split("/");
+    const id = pathArray[pathArray.length - 1];
+    this.$nextTick(() => {
+      this.getData(id);
+    });
+  },
   methods: {
-    // 显示配置参数弹框
-    showModal(param) {
-      console.log(param);
-      this.getData(param);
-      this.modalShow = true;
-    },
     // 数据初始化
-    async getData(param) {
-      this.rowId = param.id;
+    async getData(id) {
+      this.rowId = id;
       this.filterFormData = {}; // 清空表单
       this.tableData = []; // 清空表格
       this.tableColumns = []; // 清空表列项
@@ -189,16 +196,15 @@ export default {
         this.spinShow = true;
         // 动态表单
         this.paramListData =
-          JSON.parse(
-            (await getReortConditionInfo(param.id)).data.data.condition
-          ) || [];
+          JSON.parse((await getReortConditionInfo(id)).data.data.condition) ||
+          [];
         this.paramListData.forEach(item => {
           this.filterFormData[item.name] = item.defaultData;
         });
-        console.log(this.paramListData);
+        // console.log(this.paramListData);
 
         // 动态多级表头 & 动态表列项 & 动态表数据
-        const result = (await getReortHeaderInfo(param.id)).data.data;
+        const result = (await getReortHeaderInfo(id)).data.data;
         this.tableHeader = result.header;
         this.tableHeader =
           this.tableHeader !== null ? JSON.parse(this.tableHeader) : {};
@@ -233,7 +239,8 @@ export default {
         }
       } else {
         /* mock数据 */
-        this.paramListData = param.paramList;
+        // this.paramListData = param.paramList;
+        this.paramListData = mouldList[0].paramList;
         this.paramListData.forEach(item => {
           this.filterFormData[item.name] = item.defaultData; // 动态表单
         });
@@ -344,7 +351,7 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.v-transfer-dom /deep/ {
+.dooya-container /deep/ {
   #report {
     width: 100%;
     border-collapse: collapse;
@@ -368,18 +375,16 @@ export default {
       height: 48px;
     }
   }
-  .ivu-modal {
-    .ivu-form {
-      &-item {
-        margin-right: 20px;
-        margin-bottom: 14px;
-      }
-      &-item-content {
-        display: inline-block;
-      }
-      &-item-label {
-        padding-right: 10px;
-      }
+  .ivu-form {
+    &-item {
+      margin-right: 20px;
+      margin-bottom: 14px;
+    }
+    &-item-content {
+      display: inline-block;
+    }
+    &-item-label {
+      padding-right: 10px;
     }
   }
 }

@@ -12,7 +12,10 @@
       <Table :data="tableData"
              :loading="tableLoading"
              :columns="tableColumns"
-             stripe></Table>
+             stripe>
+      </Table>
+
+      <!-- 分页 -->
       <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
           <Page show-sizer
@@ -94,7 +97,7 @@
           <Button type="primary"
                   @click="handleSubmit('formModalData')"
                   :loading="buttonLoading">确定</Button>
-          <Button @click="handleReset('formModalData')"
+          <Button @click="modalShow=false"
                   style="margin-left: 8px">取消</Button>
         </FormItem>
       </Form>
@@ -103,10 +106,12 @@
 </template>
 
 <script>
-// import list from './mockData/account';
-// import {
-//   roleList // 角色列表
-// } from "./mockData/role";
+// vuex
+import { mapGetters } from "vuex";
+import {
+  userList, // 用户列表
+  roleList // 角色列表
+} from "./mockData/role";
 // api
 import {
   getUserList,
@@ -117,23 +122,22 @@ import {
 import { getUseGroupList } from "@/api/userGroup/index"; // 获取用户组列表
 import { getRolelist } from "@/api/role/index"; // 获取角色列表
 // function
-import { validateTel } from "@/libs/validate";
+import { validateTel } from "@/libs/validate"; // 手机号验证
 import {
-  getValueByKey // 根据对象数组某个key的value，查询另一个key的value
+  arraySort, // 对象数组根据key排序
+  getValueByKey, // 根据对象数组某个key的value，查询另一个key的value
+  resultCallback // 根据请求的status执行回调函数
 } from "@/libs/dataHanding";
-// vuex
-import { mapGetters } from "vuex";
 
 export default {
   data() {
     return {
       /* 全局 */
       roleList: [], // 全部角色列表 - select用
-      // 原始数据
-      tableDataOrg: [],
-      // 处理后的当页数据
-      tableData: [],
-      // 表头列项
+      userGroup: [], // 用户组列表 - select用
+      /* table */
+      tableDataOrg: [], // 原始数据
+      tableData: [], // 处理后的当页数据
       tableColumns: [
         {
           title: "账号",
@@ -265,22 +269,26 @@ export default {
             ]);
           }
         }
-      ],
-      // loading - table
-      tableLoading: false,
-      // loading - button
-      buttonLoading: false,
-      // 页码
-      pageNum: 1,
-      // 每页显示数量
-      pageSize: 10,
-      // modal弹框 - 是否显示
-      modalShow: false,
-      // modal弹框 - 数据
+      ], // 表头列项
+      total: 0, // 总数
+      pageNum: 1, // 页码
+      pageSize: 10, // 每页显示数量
+      /* loading */
+      tableLoading: false, // table
+      buttonLoading: false, // button
+      /* modal */
+      modalShow: false, // 是否显示
+      modalDataType: "", // 类型 - insert or edit
       modalData: {
-        user_phone: ""
-      },
-      // modal弹框 - form规则
+        user_name: "",
+        display_name: "",
+        user_phone: "",
+        group_id: "",
+        user_access: "",
+        lock_flag: "0",
+        user_avator: ""
+      }, // 数据
+      modalDataOrg: {}, // 数据 - 行内原始
       formModalRule: {
         user_name: [
           {
@@ -311,9 +319,9 @@ export default {
             }
           }
         ],
-        group_id: [
-          { required: true, message: "请选择用户组", trigger: "change" }
-        ],
+        // group_id: [
+        //   { required: true, message: "请选择用户组", trigger: "change" }
+        // ],
         userAccess: [
           {
             required: true,
@@ -328,11 +336,7 @@ export default {
             trigger: "change"
           }
         ]
-      },
-      // modal弹框 - 用户组数据
-      userGroup: [],
-      // modal弹框 - 类型
-      modalDataType: ""
+      } // form规则
     };
   },
   computed: {
@@ -340,15 +344,29 @@ export default {
   },
   async created() {
     this.getData();
-    // 用户组 -> select选框用
-    this.userGroup = (await getUseGroupList()).data.data;
+    this.userGroup = !this.isMock
+      ? (await getUseGroupList()).data.data || []
+      : [];
+    this.roleList = !this.isMock
+      ? (await getRolelist()).data.data || []
+      : roleList;
   },
   methods: {
     // 获取首页数据
     async getData() {
-      this.tableLoading = true;
-      this.tableDataOrg = (await getUserList()).data.data;
-      this.roleList = (await getRolelist()).data.data;
+      if (!this.isMock) {
+        // 接口数据
+        this.tableLoading = true;
+        this.tableDataOrg = (await getUserList()).data.data || [];
+        this.refreshData();
+        this.buttonLoading = false;
+        this.tableLoading = false;
+      } else {
+        // mock数据
+        this.tableDataOrg = userList;
+        this.refreshData();
+        this.buttonLoading = false;
+      }
       // 车间主管只能看检测员、产线线长和自己信息
       if (this.userAccess[0] === "workshop_manager") {
         for (let i = this.tableDataOrg.length - 1; i >= 0; i--) {
@@ -362,16 +380,23 @@ export default {
           }
         }
       }
-      this.refreshData();
-      this.buttonLoading = false;
-      this.tableLoading = false;
     },
     // 根据条件刷新数据
     refreshData() {
+      if (this.isMock) {
+        // 按"user_name"升序
+        this.tableDataOrg.sort(arraySort("user_name", "asc"));
+      }
+      // 分页 & 每页条数
       this.tableData = this.tableDataOrg.slice(
         (this.pageNum - 1) * this.pageSize,
         this.pageNum * this.pageSize
       );
+      // 如果是在删除之后获取的数据 -> 若删掉的是某一页的最后项且页码不是1，则自动获取前一页的数据
+      if (this.tableData.length === 0 && this.tableDataOrg.length !== 0) {
+        this.pageNum--;
+        this.refreshData();
+      }
     },
     // 分页
     changePage(pageNum) {
@@ -387,26 +412,18 @@ export default {
     // 点击按钮 - 新增
     insert() {
       this.modalDataType = "insert";
-      this.modalData = {};
+      this.$refs.formModalData.resetFields();
       this.modalData.user_access = ["examine"];
-      // this.modalData.user_access = [];
       this.modalShow = true;
     },
-    // 点击按钮 - 详情
+    // 点击按钮 - 编辑
     async edit(row) {
-      if (!this.isMock) {
-        // 非mock时
-        this.modalDataType = "edit";
-        this.modalData = JSON.parse(JSON.stringify(row));
-        this.modalShow = true;
-      } else {
-        // mock时
-        this.modalDataType = "edit";
-        this.modalData = JSON.parse(JSON.stringify(row));
-        this.modalData.group_id =
-          this.modalData.group_name === "开发组" ? "001" : "002";
-        this.modalShow = true;
-      }
+      this.modalDataType = "edit";
+      this.modalDataOrg = row;
+      this.modalData = JSON.parse(JSON.stringify(row));
+      // this.modalData.group_id =
+      //   this.modalData.group_name === "开发组" ? "001" : "002";
+      this.modalShow = true;
     },
     // 用户角色被选择
     accessOnChange(value) {
@@ -421,73 +438,96 @@ export default {
       this.$refs.formModalData.validate(async valid => {
         if (valid) {
           this.buttonLoading = true;
+          this.modalData.user_avator = "";
           switch (this.modalDataType) {
             case "insert":
               this.modalData.userAccess = this.modalData.user_access.join(",");
               if (!this.isMock) {
                 // 非mock时
-                this.modalData.user_avator = "";
                 if (this.modalData.user_phone === undefined) {
                   this.modalData.user_phone = "";
                 }
                 const result = (await insertUser(this.modalData)).data.status;
-                if (result === 200) {
-                  this.$refs.formModalData.resetFields();
-                  this.$Message.success("添加成功！");
-                }
-                this.modalShow = false;
-                this.getData();
+                resultCallback(
+                  result,
+                  "添加成功！",
+                  () => {
+                    this.modalShow = false;
+                    this.getData();
+                  },
+                  () => {
+                    this.buttonLoading = false;
+                  }
+                );
               } else {
                 // mock时
-                this.modalData.group_name =
-                  this.modalData.group_id === "001" ? "开发组" : "产品组";
-                this.modalData.user_id = (
-                  this.tableDataOrg.length + 1
-                ).toString();
-                this.tableDataOrg.push(this.modalData);
-                this.refreshData();
-                this.$Message.success("添加成功！");
-                this.buttonLoading = false;
-                this.modalShow = false;
+                if (
+                  this.tableDataOrg.some(
+                    item => item.user_name === this.modalData.user_name
+                  )
+                ) {
+                  // 判断重复
+                  this.$Message.error("该账号已存在！");
+                  this.buttonLoading = false;
+                } else {
+                  // 随机生成sop的id
+                  this.modalData.user_id = Math.random()
+                    .toString(36)
+                    .substr(-10);
+                  this.tableDataOrg.push(
+                    JSON.parse(JSON.stringify(this.modalData))
+                  );
+                  resultCallback(200, "添加成功！", () => {
+                    this.refreshData();
+                    this.buttonLoading = false;
+                    this.modalShow = false;
+                  });
+                }
               }
               break;
             case "edit":
               if (!this.isMock) {
                 // 非mock时
-                this.modalData.user_avator = "";
                 const result = (await updateUser(this.modalData)).data.status;
-                if (result === 200) {
-                  this.$refs.formModalData.resetFields();
-                  this.$Message.success("修改成功！");
-                }
-                this.modalShow = false;
-                this.getData();
+                resultCallback(
+                  result,
+                  "修改成功！",
+                  () => {
+                    this.modalShow = false;
+                    this.getData();
+                  },
+                  () => {
+                    this.buttonLoading = false;
+                  }
+                );
               } else {
                 // mock时
-                // console.log(this.modalData.user_id);
-                this.tableData.forEach(list => {
-                  if (this.modalData.user_id === list.user_id) {
-                    this.$set(
-                      list,
-                      "group_name",
-                      this.modalData.group_id === "001" ? "开发组" : "产品组"
-                    );
-                  }
-                });
-                this.refreshData();
-                this.$Message.success("修改成功！");
-                this.buttonLoading = false;
-                this.modalShow = false;
+                if (
+                  this.tableDataOrg.some(
+                    item => item.user_name === this.modalData.user_name
+                  ) &&
+                  this.modalData.user_name !== this.modalDataOrg.user_name
+                ) {
+                  // 判断重复
+                  this.$Message.error("该账号已存在！");
+                  this.buttonLoading = false;
+                } else {
+                  this.$set(
+                    this.tableDataOrg,
+                    (this.pageNum - 1) * this.pageSize + this.modalData._index,
+                    JSON.parse(JSON.stringify(this.modalData))
+                  );
+                  resultCallback(200, "修改成功！", () => {
+                    this.refreshData();
+                    this.buttonLoading = false;
+                    this.modalShow = false;
+                  });
+                }
               }
               break;
           }
         }
       });
-    },
-    // 点击表单按钮 - 取消
-    handleReset() {
-      this.$refs.formModalData.resetFields();
-      this.modalShow = false;
     },
     // 点击按钮 - 锁定/解锁
     async lock(row) {
@@ -495,15 +535,22 @@ export default {
       if (!this.isMock) {
         // 非mock时
         const result = (await updateUser(row)).data.status;
-        if (result === 200) {
-          this.$Message.success(
-            row.lock_flag === "1" ? "锁定成功！" : "解锁成功！"
-          );
-        }
+        resultCallback(
+          result,
+          row.lock_flag === "1" ? "锁定成功！" : "解锁成功！",
+          () => {
+            this.getData();
+          }
+        );
       } else {
         // mock时
+        this.$set(
+          this.tableDataOrg,
+          (this.pageNum - 1) * this.pageSize + row._index,
+          JSON.parse(JSON.stringify(row))
+        );
         this.$Message.success(
-          row.lock_flag === 1 ? "锁定成功！" : "解锁成功！"
+          row.lock_flag === "1" ? "锁定成功！" : "解锁成功！"
         );
       }
     },
@@ -515,20 +562,27 @@ export default {
           if (!this.isMock) {
             // 非mock时
             const result = (await deleteUser(row.user_id)).data.status;
-            if (result === 200) {
-              this.$Message.success("删除成功");
-            }
-            this.getData();
+            resultCallback(result, "删除成功！", () => {
+              this.getData();
+            });
           } else {
             // mock时
-            this.tableData.forEach(list => {
-              if (row.user_id === list.user_id) {
-                const index = this.tableDataOrg.indexOf(list);
-                this.tableDataOrg.splice(index, 1);
-              }
+            this.tableDataOrg
+              .slice(
+                (this.pageNum - 1) * this.pageSize,
+                this.pageNum * this.pageSize
+              )
+              .forEach((item, i) => {
+                if (row.user_id === item.user_id) {
+                  this.tableDataOrg.splice(
+                    (this.pageNum - 1) * this.pageSize + i,
+                    1
+                  );
+                }
+              });
+            resultCallback(200, "删除成功！", () => {
+              this.refreshData();
             });
-            this.$Message.success("删除成功");
-            this.refreshData();
           }
         },
         closable: true

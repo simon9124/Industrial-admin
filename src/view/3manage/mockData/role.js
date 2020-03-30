@@ -1,6 +1,165 @@
+// 用户列表
+const userList = [
+  {
+    id: null,
+    user_id: "dea72145-1ff2-42de-ae94-6d936a74ba5c",
+    user_name: "admin",
+    display_name: "管理员",
+    user_phone: "13888888888",
+    user_avator: "",
+    user_pwd: "2019@cestc",
+    user_access: ["admin"],
+    userAccess: "admin",
+    group_id: "7",
+    group_name: "产品组",
+    lock_flag: "0"
+  },
+  {
+    id: null,
+    user_id: "eec11929-3c60-497b-942c-92a3dd3eeeb5",
+    user_name: "cestc",
+    display_name: "工程师",
+    user_phone: "13801380138",
+    user_avator: "",
+    user_pwd: "2019@cestc",
+    user_access: ["cestc"],
+    userAccess: "cestc",
+    group_id: "4",
+    group_name: "静音检测站",
+    lock_flag: "0"
+  },
+  {
+    id: null,
+    user_id: "ada9bf57-99ad-4ca6-8000-5b245c59af3d",
+    user_name: "cgh",
+    display_name: "陈国华",
+    user_phone: "15910512300",
+    user_avator: "",
+    user_pwd: "2019@cestc",
+    user_access: ["cestc"],
+    userAccess: "cestc",
+    group_id: "1",
+    group_name: "",
+    lock_flag: "0"
+  },
+  {
+    id: null,
+    user_id: "f706830e-9b9f-498e-b1d9-536d7c366313",
+    user_name: "chenguohua1",
+    display_name: "陈国华1",
+    user_phone: "15910512300",
+    user_avator: "",
+    user_pwd: "123456",
+    user_access: ["examine"],
+    userAccess: "examine",
+    group_id: "d2e5ce63-0e12-403a-b144-cfc85782709f",
+    group_name: "",
+    lock_flag: "0"
+  },
+  {
+    id: null,
+    user_id: "9d974bb4-2386-4bb8-98c5-499b95ad025c",
+    user_name: "examine",
+    display_name: "检测员",
+    user_phone: "",
+    user_avator: "",
+    user_pwd: "2019@cestc",
+    user_access: ["examine"],
+    userAccess: "examine",
+    group_id: "3",
+    group_name: "综合检测站",
+    lock_flag: "0"
+  },
+  {
+    id: null,
+    user_id: "70f2ef02-9ee7-4062-b801-554ce00bb6a3",
+    user_name: "liuchaofan",
+    display_name: "刘超凡",
+    user_phone: "",
+    user_avator: "",
+    user_pwd: "2019@cestc",
+    user_access: ["examine"],
+    userAccess: "examine",
+    group_id: "4",
+    group_name: "静音检测站",
+    lock_flag: "0"
+  },
+  {
+    id: null,
+    user_id: "57095390-9c42-41d4-ad8b-51f059bc83ac",
+    user_name: "proline_leader",
+    display_name: "产线线长",
+    user_phone: "",
+    user_avator: "",
+    user_pwd: "2019@cestc",
+    user_access: ["proline_leader"],
+    userAccess: "proline_leader",
+    group_id: "6",
+    group_name: "条码站",
+    lock_flag: "0"
+  },
+  {
+    id: null,
+    user_id: "61144682-7438-47f1-9570-c7ddf6213832",
+    user_name: "tuwenxuan",
+    display_name: "涂文轩",
+    user_phone: "",
+    user_avator: "",
+    user_pwd: "2019@cestc",
+    user_access: ["examine"],
+    userAccess: "examine",
+    group_id: "3",
+    group_name: "综合检测站",
+    lock_flag: "0"
+  },
+  {
+    id: null,
+    user_id: "c151b4b4-3bdc-4522-933a-5de6157bf5b1",
+    user_name: "wangmingxue",
+    display_name: "王明雪",
+    user_phone: "",
+    user_avator: "",
+    user_pwd: "2019@cestc",
+    user_access: ["examine"],
+    userAccess: "examine",
+    group_id: "4",
+    group_name: "静音检测站",
+    lock_flag: "0"
+  },
+  {
+    id: null,
+    user_id: "75d5298a-2ba8-4308-80d7-cbed61ec420d",
+    user_name: "workshop_manager",
+    display_name: "车间主管",
+    user_phone: "",
+    user_avator: "",
+    user_pwd: "2019@cestc",
+    user_access: ["workshop_manager"],
+    userAccess: "workshop_manager",
+    group_id: "5",
+    group_name: "外观检测站",
+    lock_flag: "0"
+  },
+  {
+    id: null,
+    user_id: "1c66b592-f522-456d-86b3-cdf2191abcb4",
+    user_name: "zhangjiahui",
+    display_name: "张家辉",
+    user_phone: "14566786543",
+    user_avator: "",
+    user_pwd: "2019@cestc",
+    user_access: ["examine"],
+    userAccess: "examine",
+    group_id: "3",
+    group_name: "综合检测站",
+    lock_flag: "0"
+  }
+];
+
 // 角色列表
 const roleList = [
   {
+    name: "admin",
     title: "管理员",
     description: "系统管理员，管理管理中心",
     menus: [
@@ -93,6 +252,7 @@ const roleList = [
     id: 1
   },
   {
+    name: "cestc",
     title: "工程师",
     description: "系统工程师，管理配置中心",
     menus: [
@@ -141,6 +301,7 @@ const roleList = [
     id: 2
   },
   {
+    name: "workshop_manager",
     title: "车间主管",
     description: "车间主管，管理整个车间",
     menus: [
@@ -181,6 +342,7 @@ const roleList = [
     id: 3
   },
   {
+    name: "proline_leader",
     title: "产线线长",
     description: "产线线长，管理单条产线",
     menus: [
@@ -233,6 +395,7 @@ const roleList = [
     id: 4
   },
   {
+    name: "examine",
     title: "检测员",
     description: "检测员，负责检测产品",
     menus: [
@@ -408,148 +571,4 @@ const menuList = [
   }
 ];
 
-// 用户列表
-const userList = [
-  {
-    id: null,
-    user_id: "dea72145-1ff2-42de-ae94-6d936a74ba5c",
-    user_name: "admin",
-    display_name: "管理员",
-    user_phone: "13888888888",
-    user_avator: "",
-    user_pwd: "2019@cestc",
-    user_access: ["admin"],
-    userAccess: "admin",
-    group_id: "7",
-    group_name: "产品组",
-    lock_flag: "0"
-  },
-  {
-    id: null,
-    user_id: "eec11929-3c60-497b-942c-92a3dd3eeeb5",
-    user_name: "cestc",
-    display_name: "工程师",
-    user_phone: "13801380138",
-    user_avator: "",
-    user_pwd: "2019@cestc",
-    user_access: ["cestc"],
-    userAccess: "cestc",
-    group_id: "4",
-    group_name: "静音检测站",
-    lock_flag: "0"
-  },
-  {
-    id: null,
-    user_id: "ada9bf57-99ad-4ca6-8000-5b245c59af3d",
-    user_name: "cgh",
-    display_name: "陈国华",
-    user_phone: "15910512300",
-    user_avator: "",
-    user_pwd: "2019@cestc",
-    user_access: ["cestc"],
-    userAccess: "cestc",
-    group_id: "1",
-    group_name: "",
-    lock_flag: "0"
-  },
-  {
-    id: null,
-    user_id: "9d974bb4-2386-4bb8-98c5-499b95ad025c",
-    user_name: "examine",
-    display_name: "检测员",
-    user_phone: "",
-    user_avator: "",
-    user_pwd: "2019@cestc",
-    user_access: ["examine"],
-    userAccess: "examine",
-    group_id: "3",
-    group_name: "综合检测站",
-    lock_flag: "0"
-  },
-  {
-    id: null,
-    user_id: "70f2ef02-9ee7-4062-b801-554ce00bb6a3",
-    user_name: "liuchaofan",
-    display_name: "刘超凡",
-    user_phone: "",
-    user_avator: "",
-    user_pwd: "2019@cestc",
-    user_access: ["examine"],
-    userAccess: "examine",
-    group_id: "4",
-    group_name: "静音检测站",
-    lock_flag: "0"
-  },
-  {
-    id: null,
-    user_id: "57095390-9c42-41d4-ad8b-51f059bc83ac",
-    user_name: "proline_leader",
-    display_name: "产线线长",
-    user_phone: "",
-    user_avator: "",
-    user_pwd: "2019@cestc",
-    user_access: ["proline_leader"],
-    userAccess: "proline_leader",
-    group_id: "6",
-    group_name: "条码站",
-    lock_flag: "0"
-  },
-  {
-    id: null,
-    user_id: "61144682-7438-47f1-9570-c7ddf6213832",
-    user_name: "tuwenxuan",
-    display_name: "涂文轩",
-    user_phone: "",
-    user_avator: "",
-    user_pwd: "2019@cestc",
-    user_access: ["examine"],
-    userAccess: "examine",
-    group_id: "3",
-    group_name: "综合检测站",
-    lock_flag: "0"
-  },
-  {
-    id: null,
-    user_id: "c151b4b4-3bdc-4522-933a-5de6157bf5b1",
-    user_name: "wangmingxue",
-    display_name: "王明雪",
-    user_phone: "",
-    user_avator: "",
-    user_pwd: "2019@cestc",
-    user_access: ["examine"],
-    userAccess: "examine",
-    group_id: "4",
-    group_name: "静音检测站",
-    lock_flag: "0"
-  },
-  {
-    id: null,
-    user_id: "75d5298a-2ba8-4308-80d7-cbed61ec420d",
-    user_name: "workshop_manager",
-    display_name: "车间主管",
-    user_phone: "",
-    user_avator: "",
-    user_pwd: "2019@cestc",
-    user_access: ["workshop_manager"],
-    userAccess: "workshop_manager",
-    group_id: "5",
-    group_name: "外观检测站",
-    lock_flag: "0"
-  },
-  {
-    id: null,
-    user_id: "1c66b592-f522-456d-86b3-cdf2191abcb4",
-    user_name: "zhangjiahui",
-    display_name: "张家辉",
-    user_phone: "14566786543",
-    user_avator: "",
-    user_pwd: "2019@cestc",
-    user_access: ["examine"],
-    userAccess: "examine",
-    group_id: "3",
-    group_name: "综合检测站",
-    lock_flag: "0"
-  }
-];
-
-export { roleList, menuList, userList };
+export { userList, roleList, menuList };

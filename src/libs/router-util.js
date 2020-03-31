@@ -23,6 +23,7 @@ export const initRouter = async () => {
         var routerData = routerDataHanding(result.data.data);
         localSave("dynamicRouter", JSON.stringify(routerData)); // 存储routerData到localStorage
         gotRouter = filterAsyncRouter(routerData); // 过滤路由,路由组件转换
+        console.log(gotRouter);
         store.dispatch("updateMenuList", gotRouter);
       });
     } else {
@@ -59,7 +60,7 @@ export const routerDataHanding = apiRouterData => {
   // 外层节点
   apiRouterData.forEach(route => {
     if (route.parenetId === "root") {
-      console.log(route);
+      // console.log(route);
       if (route.path === "") {
         // 有子节点的父级路由
         asyncRouterMap.push({

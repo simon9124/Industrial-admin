@@ -59,6 +59,8 @@
                     style="margin-left:10px"
                     :disabled="menuType==='notFirst'"
                     @click="insert();menuType='notFirst'">新增页面</Button>
+            <Checkbox v-model="modalData.isOutSide"
+                      style="margin-left:10px">外链</Checkbox>
           </FormItem>
           <FormItem label="上级："
                     prop="parenetId">
@@ -72,6 +74,14 @@
               <Option v-for="menu in rootSelectList"
                       :value="menu.id"
                       :key="menu.id">{{ menu.title }}</Option>
+            </Select>
+          </FormItem>
+          <FormItem label="层级："
+                    prop="showLevel">
+            <Select v-model="modalData.showLevel">
+              <Option v-for="level in menuLevel"
+                      :value="level.value"
+                      :key="level.value">{{ level.label }}</Option>
             </Select>
           </FormItem>
           <FormItem label="系统名："
@@ -155,7 +165,10 @@
 // component
 import IconChoose from "@/components/icons/icon-choose";
 // mockData
-import { menuList } from "./mockData/role"; // 菜单列表
+import {
+  menuList, // 菜单列表
+  menuLevel // 菜单层级
+} from "./mockData/role";
 // function
 import {
   computedMenuData, // 菜单数据转换成iview树形数据结构(2层)
@@ -181,6 +194,7 @@ export default {
     return {
       /* 全局 */
       menuList: [], // 全部菜单列表 - 渲染后的tree
+      menuLevel: menuLevel, // 菜单层级
       rootSelectList: [],
       /* 页面 */
       tableDataOrg: [], // 原始数据
@@ -197,6 +211,8 @@ export default {
         parenetId: "root",
         parenetPath: "",
         parentName: "",
+        showLevel: "",
+        isOutSide: false,
         ico: "",
         description: "",
         children: []
@@ -219,6 +235,9 @@ export default {
         ],
         parenetId: [
           { required: true, message: "请选择上级菜单", trigger: "change" }
+        ],
+        showLevel: [
+          { required: true, message: "请选择菜单层级", trigger: "change" }
         ],
         sort: [
           // { required: true, message: "请填写排序值", trigger: "change" }
@@ -301,6 +320,8 @@ export default {
         parenetId: "",
         parenetPath: "",
         parentName: "",
+        showLevel: "",
+        isOutSide: false,
         ico: "",
         description: "",
         children: []
@@ -319,6 +340,7 @@ export default {
         this.modalDataOrg.parenetId,
         "url"
       );
+      this.modalDataOrg.showLevel = this.modalDataOrg.showLevel.toString();
       this.modalData = JSON.parse(JSON.stringify(value));
       this.menuType =
         this.modalData.parenetId === "root" && this.modalData.path === ""
@@ -484,11 +506,6 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .dooya-container /deep/ {
-  .ivu-alert {
-    // .cancel {
-    //   cursor: pointer;
-    // }
-  }
   .ivu-tree {
     &-children {
       li {

@@ -136,12 +136,13 @@ export const routerDataHanding = apiRouterData => {
   };
   handleRecurrence(asyncRouterMap);
 
-  // 首页概览：追加 redirect 和 notCache
+  // 首页概览：处理name，追加 redirect 和 notCache
   asyncRouterMap.forEach(route => {
     if (route.path === "/") {
-      route.redirect = route.children[0].path;
       route.meta.notCache = true;
       route.children[0].meta.notCache = true;
+      route.children[0].name = "_" + route.name;
+      route.redirect = route.path + route.children[0].path;
     }
   });
 

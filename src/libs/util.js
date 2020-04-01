@@ -155,12 +155,12 @@ export const getHomeRoute = (routers, homeName = "home") => {
   let homeRoute = {};
   while (++i < len) {
     let item = routers[i];
-    if (item.children && item.children.length) {
-      let res = getHomeRoute(item.children, homeName);
-      if (res.name) return res;
-    } else {
-      if (item.name === homeName) homeRoute = item;
-    }
+    // if (item.children && item.children.length) {
+    //   let res = getHomeRoute(item.children, homeName);
+    //   if (res.name) return res;
+    // } else {
+    if (item.name === homeName) homeRoute = item;
+    // }
   }
   return homeRoute;
 };

@@ -3,10 +3,9 @@
     <Dropdown @on-click="handleClick">
       <!-- :dot="!!messageUnreadCount" -->
       <Badge>
-        <Avatar v-if="userAvator!==''"
-                :src="userAvator" />
-        <img v-else
-             class="img-avator"
+        <!-- <Avatar v-if="userAvator!==''"
+                :src="userAvator" /> -->
+        <img class="img-avator"
              src="@/assets/images/userAvatar.jpg" />
       </Badge>
       <Icon :size="18"

@@ -4,7 +4,7 @@ import {
   getMenuByRouter,
   getTagNavListFromLocalstorage,
   getHomeRoute,
-  getNextRoute,
+  // getNextRoute,
   routeHasExist,
   routeEqual,
   getRouteTitleHandled,
@@ -20,11 +20,12 @@ import config from "@/config";
 const { homeName } = config;
 
 const closePage = (state, route) => {
-  const nextRoute = getNextRoute(state.tagNavList, route);
+  // const nextRoute = getNextRoute(state.tagNavList, route);
   state.tagNavList = state.tagNavList.filter(item => {
     return !routeEqual(item, route);
   });
-  router.push(nextRoute);
+  router.push(state.tagNavList[state.tagNavList.length - 1]); // 改造：动态标签关闭
+  // router.push(nextRoute);
 };
 
 export default {
@@ -44,18 +45,23 @@ export default {
     errorCount: state => state.errorList.length
   },
   mutations: {
+    // 配置面包屑导航
     setBreadCrumb(state, route) {
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute);
     },
+    // 配置主页route
     setHomeRoute(state, routes) {
       state.homeRoute = getHomeRoute(routes, homeName);
     },
+    // 配置标签导航
     setTagNavList(state, list) {
       let tagList = [];
       if (list) {
         tagList = [...list];
-      } else tagList = getTagNavListFromLocalstorage() || [];
-      if (tagList[0] && tagList[0].name !== homeName) tagList.shift();
+      } else {
+        tagList = getTagNavListFromLocalstorage() || [];
+      }
+      // if (tagList[0] && tagList[0].name !== homeName) tagList.shift();  // 改造：动态标签关闭
       let homeTagIndex = tagList.findIndex(item => item.name === homeName);
       if (homeTagIndex > 0) {
         let homeTag = tagList.splice(homeTagIndex, 1)[0];
@@ -64,17 +70,21 @@ export default {
       state.tagNavList = tagList;
       setTagNavListInLocalstorage([...tagList]);
     },
+    // 关闭标签导航
     closeTag(state, route) {
       let tag = state.tagNavList.filter(item => routeEqual(item, route));
       route = tag[0] ? tag[0] : null;
       if (!route) return;
       closePage(state, route);
     },
+    // 添加标签导航
     addTag(state, { route, type = "unshift" }) {
       let router = getRouteTitleHandled(route);
       if (!routeHasExist(state.tagNavList, router)) {
-        if (type === "push") state.tagNavList.push(router);
-        else {
+        if (type === "push") {
+          if (router.name === homeName) state.tagNavList.unshift(router);
+          else state.tagNavList.push(router);
+        } else {
           if (router.name === homeName) state.tagNavList.unshift(router);
           else state.tagNavList.splice(1, 0, router);
         }

@@ -56,12 +56,12 @@
       </Header>
       <Content class="main-content-con">
         <Layout class="main-layout-con">
-          <!-- <div class="tag-nav-wrapper">
+          <div class="tag-nav-wrapper">
             <tags-nav :value="$route"
                       @input="handleClick"
                       :list="tagNavList"
                       @on-close="handleCloseTag" />
-          </div> -->
+          </div>
           <Content class="content-wrapper">
             <keep-alive :include="cacheList">
               <router-view />
@@ -77,6 +77,7 @@
   </Layout>
 </template>
 <script>
+import store from "@/store";
 import SideMenu from "./components/side-menu";
 import HeaderBar from "./components/header-bar";
 import TagsNav from "./components/tags-nav";
@@ -86,8 +87,11 @@ import Fullscreen from "./components/fullscreen";
 // import Language from './components/language';
 import ErrorStore from "./components/error-store";
 import { mapMutations, mapActions, mapGetters } from "vuex";
-import { getNewTagList, routeEqual } from "@/libs/util";
-import routers from "@/router/routers";
+import {
+  // getNewTagList,
+  routeEqual
+} from "@/libs/util";
+// import routers from "@/router/routers";
 import minLogo from "@/assets/images/dooya-min.png";
 import maxLogo from "@/assets/images/dooya.jpg";
 // import minLogo from '@/assets/images/702-180_small.png';
@@ -193,7 +197,8 @@ export default {
     handleCloseTag(res, type, route) {
       if (type !== "others") {
         if (type === "all") {
-          this.turnToPage(this.$config.homeName);
+          // this.turnToPage(this.$config.homeName);
+          this.turnToPage(res[0].name); // 改造：关闭所有->关闭除了第一项的所有
         } else {
           if (routeEqual(this.$route, route)) {
             this.closeTag(route);
@@ -214,7 +219,7 @@ export default {
         type: "push"
       });
       this.setBreadCrumb(newRoute);
-      this.setTagNavList(getNewTagList(this.tagNavList, newRoute));
+      // this.setTagNavList(getNewTagList(this.tagNavList, newRoute)); // 改造：动态添加tag标签
       this.$refs.sideMenu.updateOpenName(newRoute.name);
     }
   },
@@ -232,7 +237,8 @@ export default {
      * @description 初始化设置面包屑导航和标签导航
      */
     this.setTagNavList();
-    this.setHomeRoute(routers);
+    // this.setHomeRoute(routers);
+    this.setHomeRoute(store.state.app.menuList); // 改造：根据动态菜单生成面包屑
     const { name, params, query, meta } = this.$route;
     this.addTag({
       route: { name, params, query, meta }

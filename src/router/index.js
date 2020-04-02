@@ -21,24 +21,31 @@ const LOGIN_PAGE_NAME = "login"; // 登录页
 const whiteList = ["erp"]; // 白名单
 
 const turnTo = (to, access, next) => {
+  // console.log(to, access);
+  // console.log(canTurnTo(to.name, access, routes));
+  // console.log(to);
+
   if (canTurnTo(to.name, access, routes)) {
     // 有权限，可访问
     next();
-  } else if (to.name === "home") {
+  } else if (to.path === "/") {
+    // } else if (to.name === "_home") {
+    console.log("2");
+    // console.log(access[0].name);
+
     // console.log("准备跳转到首页");
-    // console.log(access[0]);
-    // 已经登陆并且 "没有home页权限" 的用户新打开首页概览 -> 跳回该用户登录后的首页
-    if (access[0] === "workshop_manager") {
+    // 已经登录的用户新打开 "/"" -> 跳回该用户登录后的首页
+    if (access[0].name === "workshop_manager") {
       // 车间主管 -> 直接进入驾驶舱-车间
       next({
         name: "control-leader-shop"
       });
-    } else if (access[0] === "examine") {
+    } else if (access[0].name === "examine") {
       // 检测员 -> 直接进入追溯查询
       next({
         name: "checkSearch"
       });
-    } else if (access[0] === "cestc") {
+    } else if (access[0].name === "cestc") {
       // 工程师 -> 直接进入SOP配置
       next({
         name: "sop"
@@ -88,8 +95,8 @@ router.beforeEach((to, from, next) => {
       // 刷新页面 -> 重新获取用户信息 & 重新添加动态路由
       store
         .dispatch("getUserInfo")
-        .then(user => {
-          initRouter();
+        .then(async user => {
+          await initRouter();
           // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
           turnTo(to, user.data.user_access, next);
         })

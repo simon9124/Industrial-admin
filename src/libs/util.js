@@ -59,10 +59,14 @@ export const getMenuByRouter = (list, access) => {
  * @returns {Array}
  */
 export const getBreadCrumbList = (route, homeRoute) => {
-  let homeItem = {
-    ...homeRoute,
-    icon: homeRoute.meta.icon
-  };
+  /* 改造：没有首页概览权限时，homeItem为空对象 */
+  let homeItem = {};
+  if (homeRoute.meta !== undefined) {
+    homeItem = {
+      ...homeRoute,
+      icon: homeRoute.meta.icon
+    };
+  }
   let routeMetched = route.matched;
   if (routeMetched.some(item => item.name === homeRoute.name)) {
     return [homeItem];
@@ -89,13 +93,19 @@ export const getBreadCrumbList = (route, homeRoute) => {
   res = res.filter(item => {
     return !item.meta.hideInMenu;
   });
-  return [
-    {
-      ...homeItem,
-      to: homeRoute.path
-    },
-    ...res
-  ];
+  if (homeRoute.meta !== undefined) {
+    // 有"首页概览"权限 -> 面包屑中添加"首页概览"标签
+    return [
+      {
+        ...homeItem,
+        to: homeRoute.path
+      },
+      ...res
+    ];
+  } else {
+    // 没有"首页概览"权限 -> 面包屑中不加"首页概览"标签
+    return [...res];
+  }
 };
 
 export const getRouteTitleHandled = route => {
@@ -159,8 +169,12 @@ export const getHomeRoute = (routers, homeName = "home") => {
     //   let res = getHomeRoute(item.children, homeName);
     //   if (res.name) return res;
     // } else {
-    if (item.name === homeName) homeRoute = item;
+    // if (item.name === homeName) homeRoute = item;
     // }
+    /* 改造：homeName的route在父级路由中 */
+    if (item.name === homeName) {
+      homeRoute = item;
+    }
   }
   return homeRoute;
 };
@@ -238,8 +252,12 @@ export const getNextRoute = (list, route) => {
     res = getHomeRoute(list);
   } else {
     const index = list.findIndex(item => routeEqual(item, route));
-    if (index === list.length - 1) res = list[list.length - 2];
-    else res = list[index + 1];
+    if (index === list.length - 1) {
+      // res = list[list.length - 2];
+      res = list[list.length - 1];
+    } else {
+      res = list[index + 1];
+    }
   }
   return res;
 };

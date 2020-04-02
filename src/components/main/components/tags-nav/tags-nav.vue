@@ -52,7 +52,7 @@
                :data-route-item="item"
                @on-close="handleClose(item)"
                @click.native="handleClick(item)"
-               :closable="item.name !== $config.homeName"
+               :closable="list.length!==1&&index!==0"
                :color="isCurrentTag(item) ? 'primary' : 'default'"
                @contextmenu.prevent.native="contextMenu(item, $event)">{{ showTitleInside(item) }}</Tag>
           <!-- :closable="item.name !== $config.homeName" -->
@@ -128,14 +128,20 @@ export default {
     handleTagsOption(type) {
       if (type.includes("all")) {
         // 关闭所有，除了home
-        let res = this.list.filter(item => item.name === this.$config.homeName);
+        // let res = this.list.filter(item => item.name === this.$config.homeName);
+        // 改造：关闭所有，除了第一项
+        let res = this.list.filter((item, i) => i === 0);
         this.$emit("on-close", res, "all");
       } else if (type.includes("others")) {
         // 关闭除当前页和home页的其他页
+        // let res = this.list.filter(
+        //   item =>
+        //     routeEqual(this.currentRouteObj, item) ||
+        //     item.name === this.$config.homeName
+        // );
+        // 改造：关闭其他，除了第一项和当前项
         let res = this.list.filter(
-          item =>
-            routeEqual(this.currentRouteObj, item) ||
-            item.name === this.$config.homeName
+          (item, i) => routeEqual(this.currentRouteObj, item) || i === 0
         );
         this.$emit("on-close", res, "others", this.currentRouteObj);
         setTimeout(() => {

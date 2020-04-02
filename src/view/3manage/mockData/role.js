@@ -473,11 +473,11 @@ const roleList = [
 // 菜单列表
 const menuList = [
   {
-    id: "cc5a3db1b2804f158b8303bcf1ede8a7",
-    name: "_home",
+    id: "e5a45a1b877a4aa78f3baaee6e1dcb65",
+    name: "home",
     title: "首页概览",
-    url: "/",
-    path: "",
+    url: "/home",
+    path: "single-page/home/home",
     sort: 21,
     parenetId: "root",
     parenetPath: "root",
@@ -508,7 +508,7 @@ const menuList = [
     title: "检测员",
     url: "inspect/inspector",
     path: "1inspector/inspector",
-    sort: 16,
+    sort: 17,
     parenetId: "root",
     parenetPath: "root",
     status: 1,
@@ -578,21 +578,6 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "23001d1a12fe43ceac9769ee08f899f2",
-    name: "menu",
-    title: "菜单管理",
-    url: "menu",
-    path: "3manage/menu",
-    sort: 11,
-    parenetId: "d30bf0ff035c4e51875e7014ad46e1af",
-    parenetPath: "root.d30bf0ff035c4e51875e7014ad46e1af",
-    status: 1,
-    description: "",
-    ico: null,
-    isOutSide: false,
-    showLevel: 3
-  },
-  {
     id: "c64f399d2c03445dbfa2b23c240e2dc6",
     name: "number/print",
     title: "条码打印",
@@ -604,6 +589,21 @@ const menuList = [
     status: 1,
     description: "",
     ico: "md-print",
+    isOutSide: false,
+    showLevel: 3
+  },
+  {
+    id: "23001d1a12fe43ceac9769ee08f899f2",
+    name: "menu",
+    title: "菜单管理",
+    url: "menu",
+    path: "3manage/menu",
+    sort: 11,
+    parenetId: "d30bf0ff035c4e51875e7014ad46e1af",
+    parenetPath: "root.d30bf0ff035c4e51875e7014ad46e1af",
+    status: 1,
+    description: "",
+    ico: null,
     isOutSide: false,
     showLevel: 3
   },
@@ -623,21 +623,6 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "8",
-    name: "process",
-    title: "数据配置",
-    url: "process",
-    path: "3manage/process",
-    sort: 9,
-    parenetId: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
-    parenetPath: "root.0e1ddfaa1e7d49cdabd3aa045889e6d0",
-    status: 1,
-    description: "数据配置",
-    ico: null,
-    isOutSide: false,
-    showLevel: 3
-  },
-  {
     id: "7a6bc598bead4430adf85cd56925e29a",
     name: "electric/electricSearch",
     title: "检测列表",
@@ -649,6 +634,21 @@ const menuList = [
     status: 1,
     description: "",
     ico: "md-options",
+    isOutSide: false,
+    showLevel: 3
+  },
+  {
+    id: "8",
+    name: "process",
+    title: "数据配置",
+    url: "process",
+    path: "3manage/process",
+    sort: 9,
+    parenetId: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    parenetPath: "root.0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    status: 1,
+    description: "数据配置",
+    ico: null,
     isOutSide: false,
     showLevel: 3
   },
@@ -683,6 +683,21 @@ const menuList = [
     showLevel: 3
   },
   {
+    id: "cd63fe39ae954aacbaea376da1235b81",
+    name: "equipment",
+    title: "设备配置",
+    url: "equipment",
+    path: "3manage/equipment",
+    sort: 7,
+    parenetId: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    parenetPath: "root.0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    status: 1,
+    description: "",
+    ico: "",
+    isOutSide: false,
+    showLevel: 3
+  },
+  {
     id: "5",
     name: "reject",
     title: "异常原因",
@@ -709,21 +724,6 @@ const menuList = [
     status: 1,
     description: "",
     ico: "md-git-pull-request",
-    isOutSide: false,
-    showLevel: 3
-  },
-  {
-    id: "cd63fe39ae954aacbaea376da1235b81",
-    name: "equipment",
-    title: "设备配置",
-    url: "equipment",
-    path: "3manage/equipment",
-    sort: 7,
-    parenetId: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
-    parenetPath: "root.0e1ddfaa1e7d49cdabd3aa045889e6d0",
-    status: 1,
-    description: "",
-    ico: "",
     isOutSide: false,
     showLevel: 3
   },
@@ -818,21 +818,6 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "d30bf0ff035c4e51875e7014ad46e1af",
-    name: "manage",
-    title: "管理中心",
-    url: "manage",
-    path: "",
-    sort: 2,
-    parenetId: "root",
-    parenetPath: "root",
-    status: 1,
-    description: "系统基础配置",
-    ico: "md-settings",
-    isOutSide: false,
-    showLevel: 3
-  },
-  {
     id: "3db9fdd0ada749dab01149fa0248eb23",
     name: "distribute",
     title: "任务派发",
@@ -844,6 +829,21 @@ const menuList = [
     status: 1,
     description: "",
     ico: "",
+    isOutSide: false,
+    showLevel: 3
+  },
+  {
+    id: "d30bf0ff035c4e51875e7014ad46e1af",
+    name: "manage",
+    title: "管理中心",
+    url: "manage",
+    path: "",
+    sort: 2,
+    parenetId: "root",
+    parenetPath: "root",
+    status: 1,
+    description: "系统基础配置",
+    ico: "md-settings",
     isOutSide: false,
     showLevel: 3
   },
@@ -863,21 +863,6 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
-    name: "dispose",
-    title: "配置中心",
-    url: "dispose",
-    path: "",
-    sort: 1,
-    parenetId: "root",
-    parenetPath: "root",
-    status: 1,
-    description: "业务基础配置",
-    ico: "md-build",
-    isOutSide: false,
-    showLevel: 3
-  },
-  {
     id: "e7dfaf2ec6aa482c93410d9b4e2323e5",
     name: "history",
     title: "历史任务",
@@ -893,17 +878,17 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "e9076967ecaa48e299f42b85b999b880",
-    name: "home",
-    title: "首页概览",
-    url: "/home",
-    path: "single-page/home/home",
-    sort: 0,
-    parenetId: "cc5a3db1b2804f158b8303bcf1ede8a7",
-    parenetPath: "root.cc5a3db1b2804f158b8303bcf1ede8a7",
+    id: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    name: "dispose",
+    title: "配置中心",
+    url: "dispose",
+    path: "",
+    sort: 1,
+    parenetId: "root",
+    parenetPath: "root",
     status: 1,
-    description: "",
-    ico: "",
+    description: "业务基础配置",
+    ico: "md-build",
     isOutSide: false,
     showLevel: 3
   }

@@ -21,9 +21,29 @@ export default {
   },
   methods: {
     backHome() {
-      this.$router.replace({
-        name: this.$config.homeName
-      });
+      const access = this.$store.state.user.access[0].name;
+      switch (access) {
+        case "workshop_manager":
+          this.$router.replace({
+            name: "control-leader-shop"
+          });
+          break;
+        case "examine":
+          this.$router.replace({
+            name: "checkSearch"
+          });
+          break;
+        case "cestc":
+          this.$router.replace({
+            name: "sop"
+          });
+          break;
+        default:
+          this.$router.replace({
+            name: this.$config.homeName
+          });
+          break;
+      }
     },
     backPrev() {
       this.$router.go(-1);

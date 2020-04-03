@@ -49,16 +49,16 @@ const USER_MAP = {
     group_name: "测试组",
     lock_flag: "0"
   },
-  factor: {
+  cestc: {
     id: null,
     user_id: "c5c0ecdd-f969-4300-a187-f80a6251b773",
-    user_name: "factor",
+    user_name: "cestc",
     display_name: "工程师",
     user_phone: "",
     user_avator: "",
     user_pwd: "123456",
-    user_access: ["factor"],
-    userAccess: "factor",
+    user_access: ["cestc"],
+    userAccess: "cestc",
     group_id: "585c5c93-992f-4d1b-b03c-1f555bdb7643",
     group_name: "测试组",
     lock_flag: "0"

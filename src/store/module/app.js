@@ -1,3 +1,8 @@
+// 全局
+import router from "@/router";
+// import routers from "@/router/routers";
+import config from "@/config";
+// api
 import {
   getBreadCrumbList,
   setTagNavListInLocalstorage,
@@ -12,13 +17,17 @@ import {
   localRead
 } from "@/libs/util";
 import { saveErrorLogger } from "@/api/data";
-import router from "@/router";
-// import routers from "@/router/routers";
-import { dynamicRouterAdd } from "@/libs/router-util"; // ①添 引入加载菜单(仅mock时用)
+import { getAllMenus } from "@/api/menu"; // api - 获取当前用户的全部菜单
+// function
+import {
+  dynamicRouterAdd, // 加载路由菜单,从localStorage拿到路由,在创建路由时使用
+  routerDataHanding, // @函数：遍历后台传来的路由数据，转为路由基础数据(与menus-data的数据格式相同)
+  filterAsyncRouter // @函数: 遍历路由基础数据，转换为前端组件对象
+} from "@/libs/router-util"; // ①添 引入加载菜单(仅mock时用)
+// mockData
+import { menuList } from "@/view/3manage/mockData/role";
 
-import config from "@/config";
-const { homeName } = config;
-
+const { homeName, isMock } = config; // mockData - 全部菜单
 const closePage = (state, route) => {
   // const nextRoute = getNextRoute(state.tagNavList, route);
   state.tagNavList = state.tagNavList.filter(item => {
@@ -125,6 +134,7 @@ export default {
         commit("addError", data);
       });
     },
+    // 动态路由数据 -> 首次登录挂载路由
     updateMenuList({ commit, rootState }, routes) {
       console.log("动态添加路由：", routes);
       // 动态添加路由 - 真正添加路由（不会立刻刷新，需要手动往router.options.routes里添加数据）
@@ -139,6 +149,55 @@ export default {
       commit("setMenuList", {
         menuList: routes,
         access: rootState.user.access
+      });
+    },
+    // 获取动态路由数据
+    getRouters({ dispatch, commit, rootState }, routes) {
+      return new Promise((resolve, reject) => {
+        var gotRouter = []; // 设置动态路由
+        if (localRead("dynamicRouter") === "") {
+          /* localStorage里dynamicRouter值为空 -> 没有路由数据 -> 获取路由数据 */
+          console.log("获取路由：从api");
+          if (!isMock) {
+            // 接口数据
+            try {
+              getAllMenus(rootState.user.token)
+                .then(res => {
+                  // console.log(res);
+                  var routerData = routerDataHanding(res.data.data); // 拿到路由接口数据
+                  localSave("dynamicRouter", JSON.stringify(routerData)); // 存储routerData到localStorage
+                  gotRouter = filterAsyncRouter(routerData); // 过滤路由,路由组件转换
+                  dispatch("updateMenuList", gotRouter).then(res => {
+                    resolve(routerData);
+                  });
+                })
+                .catch(err => {
+                  reject(err);
+                });
+            } catch (error) {
+              reject(error);
+            }
+          } else {
+            // mock数据
+            var routerData = routerDataHanding(
+              JSON.parse(JSON.stringify(menuList))
+            ); // 拿到路由模拟动态数据
+            localSave("dynamicRouter", JSON.stringify(routerData)); // 存储routerData到localStorage
+            gotRouter = filterAsyncRouter(routerData); // 过滤路由,路由组件转换
+            dispatch("updateMenuList", gotRouter).then(res => {
+              resolve(routerData);
+            });
+          }
+        } else {
+          /* 有路由数据 -> 直接从localStorage里面获取 */
+          console.log("获取路由：从localStorage");
+          gotRouter = dynamicRouterAdd("router-util.js");
+          commit("setMenuList", {
+            menuList: gotRouter,
+            access: rootState.user.access
+          });
+          resolve(routerData);
+        }
       });
     }
   }

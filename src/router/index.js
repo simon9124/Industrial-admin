@@ -5,7 +5,6 @@ import store from "@/store";
 import iView from "iview";
 import { setToken, getToken, canTurnTo, setTitle } from "@/libs/util";
 import config from "@/config";
-import { initRouter } from "@/libs/router-util"; // ①新增  引入动态菜单渲染
 
 const { homeName } = config;
 
@@ -21,18 +20,11 @@ const LOGIN_PAGE_NAME = "login"; // 登录页
 const whiteList = ["erp"]; // 白名单
 
 const turnTo = (to, access, next) => {
-  // console.log(to, access);
-  // console.log(canTurnTo(to.name, access, routes));
-  // console.log(to);
-
   if (canTurnTo(to.name, access, routes)) {
     // 有权限，可访问
     next();
   } else if (to.path === "/") {
     // } else if (to.name === "_home") {
-    console.log("2");
-    // console.log(access[0].name);
-
     // console.log("准备跳转到首页");
     // 已经登录的用户新打开 "/"" -> 跳回该用户登录后的首页
     if (access[0].name === "workshop_manager") {
@@ -49,6 +41,10 @@ const turnTo = (to, access, next) => {
       // 工程师 -> 直接进入SOP配置
       next({
         name: "sop"
+      });
+    } else {
+      next({
+        name: homeName
       });
     }
   } else {
@@ -95,10 +91,11 @@ router.beforeEach((to, from, next) => {
       // 刷新页面 -> 重新获取用户信息 & 重新添加动态路由
       store
         .dispatch("getUserInfo")
-        .then(async user => {
-          await initRouter();
-          // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
-          turnTo(to, user.data.user_access, next);
+        .then(user => {
+          store.dispatch("getRouters").then(res => {
+            // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
+            turnTo(to, user.data.user_access, next);
+          });
         })
         .catch(() => {
           setToken("");

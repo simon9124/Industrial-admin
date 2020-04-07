@@ -64,12 +64,8 @@
           </FormItem>
           <FormItem label="上级："
                     prop="parenetId">
-            <Input v-if="menuType==='first'"
-                   type="text"
-                   disabled
-                   v-model.trim="modalData.parenetId"></Input>
-            <Select v-else
-                    v-model="modalData.parenetId"
+            <Select v-model="modalData.parenetId"
+                    :disabled="modalData.name==='home'||menuType==='first'"
                     @on-change="parentOnChange">
               <Option v-for="menu in rootSelectList"
                       :value="menu.id"
@@ -78,7 +74,8 @@
           </FormItem>
           <FormItem label="层级："
                     prop="showLevel">
-            <Select v-model="modalData.showLevel">
+            <Select v-model="modalData.showLevel"
+                    :disabled="modalData.name==='home'">
               <Option v-for="level in menuLevel"
                       :value="level.value"
                       :key="level.value">{{ level.label }}</Option>
@@ -88,6 +85,7 @@
                     prop="name">
             <Input type="text"
                    v-model.trim="modalData.name"
+                   :disabled="modalData.name==='home'"
                    placeholder="英文系统名，20个字符以内"></Input>
           </FormItem>
           <FormItem label="展现名："
@@ -109,7 +107,7 @@
             </Input>
           </FormItem>
           <FormItem label="组件："
-                    v-if="menuType!=='first'"
+                    v-show="menuType!=='first'"
                     prop="path">
             <Input type="text"
                    v-model.trim="modalData.path"
@@ -208,7 +206,7 @@ export default {
         url: "",
         path: "",
         sort: 0,
-        parenetId: "root",
+        parenetId: "",
         parenetPath: "",
         parentName: "",
         showLevel: "",
@@ -231,7 +229,24 @@ export default {
           { required: true, message: "请输入地址栏路径", trigger: "change" }
         ],
         path: [
-          { required: true, message: "请输入前端组件路径", trigger: "change" }
+          {
+            required: true,
+            validator: (rule, value, callback) => {
+              // console.log(this.menuType);
+              // console.log(this.modalData.path);
+              if (this.menuType === "first") {
+                callback();
+              } else if (
+                this.menuType !== "first" &&
+                this.modalData.path === ""
+              ) {
+                callback(new Error("请输入前端组件路径"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "change"
+          }
         ],
         parenetId: [
           { required: true, message: "请选择上级菜单", trigger: "change" }
@@ -267,6 +282,9 @@ export default {
       } else {
         // mock数据
         this.menuList = computedMenuData(menuList);
+        this.rootSelectList = [{ id: "root", title: "根目录" }].concat(
+          this.menuList
+        );
         this.refreshData();
         this.buttonLoading = false;
       }
@@ -304,28 +322,15 @@ export default {
     },
     // 根据条件刷新数据
     refreshData() {
-      // 按"id"升序
-      this.tableDataOrg.sort(arraySort("role_id", "asc"));
+      // 按"sort"降序
+      this.menuList.sort(arraySort("sort", "desc"));
+      this.menuList.forEach(list => {
+        list.children.sort(arraySort("sort", "desc"));
+      });
     },
     // 点击按钮 - 新增
     insert() {
       this.modalDataType = "insert";
-      // 强行重置表单
-      this.modalData = {
-        name: "",
-        title: "",
-        url: "",
-        path: "",
-        sort: 0,
-        parenetId: "",
-        parenetPath: "",
-        parentName: "",
-        showLevel: "",
-        isOutSide: false,
-        ico: "",
-        description: "",
-        children: []
-      };
       this.$refs.formModalData.resetFields();
       this.urlDisabled = false;
     },
@@ -333,6 +338,8 @@ export default {
     menuOnSelect(value) {
       this.modalDataType = "edit";
       // console.log(value);
+      this.menuType =
+        value.parenetId === "root" && value.path === "" ? "first" : "notFirst";
       this.modalDataOrg = value;
       this.modalDataOrg.parentName = getValueByKey(
         this.menuList,
@@ -342,10 +349,6 @@ export default {
       );
       this.modalDataOrg.showLevel = this.modalDataOrg.showLevel.toString();
       this.modalData = JSON.parse(JSON.stringify(value));
-      this.menuType =
-        this.modalData.parenetId === "root" && this.modalData.path === ""
-          ? "first"
-          : "notFirst";
       this.urlDisabled = true;
     },
     // 数量校验 - 禁止输入e和E和-和.

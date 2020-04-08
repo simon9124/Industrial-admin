@@ -8,60 +8,94 @@ import store from "@/store";
 // 用户列表
 const USER_MAP = {
   admin: {
-    id: null,
-    user_id: "1001",
-    user_name: "admin",
-    display_name: "管理员",
-    user_phone: "13112345678",
-    user_avator: "",
-    user_pwd: "123456",
-    user_access: ["admin"],
-    userAccess: "admin",
-    group_id: "001",
-    group_name: "开发组",
-    lock_flag: "0"
-  },
-  proline_leader: {
-    id: null,
-    user_id: "6bc3842d-e03c-4ba0-ac73-7874c05b55a5",
-    user_name: "proline_leader",
-    display_name: "产线线长",
-    user_phone: "",
-    user_avator: "",
-    user_pwd: "123456",
-    user_access: ["proline_leader"],
-    userAccess: "proline_leader",
-    group_id: "585c5c93-992f-4d1b-b03c-1f555bdb7643",
-    group_name: "测试组",
-    lock_flag: "0"
-  },
-  workshop_manager: {
-    id: null,
-    user_id: "ed95778b-3578-4a35-94ae-f36fb4792a76",
-    user_name: "workshop_manager",
-    display_name: "车间主管",
-    user_phone: "",
-    user_avator: "",
-    user_pwd: "123456",
-    user_access: ["workshop_manager"],
-    userAccess: "workshop_manager",
-    group_id: "585c5c93-992f-4d1b-b03c-1f555bdb7643",
-    group_name: "测试组",
-    lock_flag: "0"
+    id: "dea72145-1ff2-42de-ae94-6d936a74ba5c",
+    userName: "admin",
+    displayName: "管理员",
+    phone: "13888888888",
+    roles: [
+      {
+        id: "1",
+        title: "管理员",
+        name: "admin",
+        parenetId: "2",
+        parenetPath: "root.2",
+        status: 1,
+        description: "系统管理员，管理管理中心"
+      }
+    ],
+    lockFlag: 0
   },
   cestc: {
-    id: null,
-    user_id: "c5c0ecdd-f969-4300-a187-f80a6251b773",
-    user_name: "cestc",
-    display_name: "工程师",
-    user_phone: "",
-    user_avator: "",
-    user_pwd: "123456",
-    user_access: ["cestc"],
-    userAccess: "cestc",
-    group_id: "585c5c93-992f-4d1b-b03c-1f555bdb7643",
-    group_name: "测试组",
-    lock_flag: "0"
+    id: "eec11929-3c60-497b-942c-92a3dd3eeeb5",
+    userName: "cestc",
+    displayName: "工程师",
+    phone: "13801380138",
+    roles: [
+      {
+        id: "2",
+        title: "工程师",
+        name: "cestc",
+        parenetId: "root",
+        parenetPath: "root",
+        status: 1,
+        description: "所有权限"
+      }
+    ],
+    lockFlag: 0
+  },
+  workshop_manager: {
+    id: "75d5298a-2ba8-4308-80d7-cbed61ec420d",
+    userName: "workshop_manager",
+    displayName: "车间主管",
+    phone: "",
+    roles: [
+      {
+        id: "c51f88ccc20a4266be98d5b94851e953",
+        title: "车间主管",
+        name: "workshop_manager",
+        parenetId: "1",
+        parenetPath: "root.2.1",
+        status: 1,
+        description: "管理车间所有产线及生产问题"
+      }
+    ],
+    lockFlag: 0
+  },
+  proline_leader: {
+    id: "57095390-9c42-41d4-ad8b-51f059bc83ac",
+    userName: "proline_leader",
+    displayName: "产线线长",
+    phone: "",
+    roles: [
+      {
+        id: "54e3addd95d44f528c594e266f01a72f",
+        title: "产线线长",
+        name: "proline_leader",
+        parenetId: "c51f88ccc20a4266be98d5b94851e953",
+        parenetPath: "root.2.1.c51f88ccc20a4266be98d5b94851e953",
+        status: 1,
+        description: "测试"
+      }
+    ],
+    lockFlag: 0
+  },
+  test: {
+    id: "9d974bb4-2386-4bb8-98c5-499b95ad025c",
+    userName: "test",
+    displayName: "检测员",
+    phone: "",
+    roles: [
+      {
+        id: "2ce90dcc47ac4e0288139c01bbb11e16",
+        title: "检测员",
+        name: "test",
+        parenetId: null,
+        parenetPath: null,
+        status: 1,
+        description: ""
+      }
+    ],
+    lockFlag: 0
   }
 };
 
@@ -76,7 +110,7 @@ export const login = req => {
     return {
       status: 200,
       message: "成功！",
-      data: USER_MAP[req.userName].user_name
+      data: USER_MAP[req.userName].userName
     };
   } else {
     return {

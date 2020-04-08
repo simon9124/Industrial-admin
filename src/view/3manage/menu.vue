@@ -406,22 +406,20 @@ export default {
                 );
               } else {
                 // mock时
-                this.modalData.role_id = (
-                  this.tableDataOrg.length + 1
-                ).toString();
                 if (
-                  this.tableDataOrg.some(
-                    item => item.roleName === this.modalData.roleName
-                  )
+                  menuList.some(item => item.url === this.modalData.url) ||
+                  menuList.some(item => item.name === this.modalData.name)
                 ) {
-                  this.$Message.error("该角色已存在！");
+                  this.$Message.error("系统名或路径已存在！");
                   this.buttonLoading = false;
                 } else {
-                  this.tableDataOrg.push(
-                    JSON.parse(JSON.stringify(this.modalData))
-                  );
+                  // 随机生成id
+                  this.modalData.id = Math.random()
+                    .toString(36)
+                    .substr(-10);
+                  menuList.push(JSON.parse(JSON.stringify(this.modalData)));
                   resultCallback(200, "添加成功！", () => {
-                    this.refreshData();
+                    this.getData();
                     this.refreshRouteData();
                     this.buttonLoading = false;
                   });
@@ -446,18 +444,27 @@ export default {
                 );
               } else {
                 // mock时
-                // 判断重复
                 if (
-                  this.tableDataOrg.some(
-                    item => item.roleName === this.modalData.roleName
-                  ) &&
-                  this.modalData.roleName !== this.modalDataOrg.roleName
+                  (menuList.some(item => item.url === this.modalData.url) &&
+                    this.modalData.url !== this.modalDataOrg.url) ||
+                  (menuList.some(item => item.name === this.modalData.name) &&
+                    this.modalData.name !== this.modalDataOrg.name)
                 ) {
-                  this.$Message.error("该角色已存在！");
+                  // 判断重复
+                  this.$Message.error("系统名或路径已存在！");
                   this.buttonLoading = false;
                 } else {
+                  menuList.forEach((list, i) => {
+                    if (list.id === this.modalData.id) {
+                      this.$set(
+                        menuList,
+                        i,
+                        JSON.parse(JSON.stringify(this.modalData))
+                      );
+                    }
+                  });
                   resultCallback(200, "修改成功！", () => {
-                    this.refreshData();
+                    this.getData();
                     this.refreshRouteData();
                     this.buttonLoading = false;
                   });
@@ -487,9 +494,14 @@ export default {
               });
             } else {
               // mock数据
+              menuList.forEach((list, i) => {
+                if (data.id === list.id) {
+                  menuList.splice(i, 1);
+                }
+              });
               resultCallback(200, "删除成功！", () => {
                 this.refreshRouteData();
-                this.refreshData();
+                this.getData();
               });
             }
           },

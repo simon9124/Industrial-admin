@@ -274,17 +274,12 @@ export default {
         // 接口数据
         this.treeLoading = true;
         this.menuList = computedMenuData((await getAllMenus()).data.data || []);
-        this.rootSelectList = [{ id: "root", title: "根目录" }].concat(
-          this.menuList
-        );
+        this.refreshData();
         this.buttonLoading = false;
         this.treeLoading = false;
       } else {
         // mock数据
         this.menuList = computedMenuData(menuList);
-        this.rootSelectList = [{ id: "root", title: "根目录" }].concat(
-          this.menuList
-        );
         this.refreshData();
         this.buttonLoading = false;
       }
@@ -322,11 +317,19 @@ export default {
     },
     // 根据条件刷新数据
     refreshData() {
-      // 按"sort"降序
-      this.menuList.sort(arraySort("sort", "desc"));
-      this.menuList.forEach(list => {
-        list.children.sort(arraySort("sort", "desc"));
-      });
+      if (this.isMock) {
+        // 按"sort"降序
+        this.menuList.sort(arraySort("sort", "desc"));
+        this.menuList.forEach(list => {
+          list.children.sort(arraySort("sort", "desc"));
+        });
+      }
+      // 上级目录列表 - 只含模块不含页面
+      this.rootSelectList = [{ id: "root", title: "根目录" }].concat(
+        this.menuList.filter(list => {
+          return list.path === "";
+        })
+      );
     },
     // 点击按钮 - 新增
     insert() {

@@ -56,12 +56,12 @@
       </Header>
       <Content class="main-content-con">
         <Layout class="main-layout-con">
-          <div class="tag-nav-wrapper">
+          <!-- <div class="tag-nav-wrapper">
             <tags-nav :value="$route"
                       @input="handleClick"
                       :list="tagNavList"
                       @on-close="handleCloseTag" />
-          </div>
+          </div> -->
           <Content class="content-wrapper">
             <keep-alive :include="cacheList">
               <router-view />
@@ -146,9 +146,7 @@ export default {
     },
     menuList() {
       // return this.$store.getters.menuList;
-      return this.isMock
-        ? this.$store.getters.menuList
-        : this.$store.state.app.menuList;
+      return this.$store.state.app.menuList; // 改造：动态生成左侧菜单
     },
     local() {
       return this.$store.state.app.local;

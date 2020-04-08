@@ -9,7 +9,6 @@ import config from "@/config";
 import Main from "@/components/main"; // Main 是架构组件，不在后台返回，在文件里单独引入
 import parentView from "@/components/parent-view"; // parentView 是二级架构组件，不在后台返回，在文件里单独引入
 import { getAllMenus } from "@/api/menu"; // api - 获取当前用户的全部菜单
-// import menuList from "@/mock/data/menus-data"; // mockData - 全部菜单
 import { menuList } from "@/view/3manage/mockData/role"; // mockData - 全部菜单
 
 // 初始化路由数据
@@ -29,9 +28,7 @@ export const initRouter = async () => {
       });
     } else {
       // mock数据
-      var routerData = routerDataHanding(
-        JSON.parse(JSON.stringify(menuList))
-      ); // 拿到路由模拟动态数据
+      var routerData = routerDataHanding(JSON.parse(JSON.stringify(menuList))); // 拿到路由模拟动态数据
       localSave("dynamicRouter", JSON.stringify(routerData)); // 存储routerData到localStorage
       gotRouter = filterAsyncRouter(routerData); // 过滤路由,路由组件转换
       store.dispatch("updateMenuList", gotRouter);
@@ -139,16 +136,19 @@ export const routerDataHanding = apiRouterData => {
   };
   handleRecurrence(asyncRouterMap);
 
-  // 首页概览：处理name，追加 redirect 和 notCache
+  // 首页重定向：处理name，追加 redirect 和 notCache
   asyncRouterMap.forEach(route => {
     if (route.path === "/") {
+      // home 页 -> 重定向为home
       route.meta.notCache = true;
       route.children[0].meta.notCache = true;
       route.children[0].name = "_" + route.name;
       route.redirect = route.path + route.children[0].path;
+    } else if (route.children.length !== 0) {
+      // 非 home 页且有子组件 -> 重定向为第一个子组件
+      route.redirect = route.path + "/" + route.children[0].path;
     }
   });
-
   return asyncRouterMap;
 };
 

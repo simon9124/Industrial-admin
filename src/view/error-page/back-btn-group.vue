@@ -28,7 +28,7 @@ export default {
             name: "control-leader-shop"
           });
           break;
-        case "examine":
+        case "test":
           this.$router.replace({
             name: "checkSearch"
           });

@@ -119,10 +119,9 @@ export default {
           getUserInfo(state.token)
             .then(res => {
               const data = res.data;
-              commit("setAvator", data.data.user_avator);
-              commit("setUserName", data.data.user_name);
-              commit("setUserId", data.data.user_id);
-              commit("setAccess", data.data.user_access);
+              commit("setUserName", data.data.userName);
+              commit("setUserId", data.data.id);
+              commit("setAccess", data.data.roles);
               commit("setHasGetInfo", true);
               resolve(data);
             })

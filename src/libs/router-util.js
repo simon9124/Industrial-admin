@@ -56,6 +56,7 @@ export const dynamicRouterAdd = from => {
 // @函数：遍历后台传来的路由数据，转为路由基础数据(与menus-data的数据格式相同)
 export const routerDataHanding = apiRouterData => {
   const asyncRouterMap = [];
+  console.log(asyncRouterMap);
 
   // 外层节点
   apiRouterData.forEach(route => {
@@ -75,7 +76,7 @@ export const routerDataHanding = apiRouterData => {
           },
           children: []
         });
-      } else if (route.showLevel === 3) {
+      } else if (parseInt(route.showLevel) === 3) {
         // 无子节点，菜单显示该页面选项，页面含菜单栏和面包屑 -> 根据url和name创建父子结构的路由
         asyncRouterMap.push({
           path: "/" + route.url.split("/")[0],
@@ -109,7 +110,7 @@ export const routerDataHanding = apiRouterData => {
             }
           ]
         });
-      } else if (route.showLevel === 1) {
+      } else if (parseInt(route.showLevel) === 1) {
         // 无子节点，菜单显示该页面选项，页面不含菜单栏不含面包屑 -> 根节点路由，与main组件平级
         asyncRouterMap.push({
           path: "/" + route.url,
@@ -122,7 +123,7 @@ export const routerDataHanding = apiRouterData => {
           },
           children: []
         });
-      } else if (route.showLevel === 4) {
+      } else if (parseInt(route.showLevel) === 4) {
         // 无子节点，菜单隐藏该页面选项，页面不含菜单栏不含面包屑 -> 根节点路由，与main组件平级
         asyncRouterMap.push({
           path: "/" + route.url,

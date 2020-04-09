@@ -817,7 +817,7 @@ export default {
     },
     // 车间主管 -> 返回检测列表 / 管理员 -> 返回上一页
     backRouter() {
-      if (this.userAccess.indexOf("workshop_manager") !== -1) {
+      if (JSON.stringify(this.userAccess).indexOf("workshop_manager") !== -1) {
         if (!this.isMock) {
           this.client.unsubscribe("ProductRoom");
           this.client.end(
@@ -839,7 +839,7 @@ export default {
             name: "electricSearch"
           });
         }
-      } else if (this.userAccess.indexOf("admin") !== -1) {
+      } else {
         if (!this.isMock) {
           this.client.unsubscribe("ProductRoom");
           this.client.end(

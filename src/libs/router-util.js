@@ -62,7 +62,7 @@ export const routerDataHanding = apiRouterData => {
     if (route.parenetId === "root") {
       // console.log(route);
       if (route.path === "") {
-        // 有子节点的父级路由
+        // 有子节点的父级路由（模块，非页面）
         asyncRouterMap.push({
           path: route.url === "/" ? route.url : "/" + route.url,
           name: route.name,
@@ -75,8 +75,8 @@ export const routerDataHanding = apiRouterData => {
           },
           children: []
         });
-      } else {
-        // 无子节点 -> 根据url和name创建父子结构的路由
+      } else if (route.showLevel === 3) {
+        // 无子节点，菜单显示该页面选项，页面含菜单栏和面包屑 -> 根据url和name创建父子结构的路由
         asyncRouterMap.push({
           path: "/" + route.url.split("/")[0],
           name: route.name.split("/")[0],
@@ -109,9 +109,38 @@ export const routerDataHanding = apiRouterData => {
             }
           ]
         });
+      } else if (route.showLevel === 1) {
+        // 无子节点，菜单显示该页面选项，页面不含菜单栏不含面包屑 -> 根节点路由，与main组件平级
+        asyncRouterMap.push({
+          path: "/" + route.url,
+          name: route.name,
+          component: route.path,
+          meta: {
+            icon: route.ico,
+            title: route.title,
+            hideInBread: true
+          },
+          children: []
+        });
+      } else if (route.showLevel === 4) {
+        // 无子节点，菜单隐藏该页面选项，页面不含菜单栏不含面包屑 -> 根节点路由，与main组件平级
+        asyncRouterMap.push({
+          path: "/" + route.url,
+          name: route.name,
+          component: route.path,
+          meta: {
+            icon: route.ico,
+            title: route.title,
+            hideInBread: true,
+            hideInMenu: true
+          },
+          children: []
+        });
       }
     }
   });
+
+  console.log(asyncRouterMap);
 
   // 内层子路由 - 递归
   const handleRecurrence = recurrenceData => {

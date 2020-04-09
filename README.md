@@ -15,9 +15,10 @@ nodejs + vuejs + iview + echart
 **账户密码：**
 
 - admin：管理员
-- factor：工程师
+- cestc：工程师
 - workshop_manager：车间主管
 - proline_leader：产线线长
+- test：检测员
 
 *密码均为2019@cestc
 

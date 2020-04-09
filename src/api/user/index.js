@@ -42,8 +42,16 @@ export const updateUser = data => {
 
 export const deleteUser = id => {
   return axios.request({
-    // url: `/api/user/delete/${id}`,
     url: `/api/user/delete?id=${id}`,
     method: "delete"
+  });
+};
+
+// 用户锁定/解锁
+export const lockUser = data => {
+  return axios.request({
+    url: "/api/user/lockUser",
+    data,
+    method: "put"
   });
 };

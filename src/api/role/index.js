@@ -8,6 +8,14 @@ export const getRolelist = () => {
   });
 };
 
+// 查询角色的下级角色
+export const getRoles = () => {
+  return axios.request({
+    url: "/api/roleMenu/getRoles",
+    method: "get"
+  });
+};
+
 // 新增角色
 export const addRole = data => {
   return axios.request({

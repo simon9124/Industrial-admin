@@ -463,12 +463,12 @@ const roleList = [
 // 菜单列表
 const menuList = [
   {
-    id: "e5a45a1b877a4aa78f3baaee6e1dcb65",
+    id: "a4a49ff8874044dfbd90c06544be165b",
     name: "home",
     title: "首页概览",
     url: "/home",
     path: "single-page/home/home",
-    sort: 21,
+    sort: 30,
     parenetId: "root",
     parenetPath: "root",
     status: 1,
@@ -478,16 +478,46 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "5745a3d62b354300a282662b6825ed0f",
+    id: "3976b690e56b48639e108ac6d6ca622b",
     name: "control-leader-shop",
     title: "驾驶舱",
-    url: "6inspector/controlCabin",
-    path: "",
-    sort: 19,
+    url: "control-leader-shop",
+    path: "6inspector/controlCabin",
+    sort: 25,
     parenetId: "root",
     parenetPath: "root",
     status: 1,
-    description: "",
+    description: "驾驶舱-车间（管理员或车间主管）",
+    ico: "md-laptop",
+    isOutSide: false,
+    showLevel: 1
+  },
+  {
+    id: "5fafcc08f6c143ee86fb7486e5a80647",
+    name: "control-leader-line",
+    title: "驾驶舱（产线）",
+    url: "control-leader-line",
+    path: "6inspector/controlCabinLine",
+    sort: 23,
+    parenetId: "root",
+    parenetPath: "root",
+    status: 1,
+    description: "驾驶舱-产线（管理员或车间主管）",
+    ico: "md-laptop",
+    isOutSide: false,
+    showLevel: 4
+  },
+  {
+    id: "00a490a674d74e4fb495e52fe9f77984",
+    name: "control-line",
+    title: "驾驶舱",
+    url: "control-line",
+    path: "6inspector/controlCabinLine",
+    sort: 21,
+    parenetId: "root",
+    parenetPath: "root",
+    status: 1,
+    description: "驾驶舱-车间（非管理员或车间主管）",
     ico: "md-laptop",
     isOutSide: false,
     showLevel: 1
@@ -613,6 +643,21 @@ const menuList = [
     showLevel: 3
   },
   {
+    id: "8",
+    name: "process",
+    title: "数据配置",
+    url: "process",
+    path: "3manage/process",
+    sort: 9,
+    parenetId: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    parenetPath: "root.0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    status: 1,
+    description: "数据配置",
+    ico: null,
+    isOutSide: false,
+    showLevel: 3
+  },
+  {
     id: "7a6bc598bead4430adf85cd56925e29a",
     name: "electric/electricSearch",
     title: "检测列表",
@@ -628,16 +673,16 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "8",
-    name: "process",
-    title: "数据配置",
-    url: "process",
-    path: "3manage/process",
-    sort: 9,
-    parenetId: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
-    parenetPath: "root.0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    id: "66",
+    name: "sncode",
+    title: "组合管理",
+    url: "sncode",
+    path: "3manage/snCode",
+    sort: 8,
+    parenetId: "d30bf0ff035c4e51875e7014ad46e1af",
+    parenetPath: "root.d30bf0ff035c4e51875e7014ad46e1af",
     status: 1,
-    description: "数据配置",
+    description: "sop配方组合管理",
     ico: null,
     isOutSide: false,
     showLevel: 3
@@ -658,16 +703,16 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "66",
-    name: "sncode",
-    title: "组合管理",
-    url: "sncode",
-    path: "3manage/snCode",
-    sort: 8,
+    id: "5",
+    name: "reject",
+    title: "异常原因",
+    url: "reject",
+    path: "3manage/reject",
+    sort: 7,
     parenetId: "d30bf0ff035c4e51875e7014ad46e1af",
     parenetPath: "root.d30bf0ff035c4e51875e7014ad46e1af",
     status: 1,
-    description: "sop配方组合管理",
+    description: "产品异常原因管理",
     ico: null,
     isOutSide: false,
     showLevel: 3
@@ -684,21 +729,6 @@ const menuList = [
     status: 1,
     description: "",
     ico: "",
-    isOutSide: false,
-    showLevel: 3
-  },
-  {
-    id: "5",
-    name: "reject",
-    title: "异常原因",
-    url: "reject",
-    path: "3manage/reject",
-    sort: 7,
-    parenetId: "d30bf0ff035c4e51875e7014ad46e1af",
-    parenetPath: "root.d30bf0ff035c4e51875e7014ad46e1af",
-    status: 1,
-    description: "产品异常原因管理",
-    ico: null,
     isOutSide: false,
     showLevel: 3
   },
@@ -733,21 +763,6 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "3c557f993903480a8a5db6f472b8f36e",
-    name: "proLine",
-    title: "产线配置",
-    url: "proLine",
-    path: "3manage/proLine",
-    sort: 5,
-    parenetId: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
-    parenetPath: "root.0e1ddfaa1e7d49cdabd3aa045889e6d0",
-    status: 1,
-    description: "",
-    ico: "",
-    isOutSide: false,
-    showLevel: 3
-  },
-  {
     id: "cd306e3afe40442d971b2ddc6c1a02d4",
     name: "systemManage/checkReason",
     title: "异常确认",
@@ -759,6 +774,21 @@ const menuList = [
     status: 1,
     description: "",
     ico: "md-bug",
+    isOutSide: false,
+    showLevel: 3
+  },
+  {
+    id: "3c557f993903480a8a5db6f472b8f36e",
+    name: "proLine",
+    title: "产线配置",
+    url: "proLine",
+    path: "3manage/proLine",
+    sort: 5,
+    parenetId: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    parenetPath: "root.0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    status: 1,
+    description: "",
+    ico: "",
     isOutSide: false,
     showLevel: 3
   },
@@ -778,21 +808,6 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "6b2d3c49373946989262e586d655dccf",
-    name: "mould",
-    title: "模板配置",
-    url: "mould",
-    path: "3manage/mould/index",
-    sort: 3,
-    parenetId: "013ad32e79c44427a8cad340fb056821",
-    parenetPath: "root.013ad32e79c44427a8cad340fb056821",
-    status: 1,
-    description: "",
-    ico: "",
-    isOutSide: false,
-    showLevel: 3
-  },
-  {
     id: "013ad32e79c44427a8cad340fb056821",
     name: "report",
     title: "报表中心",
@@ -804,6 +819,21 @@ const menuList = [
     status: 1,
     description: "",
     ico: "md-analytics",
+    isOutSide: false,
+    showLevel: 3
+  },
+  {
+    id: "6b2d3c49373946989262e586d655dccf",
+    name: "mould",
+    title: "模板配置",
+    url: "mould",
+    path: "3manage/mould/index",
+    sort: 3,
+    parenetId: "013ad32e79c44427a8cad340fb056821",
+    parenetPath: "root.013ad32e79c44427a8cad340fb056821",
+    status: 1,
+    description: "",
+    ico: "",
     isOutSide: false,
     showLevel: 3
   },
@@ -838,6 +868,21 @@ const menuList = [
     showLevel: 3
   },
   {
+    id: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    name: "dispose",
+    title: "配置中心",
+    url: "dispose",
+    path: "",
+    sort: 1,
+    parenetId: "root",
+    parenetPath: "root",
+    status: 1,
+    description: "业务基础配置",
+    ico: "md-build",
+    isOutSide: false,
+    showLevel: 3
+  },
+  {
     id: "82814bef61934f5aadb4e1e84608f414",
     name: "view",
     title: "异常产品报表",
@@ -866,37 +911,26 @@ const menuList = [
     ico: "",
     isOutSide: false,
     showLevel: 3
-  },
-  {
-    id: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
-    name: "dispose",
-    title: "配置中心",
-    url: "dispose",
-    path: "",
-    sort: 1,
-    parenetId: "root",
-    parenetPath: "root",
-    status: 1,
-    description: "业务基础配置",
-    ico: "md-build",
-    isOutSide: false,
-    showLevel: 3
   }
 ];
 
 // 菜单层级
 const menuLevel = [
   {
-    label: "不含菜单栏和面包屑",
+    label: "菜单显示该页面选项，页面不含菜单栏不含面包屑",
     value: "1"
   },
   {
-    label: "含菜单栏不含面包屑",
+    label: "菜单显示该页面选项，页面含菜单栏但不含面包屑",
     value: "2"
   },
   {
-    label: "含菜单栏和面包屑",
+    label: "菜单显示该页面选项，页面含菜单栏和面包屑",
     value: "3"
+  },
+  {
+    label: "菜单隐藏该页面选项，页面不含菜单栏不含面包屑",
+    value: "4"
   }
 ];
 

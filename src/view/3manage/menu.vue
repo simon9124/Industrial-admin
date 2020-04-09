@@ -99,7 +99,7 @@
             <Input type="text"
                    v-model.trim="modalData.url"
                    placeholder="地址栏路径"
-                   :disabled="!urlDisabled">
+                   :disabled="!urlDisabled||modalData.name==='home'">
             <!-- <span slot="prepend">
               <span v-if="menuType!=='first'">/</span>
               {{modalData.parentName}} /
@@ -114,7 +114,7 @@
                    placeholder="前端组件路径"></Input>
           </FormItem>
           <FormItem label="图标："
-                    v-if="menuType==='first' || modalData.parenetId==='root'"
+                    v-show="menuType==='first' || modalData.parenetId==='root'"
                     prop="ico">
             <icon-choose v-model="modalData.ico"></icon-choose>
           </FormItem>
@@ -145,6 +145,7 @@
             </Button>
             <Button v-if="modalDataType!=='insert'"
                     type="error"
+                    :disabled="modalData.name==='home'"
                     @click="deleteMenu(modalData)"
                     style="margin-left: 8px">删除
             </Button>
@@ -201,6 +202,7 @@ export default {
       buttonLoading: false, // button
       /* modal弹框 */
       modalData: {
+        id: "",
         name: "",
         title: "",
         url: "",
@@ -335,6 +337,8 @@ export default {
     insert() {
       this.modalDataType = "insert";
       this.$refs.formModalData.resetFields();
+      this.modalData.id = "";
+      this.modalData.children = [];
       this.urlDisabled = false;
     },
     // 选中菜单

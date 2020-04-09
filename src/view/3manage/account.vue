@@ -107,7 +107,7 @@ import {
   deleteUser,
   lockUser
 } from "@/api/user/index"; // 用户增删改查
-import { getRolelist } from "@/api/role/index"; // 获取角色列表
+import { getRoles } from "@/api/role/index"; // 查询角色的下级角色
 
 export default {
   data() {
@@ -324,9 +324,7 @@ export default {
   },
   async created() {
     this.getData();
-    this.roleList = !this.isMock
-      ? (await getRolelist()).data.data || []
-      : roleList;
+    this.getSubList();
   },
   methods: {
     // 获取首页数据
@@ -344,6 +342,19 @@ export default {
         this.refreshData();
         this.buttonLoading = false;
       }
+    },
+    // 当前角色的可选角色列表
+    async getSubList() {
+      // 接口 or mock 数据
+      const roleSubList = !this.isMock
+        ? (await getRoles()).data.data || []
+        : roleList;
+      // 当前用户的角色(按name值和接口数据比对去重) + 接口数据
+      this.roleList = this.userAccess
+        .filter(role => {
+          return roleSubList.every(_role => _role.name !== role.name);
+        })
+        .concat(roleSubList);
     },
     // 根据条件刷新数据
     refreshData() {

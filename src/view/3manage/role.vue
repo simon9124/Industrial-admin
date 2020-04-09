@@ -43,12 +43,29 @@
         <FormItem label="标识："
                   prop="name">
           <Input type="text"
-                 v-model.trim="modalDataRole.name"></Input>
+                 v-model.trim="modalDataRole.name"
+                 :disabled="modalDataRole.name==='admin'
+                          ||modalDataRole.name==='cestc'
+                          ||modalDataRole.name==='workshop_manager'
+                          ||modalDataRole.name==='proline_leader'
+                          ||modalDataRole.name==='test'"></Input>
         </FormItem>
         <FormItem label="名称："
                   prop="title">
           <Input type="text"
                  v-model.trim="modalDataRole.title"></Input>
+        </FormItem>
+        <FormItem label="上级："
+                  prop="parentId">
+          <Select v-model="modalDataRole.parentId">
+            <Option v-for="(role,i) in roleSubList"
+                    :value="role.id"
+                    :key="i">
+              {{ role.title }}
+            </Option>
+          </Select>
+          <!-- <Input type="text"
+                 v-model.trim="modalDataRole.parentId"></Input> -->
         </FormItem>
         <FormItem label="描述："
                   prop="description">
@@ -89,17 +106,17 @@
                   style="margin:0 10px 0 0;width:340px"
                   @on-change="userOnChange">
             <Option v-for="(user,i) in userList"
-                    :value="user.user_id"
-                    :key="i"
-                    :disabled="JSON.stringify(userSelectList).indexOf(user.display_name)>-1">
-              <!-- :disabled="JSON.stringify(tableDataOrg).indexOf(user.display_name)>-1" -->
-              {{ user.display_name }}
+                    :value="user.id"
+                    :key="i">
+              <!-- :disabled="JSON.stringify(userSelectList).indexOf(user.displayName)>-1" -->
+              {{ user.displayName }}
             </Option>
           </Select>
 
           <Button type="success"
                   size="small"
-                  @click="addToUserSelect">添加</Button>
+                  @click="addToUserSelect">添加
+          </Button>
 
           <div style="margin-top:10px">
             <Tag v-for="(item,i) in userSelectList"
@@ -107,7 +124,7 @@
                  type="border"
                  color="primary"
                  closable
-                 @on-close="deleteUserItem(i)">{{item.display_name}}</Tag>
+                 @on-close="deleteUserItem(i)">{{item.displayName}}</Tag>
           </div>
 
         </FormItem>
@@ -160,6 +177,8 @@
 </template>
 
 <script>
+// vuex
+import { mapGetters } from "vuex";
 // mockData
 import {
   roleList, // 角色列表
@@ -170,12 +189,13 @@ import {
 import {
   computedMenuData, // 菜单数据转换成iview树形数据结构(2层)
   arraySort, // 对象数组根据key排序
-  resultCallback // 根据请求的status执行回调函数
-  // getValueByKey // 根据对象数组某个key的value，查询另一个key的value
+  resultCallback, // 根据请求的status执行回调函数
+  getValueByKey // 根据对象数组某个key的value，查询另一个key的value
 } from "@/libs/dataHanding";
 // api
 import {
   getRolelist, // 获取角色列表
+  getRoles, // 查询角色的下级角色
   addRole, // 新增角色
   updateRole, // 更新角色
   removeRole, // 删除角色
@@ -193,8 +213,10 @@ export default {
     return {
       /* 全局 */
       userList: [], // 全部用户列表 - select用
-      menuListOrg: [], // 全部菜单列表 - 原始数据
+      menuListNotComputed: [], // 全部菜单列表 - 原始数据未处理
+      menuListOrg: [], // 全部菜单列表 - 原始数据处理后
       menuList: [], // 全部菜单列表 - 渲染后的tree
+      roleSubList: [], // 当前角色的下级角色列表
       roleId: "", // 角色id - 维护关系用
       /* 每页 */
       tableDataOrg: [], // 原始数据
@@ -209,7 +231,6 @@ export default {
         {
           title: "功能",
           key: "menus",
-          // align: "center",
           render: (h, params) => {
             return h("div", [
               params.row.menus.map(item => {
@@ -218,9 +239,21 @@ export default {
                   {
                     props: {
                       color: "blue"
+                    },
+                    style: {
+                      /* eslint-disable */
+                      display:
+                        getValueByKey(
+                          this.menuListNotComputed,
+                          "title",
+                          this.isMock ? item.title : item,
+                          "path"
+                        ) !== ""
+                          ? "inline-block"
+                          : "none"
                     }
                   },
-                  !this.isMock ? item : item.functionName
+                  this.isMock ? item.title : item
                 );
               })
             ]);
@@ -334,7 +367,13 @@ export default {
                     props: {
                       type: "error",
                       size: "small",
-                      icon: "md-close"
+                      icon: "md-close",
+                      disabled:
+                        params.row.name === "admin" ||
+                        params.row.name === "cestc" ||
+                        params.row.name === "workshop_manager" ||
+                        params.row.name === "proline_leader" ||
+                        params.row.name === "test"
                     },
                     on: {
                       click: () => {
@@ -360,6 +399,7 @@ export default {
       modalDataRole: {
         name: "",
         title: "",
+        parentId: "",
         description: ""
         // menus: [],
         // users: []
@@ -404,6 +444,13 @@ export default {
             trigger: "change"
           }
         ],
+        parentId: [
+          {
+            required: true,
+            message: "请选择上级角色",
+            trigger: "change"
+          }
+        ],
         description: [
           {
             type: "string",
@@ -416,12 +463,17 @@ export default {
       modalDataRoleType: "" // 类型：insert/edit
     };
   },
+  computed: {
+    ...mapGetters(["userAccess"])
+  },
   async created() {
     this.getData();
+    this.getSubList();
     // 设置menuList的副本，每次关联时以副本为基准清空已选项
-    this.menuListOrg = !this.isMock
-      ? computedMenuData((await getAllMenus()).data.data) || []
-      : computedMenuData(menuList);
+    this.menuListNotComputed = !this.isMock
+      ? (await getAllMenus()).data.data || []
+      : menuList;
+    this.menuListOrg = computedMenuData(this.menuListNotComputed);
     this.menuList = JSON.parse(JSON.stringify(this.menuListOrg));
     this.userList = !this.isMock
       ? (await getUserList()).data.data || []
@@ -445,10 +497,34 @@ export default {
         this.buttonLoading = false;
       }
     },
+    // 当前角色的可选上级角色列表
+    async getSubList() {
+      // 接口数据
+      this.roleSubList = !this.isMock
+        ? (await getRoles()).data.data || []
+        : roleList;
+      // 根角色 - 只有当前用户角色是admin或cestc时才有
+      const rootList = this.userAccess.some(
+        role => role.name === "admin" || role.name === "cestc"
+      )
+        ? [{ id: "root", title: "根角色", parenetId: null }]
+        : [];
+      // 根角色 + 当前用户的角色(按name值和接口数据比对去重) + 接口数据
+      this.roleSubList = rootList
+        .concat(
+          this.userAccess.filter(role => {
+            return this.roleSubList.every(_role => _role.name !== role.name);
+          })
+        )
+        .concat(this.roleSubList);
+      // console.log(this.roleSubList);
+    },
     // 根据条件刷新数据
     refreshData() {
-      // 按"id"升序
-      this.tableDataOrg.sort(arraySort("id", "asc"));
+      if (this.isMock) {
+        // 按"id"升序
+        this.tableDataOrg.sort(arraySort("id", "asc"));
+      }
       // 分页 & 每页条数
       this.tableData = this.tableDataOrg.slice(
         (this.pageNum - 1) * this.pageSize,
@@ -639,7 +715,9 @@ export default {
     // 点击按钮 - 关联用户
     async relateUsers(row) {
       this.roleId = row.id;
-      this.userSelectList = (await getUsersByRole(row.id)).data.data || [];
+      this.userSelectList = !this.isMock
+        ? (await getUsersByRole(row.id)).data.data || []
+        : row.users;
       this.modalShowUser = true;
     },
     // select框选择的数据发生变化 - user
@@ -647,8 +725,8 @@ export default {
       this.userSelectedData = [];
       value.forEach(item => {
         this.userSelectedData.push({
-          user_id: item.value,
-          display_name: item.label
+          id: item.value,
+          displayName: item.label
         });
       });
     },
@@ -670,7 +748,7 @@ export default {
       this.buttonLoading = true;
       const userIds = [];
       this.userSelectList.forEach(user => {
-        userIds.push(user.user_id);
+        userIds.push(user.id);
       });
       // console.log(userIds);
       const result = (
@@ -695,7 +773,9 @@ export default {
     // 点击按钮 - 关联菜单
     async relateMenus(row) {
       this.roleId = row.id;
-      this.menuSelectList = (await getMenusByRole(row.id)).data.data;
+      this.menuSelectList = !this.isMock
+        ? (await getMenusByRole(row.id)).data.data || []
+        : JSON.parse(JSON.stringify(row.menus));
       // 根据menuSelectList，动态渲染menuList已选中的选项
       if (this.menuList.length > 0) {
         this.menuList.forEach(menu => {

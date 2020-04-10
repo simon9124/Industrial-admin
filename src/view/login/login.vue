@@ -62,9 +62,13 @@
 </template>
 
 <script>
+// vuex
+import { mapActions } from "vuex";
+// component
 import LoginForm from "_c/login-form";
 import InspectForm from "_c/login-form/inspect-form";
-import { mapActions } from "vuex";
+// function
+import { refreshRoute } from "@/router"; // 路由初始化，清空动态路由
 
 export default {
   components: {
@@ -75,6 +79,10 @@ export default {
     return {
       isManage: true
     };
+  },
+  created() {
+    localStorage.setItem("dynamicRouter", []);
+    refreshRoute();
   },
   methods: {
     ...mapActions(["handleLogin", "getUserInfo", "getRouters"]),

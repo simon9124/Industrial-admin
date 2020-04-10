@@ -56,7 +56,6 @@ export const dynamicRouterAdd = from => {
 // @函数：遍历后台传来的路由数据，转为路由基础数据(与menus-data的数据格式相同)
 export const routerDataHanding = apiRouterData => {
   const asyncRouterMap = [];
-  console.log(asyncRouterMap);
 
   // 外层节点
   apiRouterData.forEach(route => {

@@ -7,7 +7,8 @@ const userList = [
     phone: "13888888888",
     roles: [
       {
-        id: "1"
+        id: "1",
+        name: "admin"
       }
     ],
     lockFlag: 0
@@ -19,58 +20,24 @@ const userList = [
     phone: "13801380138",
     roles: [
       {
-        id: "2"
-      }
-    ],
-    lockFlag: 0
-  },
-  {
-    id: "ada9bf57-99ad-4ca6-8000-5b245c59af3d",
-    userName: "gy",
-    displayName: "gy",
-    phone: "15210533478",
-    roles: [
-      {
-        id: "1"
+        id: "2",
+        name: "cestc"
       }
     ],
     lockFlag: 0
   },
   {
     id: "f706830e-9b9f-498e-b1d9-536d7c366313",
-    userName: "dj",
-    displayName: "dj",
-    phone: "15210533478",
+    userName: "chenguohua",
+    displayName: "陈国华",
+    phone: "15910512300",
     roles: [
       {
-        id: "1"
+        id: "1",
+        name: "admin"
       }
     ],
-    lockFlag: 0
-  },
-  {
-    id: "ddccd51f-6054-470d-91b1-b63785ccb528",
-    userName: "dn",
-    displayName: "dn",
-    phone: "15210533478",
-    roles: [
-      {
-        id: "1"
-      }
-    ],
-    lockFlag: 0
-  },
-  {
-    id: "9d974bb4-2386-4bb8-98c5-499b95ad025c",
-    userName: "test",
-    displayName: "检测员",
-    phone: "",
-    roles: [
-      {
-        id: "5"
-      }
-    ],
-    lockFlag: 0
+    lockFlag: 1
   },
   {
     id: "70f2ef02-9ee7-4062-b801-554ce00bb6a3",
@@ -79,7 +46,8 @@ const userList = [
     phone: "",
     roles: [
       {
-        id: "5"
+        id: "2ce90dcc47ac4e0288139c01bbb11e16",
+        name: "test"
       }
     ],
     lockFlag: 0
@@ -91,7 +59,21 @@ const userList = [
     phone: "",
     roles: [
       {
-        id: "4"
+        id: "54e3addd95d44f528c594e266f01a72f",
+        name: "proline_leader"
+      }
+    ],
+    lockFlag: 0
+  },
+  {
+    id: "9d974bb4-2386-4bb8-98c5-499b95ad025c",
+    userName: "test",
+    displayName: "检测员",
+    phone: "",
+    roles: [
+      {
+        id: "2ce90dcc47ac4e0288139c01bbb11e16",
+        name: "test"
       }
     ],
     lockFlag: 0
@@ -103,7 +85,8 @@ const userList = [
     phone: "",
     roles: [
       {
-        id: "5"
+        id: "2ce90dcc47ac4e0288139c01bbb11e16",
+        name: "test"
       }
     ],
     lockFlag: 0
@@ -115,7 +98,9 @@ const userList = [
     phone: "",
     roles: [
       {
-        id: "5"
+        id: "2ce90dcc47ac4e0288139c01bbb11e16",
+        name: "test",
+        parentId: "54e3addd95d44f528c594e266f01a72f"
       }
     ],
     lockFlag: 0
@@ -127,7 +112,8 @@ const userList = [
     phone: "",
     roles: [
       {
-        id: "3"
+        id: "c51f88ccc20a4266be98d5b94851e953",
+        name: "workshop_manager"
       }
     ],
     lockFlag: 0
@@ -139,7 +125,8 @@ const userList = [
     phone: "14566786543",
     roles: [
       {
-        id: "5"
+        id: "2ce90dcc47ac4e0288139c01bbb11e16",
+        name: "test"
       }
     ],
     lockFlag: 0
@@ -482,7 +469,7 @@ const menuList = [
     name: "control-leader-shop",
     title: "驾驶舱",
     url: "control-leader-shop",
-    path: "6inspector/controlCabin",
+    path: "6inspector/control",
     sort: 25,
     parenetId: "root",
     parenetPath: "root",
@@ -506,21 +493,6 @@ const menuList = [
     ico: "md-laptop",
     isOutSide: false,
     showLevel: 4
-  },
-  {
-    id: "00a490a674d74e4fb495e52fe9f77984",
-    name: "control-line",
-    title: "驾驶舱",
-    url: "control-line",
-    path: "6inspector/controlCabinLine",
-    sort: 21,
-    parenetId: "root",
-    parenetPath: "root",
-    status: 1,
-    description: "驾驶舱-车间（非管理员或车间主管）",
-    ico: "md-laptop",
-    isOutSide: false,
-    showLevel: 1
   },
   {
     id: "b058f93cee0c43199ce9af19f17cffa9",
@@ -598,21 +570,6 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "c64f399d2c03445dbfa2b23c240e2dc6",
-    name: "number/print",
-    title: "条码打印",
-    url: "number/print",
-    path: "3manage/number",
-    sort: 11,
-    parenetId: "root",
-    parenetPath: "root",
-    status: 1,
-    description: "",
-    ico: "md-print",
-    isOutSide: false,
-    showLevel: 3
-  },
-  {
     id: "23001d1a12fe43ceac9769ee08f899f2",
     name: "menu",
     title: "菜单管理",
@@ -628,6 +585,21 @@ const menuList = [
     showLevel: 3
   },
   {
+    id: "c64f399d2c03445dbfa2b23c240e2dc6",
+    name: "number/print",
+    title: "条码打印",
+    url: "number/print",
+    path: "3manage/number",
+    sort: 11,
+    parenetId: "root",
+    parenetPath: "root",
+    status: 1,
+    description: "",
+    ico: "md-print",
+    isOutSide: false,
+    showLevel: 3
+  },
+  {
     id: "7",
     name: "sop",
     title: "SOP配置",
@@ -638,21 +610,6 @@ const menuList = [
     parenetPath: "root.0e1ddfaa1e7d49cdabd3aa045889e6d0",
     status: 1,
     description: "SOP步骤配置",
-    ico: null,
-    isOutSide: false,
-    showLevel: 3
-  },
-  {
-    id: "8",
-    name: "process",
-    title: "数据配置",
-    url: "process",
-    path: "3manage/process",
-    sort: 9,
-    parenetId: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
-    parenetPath: "root.0e1ddfaa1e7d49cdabd3aa045889e6d0",
-    status: 1,
-    description: "数据配置",
     ico: null,
     isOutSide: false,
     showLevel: 3
@@ -673,16 +630,16 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "66",
-    name: "sncode",
-    title: "组合管理",
-    url: "sncode",
-    path: "3manage/snCode",
-    sort: 8,
-    parenetId: "d30bf0ff035c4e51875e7014ad46e1af",
-    parenetPath: "root.d30bf0ff035c4e51875e7014ad46e1af",
+    id: "8",
+    name: "process",
+    title: "数据配置",
+    url: "process",
+    path: "3manage/process",
+    sort: 9,
+    parenetId: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
+    parenetPath: "root.0e1ddfaa1e7d49cdabd3aa045889e6d0",
     status: 1,
-    description: "sop配方组合管理",
+    description: "数据配置",
     ico: null,
     isOutSide: false,
     showLevel: 3
@@ -703,16 +660,16 @@ const menuList = [
     showLevel: 3
   },
   {
-    id: "5",
-    name: "reject",
-    title: "异常原因",
-    url: "reject",
-    path: "3manage/reject",
-    sort: 7,
+    id: "66",
+    name: "sncode",
+    title: "组合管理",
+    url: "sncode",
+    path: "3manage/snCode",
+    sort: 8,
     parenetId: "d30bf0ff035c4e51875e7014ad46e1af",
     parenetPath: "root.d30bf0ff035c4e51875e7014ad46e1af",
     status: 1,
-    description: "产品异常原因管理",
+    description: "sop配方组合管理",
     ico: null,
     isOutSide: false,
     showLevel: 3
@@ -744,6 +701,21 @@ const menuList = [
     status: 1,
     description: "",
     ico: "md-git-pull-request",
+    isOutSide: false,
+    showLevel: 3
+  },
+  {
+    id: "5",
+    name: "reject",
+    title: "异常原因",
+    url: "reject",
+    path: "3manage/reject",
+    sort: 7,
+    parenetId: "d30bf0ff035c4e51875e7014ad46e1af",
+    parenetPath: "root.d30bf0ff035c4e51875e7014ad46e1af",
+    status: 1,
+    description: "产品异常原因管理",
+    ico: null,
     isOutSide: false,
     showLevel: 3
   },

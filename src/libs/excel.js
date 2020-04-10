@@ -68,10 +68,10 @@ function get_header_row(sheet) {
     /* walk every column in the range */
     var cell =
       sheet[
-        XLSX.utils.encode_cell({
-          c: C,
-          r: R
-        })
+      XLSX.utils.encode_cell({
+        c: C,
+        r: R
+      })
       ]; /* find the cell in the first row */
     var hdr = "UNKNOWN " + C; // <-- replace with your desired default
     if (cell && cell.t) hdr = XLSX.utils.format_cell(cell);
@@ -262,63 +262,68 @@ function cellIdSort(a, b) {
  * @param originalDom 原始tableDom元素
  */
 export const builderHtml = (headConfig, originalDom) => {
-  let rowObjs = headGroupbyRow(headConfig); //把表示信息按行分组;
-  let rowKeys = Object.keys(rowObjs).sort(); //把行信息按从小到大排序
-  for (let i in rowKeys) {
-    let rk = rowKeys[i];
-    let rowObj = rowObjs[rk];
-    let onerowcell = Object.keys(rowObj).sort(cellIdSort); //同一行的单元格排序
+  let rowObjs = headGroupbyRow(headConfig);//把表示信息按行分组; r1:[],r2:[]
+  let rowKeys = Object.keys(rowObjs).sort();//把行信息按从小到大排序
+  for (let i in rowKeys) {//逐行处理表头元素
+    writeToTable("example", originalDom);
+    let rk = rowKeys[i];//当前行的行Key:r1/r2...
+    let rowObj = rowObjs[rk];//当前行所有单元格信息
+    let onerowcell = Object.keys(rowObj).sort(cellIdSort);//当前行单元格排序，得到排序后的单元格标识
 
-    let rowMerges = headConfig["!merges"].filter(o => {
-      return o.s.r == i;
-    }); //当前行的所有合并单元格样式
+    let rowMerges = headConfig["!merges"] ? headConfig["!merges"].filter(o => { return o.s.r == i; }) : [];//当前行的所有合并单元格样式
+
 
     //处理有表头信息的单元格
     for (let j in onerowcell) {
-      let ck = onerowcell[j];
-      let colObj = rowObj[ck]; //单元格对象
-      let rcIndexObj = cellIdToNumIndex(ck); //单元格的行列坐标，都是从0开始;
+      let ck = onerowcell[j]; //当前行的当前单元格标识
+      let colObj = rowObj[ck]; //当前行的当前单元格对象
+      let rcIndexObj = cellIdToNumIndex(ck);//转换单元格的行列坐标，都是从0开始｛r:0,c:0｝;
 
-      let cellMergeIndex = rowMerges.findIndex(o => {
-        return o.s.c == rcIndexObj.c;
-      }); //cellMergeIndex
 
-      if (cellMergeIndex > -1) {
-        let cmObj = rowMerges[cellMergeIndex];
-        let rowspan = 1,
-          colspan = 1;
-        rowspan += cmObj.e.r - cmObj.s.r;
-        colspan += cmObj.e.c - cmObj.s.c;
+      let cellMergeIndex = rowMerges.findIndex(o => { return o.s.c == rcIndexObj.c });//当前单元格的合并单元格信息数组下标值cellMergeIndex
+      if (!originalDom[rk][rcIndexObj.c]) {
+        if (cellMergeIndex > -1) rowMerges.splice(cellMergeIndex, 1);
+        continue;
+      }
 
-        originalDom[rk][rcIndexObj.c] = buildThDom(
-          ck,
-          rowspan,
-          colspan,
-          colObj.v
-        ); //`<th style="border:1px solid #F00 ;" rowspan="${rowspan}" colspan="${colspan}">${colObj.v}</th>`;
+      if (cellMergeIndex > -1) {//当前单元格存在合并信息
+        let cmObj = rowMerges[cellMergeIndex];//当前单元合并信息
+        let rowspan = 1, colspan = 1;
+        rowspan += cmObj.e.r - cmObj.s.r;//计算 html 的 rowspan 从1开始
+        colspan += cmObj.e.c - cmObj.s.c;//计算 html 的 colspan 从1开始
 
+        originalDom[rk][rcIndexObj.c] = buildThDom(ck, rowspan, colspan, colObj.v);//更新对应的Html元素，赋值和设置跨行跨列属性
+
+        //处理已被合并的html单元格元素
         for (let r = cmObj.s.r; r <= cmObj.e.r; r++) {
-          let startRowSpan = r > cmObj.s.r;
+          let startRowSpan = r > cmObj.s.r;//是否开始行合并
           for (let s = cmObj.s.c; s <= cmObj.e.c; s++) {
             if (startRowSpan) {
               //处理被跨行的单元格
               delete originalDom[`r${r + 1}`][s];
               continue;
             }
-            if (s == cmObj.s.c) continue;
-            delete originalDom[`r${r + 1}`][s];
+            if (s == cmObj.s.c) continue; //如果是合并单元格的起始单元格，不处理
+            originalDom[`r${r + 1}`][s] = ""; //清空已被合并的单元格Html元素
           }
         }
         rowMerges.splice(cellMergeIndex, 1); //清除当前行已处理的合并单元格配置
 
         cmObj = null;
-      } else originalDom[rk][rcIndexObj.c] = buildThDom(ck, 1, 1, colObj.v); //`<th style="border:1px solid #F00 ;">${colObj.v}</th>`;
+
+
+      }
+
+      else
+        originalDom[rk][rcIndexObj.c] = buildThDom(ck, 1, 1, colObj.v);//不存在单元格合并信息
+
+
+
     }
 
     //处理无表头信息，但有合并配置信息的单元格
     rowMerges.forEach(cmObj => {
-      let rowspan = 1;
-      let colspan = 1;
+      let rowspan = 1, colspan = 1;
       rowspan += cmObj.e.r - cmObj.s.r;
       colspan += cmObj.e.c - cmObj.s.c;
 
@@ -326,9 +331,14 @@ export const builderHtml = (headConfig, originalDom) => {
       if (cmObj.s.c > 50) alert("表格列数太，请联系管理员");
       else if (cmObj.s.c > 25) {
         tag = `A${String.fromCharCode(cmObj.s.c - 25 + 65)}${cmObj.s.r + 1}`;
-      } else tag = `${String.fromCharCode(cmObj.s.c + 65)}${cmObj.s.r + 1}`;
+      }
+      else tag = `${String.fromCharCode(cmObj.s.c + 65)}${cmObj.s.r + 1}`;
 
-      originalDom[rk][cmObj.s.c] = buildThDom(tag, rowspan, colspan, ""); // `<th style="border:1px solid #F00 ;" rowspan="${rowspan}" colspan="${colspan}"> </th>`;
+
+      if (originalDom[rk][rcIndexObj.c])
+        originalDom[rk][cmObj.s.c] = buildThDom(tag, rowspan, colspan, "");//更新对应的Html元素，赋值和设置跨行跨列属性
+      else return;
+
 
       for (let r = cmObj.s.r; r <= cmObj.e.r; r++) {
         let startRowSpan = r > cmObj.s.r;
@@ -339,10 +349,15 @@ export const builderHtml = (headConfig, originalDom) => {
             continue;
           }
           if (s == cmObj.s.c) continue;
-          delete originalDom[`r${r + 1}`][s];
+          originalDom[`r${r + 1}`][s] = "";
         }
+
       }
+
+
     });
+
+
   }
 };
 
@@ -408,7 +423,7 @@ export const xlsxUtils = {
   import(f, c) {
     this.wb = null;
     var reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       var data = e.target.result;
       xlsxUtils._wb = xlsxUtils._rABS
         ? XLSX.read(btoa(xlsxUtils.Binary.fixdata(data)), { type: "base64" })
@@ -478,9 +493,9 @@ export const xlsxUtils = {
     var types =
       t == undefined
         ? v =>
-            ({ number: "n", undefined: "s", boolean: "b", string: "s" }[
-              typeof v
-            ] || "s")
+          ({ number: "n", undefined: "s", boolean: "b", string: "s" }[
+            typeof v
+          ] || "s")
         : t;
     n = n || 0;
     r = r || 0;

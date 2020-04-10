@@ -275,13 +275,10 @@ export default {
       reader.onload = e => {
         this.$Message.info("上传成功");
         let data = e.target.result;
-
         this.tableHeader = excel.readMergeHeader(data, "binary");
-
-        console.log(this.tableHeader);
+        // console.log(this.tableHeader);
         this.headerHandle(this.tableHeader);
         this.headerField(this.tableHeader);
-
         this.uploadLoading = false;
         this.showRemoveFile = true;
       };

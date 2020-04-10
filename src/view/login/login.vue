@@ -91,19 +91,27 @@ export default {
       this.handleLogin({ userName, password, lineNo }).then(res => {
         this.getUserInfo().then(resUserInfo => {
           this.getRouters().then(resRoutes => {
-            if (resUserInfo.data.roles[0].name === "workshop_manager") {
+            if (
+              JSON.stringify(resUserInfo.data.roles).indexOf(
+                "workshop_manager"
+              ) > -1
+            ) {
               // 车间主管 -> 直接进入驾驶舱-车间
               this.$router.push({
                 path: "/control-leader-shop",
                 name: "control-leader-shop"
               });
-            } else if (resUserInfo.data.roles[0].name === "test") {
+            } else if (
+              JSON.stringify(resUserInfo.data.roles).indexOf("test") > -1
+            ) {
               // 检测员 -> 直接进入追溯查询
               this.$router.push({
                 path: "/check/checkSearch",
                 name: "checkSearch"
               });
-            } else if (resUserInfo.data.roles[0].name === "cestc") {
+            } else if (
+              JSON.stringify(resUserInfo.data.roles).indexOf("cestc") > -1
+            ) {
               // 工程师 -> 直接进入SOP配置
               this.$router.push({
                 path: "/dispose/sop",

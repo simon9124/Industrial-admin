@@ -23,17 +23,17 @@ const turnTo = (to, access, next) => {
   if (to.path === "/") {
     // console.log("准备跳转到首页");
     // 已经登录的用户新打开 "/"" -> 跳回该用户登录后的首页
-    if (access[0].name === "workshop_manager") {
+    if (JSON.stringify(access).indexOf("workshop_manager") > -1) {
       // 车间主管 -> 直接进入驾驶舱-车间
       next({
         name: "control-leader-shop"
       });
-    } else if (access[0].name === "test") {
+    } else if (JSON.stringify(access).indexOf("test") > -1) {
       // 检测员 -> 直接进入追溯查询
       next({
         name: "checkSearch"
       });
-    } else if (access[0].name === "cestc") {
+    } else if (JSON.stringify(access).indexOf("cestc") > -1) {
       // 工程师 -> 直接进入SOP配置
       next({
         name: "sop"

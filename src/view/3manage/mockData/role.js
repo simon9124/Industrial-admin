@@ -46,7 +46,7 @@ const userList = [
     phone: "",
     roles: [
       {
-        id: "2ce90dcc47ac4e0288139c01bbb11e16",
+        id: "5",
         name: "test"
       }
     ],
@@ -59,7 +59,7 @@ const userList = [
     phone: "",
     roles: [
       {
-        id: "54e3addd95d44f528c594e266f01a72f",
+        id: "4",
         name: "proline_leader"
       }
     ],
@@ -72,7 +72,7 @@ const userList = [
     phone: "",
     roles: [
       {
-        id: "2ce90dcc47ac4e0288139c01bbb11e16",
+        id: "5",
         name: "test"
       }
     ],
@@ -85,7 +85,7 @@ const userList = [
     phone: "",
     roles: [
       {
-        id: "2ce90dcc47ac4e0288139c01bbb11e16",
+        id: "5",
         name: "test"
       }
     ],
@@ -98,9 +98,9 @@ const userList = [
     phone: "",
     roles: [
       {
-        id: "2ce90dcc47ac4e0288139c01bbb11e16",
+        id: "5",
         name: "test",
-        parentId: "54e3addd95d44f528c594e266f01a72f"
+        parentId: "4"
       }
     ],
     lockFlag: 0
@@ -112,7 +112,7 @@ const userList = [
     phone: "",
     roles: [
       {
-        id: "c51f88ccc20a4266be98d5b94851e953",
+        id: "3",
         name: "workshop_manager"
       }
     ],
@@ -125,7 +125,7 @@ const userList = [
     phone: "14566786543",
     roles: [
       {
-        id: "2ce90dcc47ac4e0288139c01bbb11e16",
+        id: "5",
         name: "test"
       }
     ],
@@ -372,7 +372,7 @@ const roleList = [
     id: "4"
   },
   {
-    name: "examine",
+    name: "test",
     title: "检测员",
     description: "检测员，负责检测产品",
     menus: [

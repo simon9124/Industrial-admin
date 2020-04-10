@@ -1,23 +1,21 @@
 <template>
   <div>
     <!-- Modal - 整体数据-->
-    <Modal
-      v-model="modalShow"
-      :mask-closable="false"
-      :closable="false"
-      footer-hide
-      width="80%"
-      title="配置模板"
-    >
+    <Modal v-model="modalShow"
+           :mask-closable="false"
+           :closable="false"
+           footer-hide
+           width="80%"
+           title="配置模板">
       <!-- 操作  -->
       <Row>
-        <Upload action :before-upload="handleBeforeUpload" accept=".xls, .xlsx">
-          <Button
-            type="primary"
-            icon="ios-cloud-upload-outline"
-            :loading="uploadLoading"
-            @click="handleUploadFile"
-          >上传模板</Button>
+        <Upload action
+                :before-upload="handleBeforeUpload"
+                accept=".xls, .xlsx">
+          <Button type="primary"
+                  icon="ios-cloud-upload-outline"
+                  :loading="uploadLoading"
+                  @click="handleUploadFile">上传模板</Button>
         </Upload>
       </Row>
       <!-- <Row>
@@ -47,83 +45,84 @@
       <!-- tableHeader -->
       <Row style="margin-top:10px;overflow-x:auto;">
         <table id="example"></table>
-        <Table
-          v-if="JSON.stringify(tableHeader) === '{}'"
-          style="margin-bottom:10px"
-          :columns="[]"
-          :data="[]"
-          no-data-text="未配置模板"
-        ></Table>
+        <Table v-if="JSON.stringify(tableHeader) === '{}'"
+               style="margin-bottom:10px"
+               :columns="[]"
+               :data="[]"
+               no-data-text="未配置模板"></Table>
       </Row>
 
       <!-- fieldForm -->
-      <Form
-        v-if="JSON.stringify(this.tableHeader) !== '{}'"
-        :model="{}"
-        inline
-        label-position="right"
-        @submit.native.prevent
-        style="margin:20px 0 0 0"
-      >
-        <FormItem
-          v-for="(item,i) in fieldArrayData"
-          :key="i"
-          :label="item.title+'-'+item.colTag"
-          prop="name"
-        >
-          <Input type="text" v-model.trim="item.name"></Input>
+      <Form v-if="JSON.stringify(this.tableHeader) !== '{}'"
+            :model="{}"
+            inline
+            label-position="right"
+            @submit.native.prevent
+            style="margin:20px 0 0 0">
+        <FormItem v-for="(item,i) in fieldArrayData"
+                  :key="i"
+                  :label="item.title+'-'+item.colTag"
+                  prop="name">
+          <Input type="text"
+                 v-model.trim="item.name"></Input>
         </FormItem>
       </Form>
 
       <!-- form -->
-      <Form
-        ref="formData"
-        :model="formData"
-        :rules="formRule"
-        inline
-        @submit.native.prevent
-        style="margin:6px 0 0 0"
-      >
-        <FormItem label="数据源类型" prop="sourceType">
-          <Select v-model="formData.sourceType" placeholder="请选择" style="width:200px">
-            <Option v-for="(item,i) in sourceTypeList" :value="item" :key="i">{{ item }}</Option>
+      <Form ref="formData"
+            :model="formData"
+            :rules="formRule"
+            inline
+            @submit.native.prevent
+            style="margin:6px 0 0 0">
+        <FormItem label="数据源类型"
+                  prop="sourceType">
+          <Select v-model="formData.sourceType"
+                  placeholder="请选择"
+                  style="width:200px">
+            <Option v-for="(item,i) in sourceTypeList"
+                    :value="item"
+                    :key="i">{{ item }}</Option>
           </Select>
         </FormItem>
-        <FormItem label="分页查询" prop="isPage">
+        <FormItem label="分页查询"
+                  prop="isPage">
           <Checkbox v-model="formData.isPage">isPage</Checkbox>
         </FormItem>
-        <FormItem label="Sql语句" prop="sourceSql" style="display:block;margin-top:10px">
-          <Input
-            type="textarea"
-            style="width:600px"
-            :autosize="{minRows: 4,maxRows: 8}"
-            v-model.trim="formData.sourceSql"
-            placeholder="请输入"
-          ></Input>
+        <FormItem label="Sql语句"
+                  prop="sourceSql"
+                  style="display:block;margin-top:10px">
+          <Input type="textarea"
+                 style="width:600px"
+                 :autosize="{minRows: 4,maxRows: 8}"
+                 v-model.trim="formData.sourceSql"
+                 placeholder="请输入"></Input>
         </FormItem>
-        <FormItem label="排序规则" prop="sourceOrder" style="display:block;margin-top:20px">
-          <Input
-            type="textarea"
-            style="width:600px"
-            :autosize="{minRows: 4,maxRows: 8}"
-            v-model.trim="formData.sourceOrder"
-            placeholder="请输入"
-          ></Input>
+        <FormItem label="排序规则"
+                  prop="sourceOrder"
+                  style="display:block;margin-top:20px">
+          <Input type="textarea"
+                 style="width:600px"
+                 :autosize="{minRows: 4,maxRows: 8}"
+                 v-model.trim="formData.sourceOrder"
+                 placeholder="请输入"></Input>
         </FormItem>
       </Form>
 
       <!-- 操作 - 保存/取消 -->
       <div style="margin:20px 0 10px 0">
-        <Button type="primary" @click="submitTableHeader" :loading="buttonLoading">确定</Button>
-        <Button
-          type="warning"
-          style="margin-left: 8px"
-          @click="modalShow=false;showProgress=false;file=null"
-        >取消</Button>
+        <Button type="primary"
+                @click="submitTableHeader"
+                :loading="buttonLoading">确定</Button>
+        <Button type="warning"
+                style="margin-left: 8px"
+                @click="modalShow=false;showProgress=false;file=null">取消</Button>
       </div>
 
       <!-- spin -->
-      <Spin size="large" fix v-if="spinShow"></Spin>
+      <Spin size="large"
+            fix
+            v-if="spinShow"></Spin>
     </Modal>
   </div>
 </template>
@@ -259,31 +258,33 @@ export default {
     },
     // 读取文件
     readFile(file) {
-      let wb; // 读取完成的数据
+      //  let wb; // 读取完成的数据
       console.log(file);
       let reader = new FileReader();
       reader.readAsBinaryString(file);
-      // reader.onloadstart = e => {
-      //   this.uploadLoading = true;
-      //   this.showProgress = true;
-      // };
-      // reader.onprogress = e => {
-      //   this.progressPercent = Math.round((e.loaded / e.total) * 100);
-      // };
-      // reader.onerror = e => {
-      //   this.$Message.error("文件读取出错");
-      // };
-      reader.onload = function(e) {
-        // this.$Message.info("上传成功");
+      reader.onloadstart = e => {
+        this.uploadLoading = true;
+        this.showProgress = true;
+      };
+      reader.onprogress = e => {
+        this.progressPercent = Math.round((e.loaded / e.total) * 100);
+      };
+      reader.onerror = e => {
+        this.$Message.error("文件读取出错");
+      };
+      reader.onload = e => {
+        this.$Message.info("上传成功");
         let data = e.target.result;
 
-        wb = excel.readMergeHeader(data, "binary");
+        this.tableHeader = excel.readMergeHeader(data, "binary");
 
-        console.log(wb);
+        console.log(this.tableHeader);
+        this.headerHandle(this.tableHeader);
+        this.headerField(this.tableHeader);
+
+        this.uploadLoading = false;
+        this.showRemoveFile = true;
       };
-
-      // this.headerHandle(this.tableHeader);
-      // this.headerField(this.tableHeader);
     },
 
     // const reader = new FileReader();

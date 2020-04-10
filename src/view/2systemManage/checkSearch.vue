@@ -67,7 +67,7 @@
               </span>
               <span v-if="FormData.qc1_Result.qcStatus!==0">
                 <span :style="{ marginRight:largePage?'15px':'5px',
-                                width:largePage?'90px':'40px',
+                                width:largePage?'100px':'40px',
                                 display:'inline-block'}">
                   {{largePage?'测试员：':''}}{{FormData.qc1_Result.qcUser}}
                 </span>
@@ -193,7 +193,7 @@
               </span>
               <span v-if="FormData.qc2_Result.qcStatus!==0">
                 <span :style="{ marginRight:largePage?'15px':'5px',
-                                width:largePage?'90px':'40px',
+                                width:largePage?'100px':'40px',
                                 display:'inline-block'}">
                   {{largePage?'测试员：':''}}{{FormData.qc2_Result.qcUser}}
                 </span>
@@ -318,7 +318,7 @@
               </span>
               <span v-if="FormData.qc3_Result.qcStatus!==0">
                 <span :style="{ marginRight:largePage?'15px':'5px',
-                                width:largePage?'90px':'40px',
+                                width:largePage?'100px':'40px',
                                 display:'inline-block'}">
                   {{largePage?'测试员：':''}}{{FormData.qc3_Result.qcUser}}
                 </span>

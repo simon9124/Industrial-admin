@@ -1,4 +1,5 @@
 /* eslint-disable */
+// import XLSX from "xlsx";
 import XLSX from "xlsx-style";
 // import XLSX from "./xlsx.full.min.js"
 
@@ -67,10 +68,10 @@ function get_header_row(sheet) {
     /* walk every column in the range */
     var cell =
       sheet[
-      XLSX.utils.encode_cell({
-        c: C,
-        r: R
-      })
+        XLSX.utils.encode_cell({
+          c: C,
+          r: R
+        })
       ]; /* find the cell in the first row */
     var hdr = "UNKNOWN " + C; // <-- replace with your desired default
     if (cell && cell.t) hdr = XLSX.utils.format_cell(cell);
@@ -375,18 +376,24 @@ export const writeToTable = (contentId, jqTrDom) => {
 //-----------------------cgh  xls-style 工具类
 export const xlsxUtils = {
   Binary: {
-    fixdata(data) { //文件流转BinaryString
+    fixdata(data) {
+      //文件流转BinaryString
       var o = "",
         l = 0,
         w = 10240;
-      for (; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
+      for (; l < data.byteLength / w; ++l)
+        o += String.fromCharCode.apply(
+          null,
+          new Uint8Array(data.slice(l * w, l * w + w))
+        );
       o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
       return o;
     },
-    s2ab(s) { //字符串转字符流
+    s2ab(s) {
+      //字符串转字符流
       var buf = new ArrayBuffer(s.length);
       var view = new Uint8Array(buf);
-      for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+      for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xff;
       return buf;
     }
   },
@@ -401,10 +408,14 @@ export const xlsxUtils = {
   import(f, c) {
     this.wb = null;
     var reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = function(e) {
       var data = e.target.result;
-      xlsxUtils._wb = xlsxUtils._rABS ? XLSX.read(btoa(xlsxUtils.Binary.fixdata(data)), { type: 'base64' }) : XLSX.read(data, { type: 'binary' });
-      if (typeof c == "function") { c(xlsxUtils._wb); }
+      xlsxUtils._wb = xlsxUtils._rABS
+        ? XLSX.read(btoa(xlsxUtils.Binary.fixdata(data)), { type: "base64" })
+        : XLSX.read(data, { type: "binary" });
+      if (typeof c == "function") {
+        c(xlsxUtils._wb);
+      }
     };
     if (xlsxUtils._rABS) {
       reader.readAsArrayBuffer(f);
@@ -417,7 +428,8 @@ export const xlsxUtils = {
    * @param {String} name
    * @return {Object}
    */
-  getSheetByName(name) {//
+  getSheetByName(name) {
+    //
     return XLSX.utils.sheet_to_json(xlsxUtils._wb.Sheets[name]);
   },
   /**
@@ -448,7 +460,9 @@ export const xlsxUtils = {
    * @return {Object}
    */
   readDataHead(data) {
-    var o = {}, d = Array.isArray(data) ? Object.keys(data[0]) : data; for (var i of d) o[i] = i;
+    var o = {},
+      d = Array.isArray(data) ? Object.keys(data[0]) : data;
+    for (var i of d) o[i] = i;
     return o;
   },
   /**
@@ -461,31 +475,54 @@ export const xlsxUtils = {
    */
   format2Sheet(json, n, r, keyMap, t) {
     keyMap = keyMap || Object.keys(json[0]);
-    var types = (t == undefined ? ((v) => (({ "number": "n", undefined: "s", "boolean": "b", "string": "s" })[typeof v]) || "s") : t);
+    var types =
+      t == undefined
+        ? v =>
+            ({ number: "n", undefined: "s", boolean: "b", string: "s" }[
+              typeof v
+            ] || "s")
+        : t;
     n = n || 0;
     r = r || 0;
-    var tmpdata = {};//用来保存转换好的json
-    var t1 = json.map((v, i) => keyMap.map((k, j) => Object.assign({}, {
-      v: v[k],
-      position: ((j + n) > 25 ? xlsxUtils.getCharCol((j + n)) : String.fromCharCode(65 + (j + n))) + (i + 1 + r),
-    }))).reduce((prev, next) => prev.concat(next)).forEach((v, i) => tmpdata[v.position] = {
-      v: v.v,
-      t: types ? types(v.v) : "s",
-      s: {
-        font: { name: "宋体", sz: 11, color: { auto: 1 } },
-        border: {
-          color: { auto: 1 }
-        },
-        alignment: {
-          /// 自动换行
-          wrapText: 1,
-          // 居中
-          horizontal: "center",
-          vertical: "center",
-          indent: 0
-        }
-      }
-    });
+    var tmpdata = {}; //用来保存转换好的json
+    var t1 = json
+      .map((v, i) =>
+        keyMap.map((k, j) =>
+          Object.assign(
+            {},
+            {
+              v: v[k],
+              position:
+                (j + n > 25
+                  ? xlsxUtils.getCharCol(j + n)
+                  : String.fromCharCode(65 + (j + n))) +
+                (i + 1 + r)
+            }
+          )
+        )
+      )
+      .reduce((prev, next) => prev.concat(next))
+      .forEach(
+        (v, i) =>
+          (tmpdata[v.position] = {
+            v: v.v,
+            t: types ? types(v.v) : "s",
+            s: {
+              font: { name: "宋体", sz: 11, color: { auto: 1 } },
+              border: {
+                color: { auto: 1 }
+              },
+              alignment: {
+                /// 自动换行
+                wrapText: 1,
+                // 居中
+                horizontal: "center",
+                vertical: "center",
+                indent: 0
+              }
+            }
+          })
+      );
     return tmpdata;
   },
   /**
@@ -501,7 +538,9 @@ export const xlsxUtils = {
     if (!wb) wb = { Sheets: {}, SheetNames: [] };
     wb.SheetNames.push(title);
     wb.Sheets[title] = Object.assign({}, sheetData, {
-      '!ref': ref || (outputPos[0] + ':' + outputPos.reverse().find(_ => _.indexOf("!") == -1))//设置填充区域
+      "!ref":
+        ref ||
+        outputPos[0] + ":" + outputPos.reverse().find(_ => _.indexOf("!") == -1) //设置填充区域
     });
     return wb;
   },
@@ -511,24 +550,36 @@ export const xlsxUtils = {
    * @param {String} type 类型
    */
   format2Blob(wb, type) {
-    return new Blob([xlsxUtils.Binary.s2ab(XLSX.write(wb,
-      { bookType: (type == undefined ? 'xlsx' : type), bookSST: false, type: 'binary' }//这里的数据是用来定义导出的格式类型
-    ))], { type: "" });
+    return new Blob(
+      [
+        xlsxUtils.Binary.s2ab(
+          XLSX.write(
+            wb,
+            {
+              bookType: type == undefined ? "xlsx" : type,
+              bookSST: false,
+              type: "binary"
+            } //这里的数据是用来定义导出的格式类型
+          )
+        )
+      ],
+      { type: "" }
+    );
   },
   /**
    * @desc 匹配单元格对应的标识
    * @param {Number} n
    */
   getCharCol(n) {
-    let temCol = '',
-      s = '',
-      m = 0
+    let temCol = "",
+      s = "",
+      m = 0;
     while (n > 0) {
-      m = n % 26 + 1
-      s = String.fromCharCode(m + 64) + s
-      n = (n - m) / 26
+      m = (n % 26) + 1;
+      s = String.fromCharCode(m + 64) + s;
+      n = (n - m) / 26;
     }
-    return s
+    return s;
   },
   /**
    *
@@ -559,7 +610,7 @@ export const xlsxUtils = {
       }
     }
   }
-}
+};
 
 export default {
   export_table_to_excel,

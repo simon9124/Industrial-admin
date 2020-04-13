@@ -430,7 +430,7 @@ export default {
       // console.log(this.modalData);
       this.$refs.formModalData.validate(async valid => {
         if (valid) {
-          this.buttonLoading = true;
+          // this.buttonLoading = true;
           // 处理roles的格式，赋给新对象
           const modalData = JSON.parse(JSON.stringify(this.modalData));
           const roles = [];
@@ -509,13 +509,55 @@ export default {
                   this.$Message.error("该账号已存在！");
                   this.buttonLoading = false;
                 } else {
+                  // 1.在用户列表更新
                   this.$set(
                     this.tableDataOrg,
                     (this.pageNum - 1) * this.pageSize + this.modalData._index,
                     JSON.parse(JSON.stringify(modalData))
                   );
+                  // console.log(this.roleList);
+                  // console.log(modalData.roles, modalData.id);
+                  // 2.在角色列表更新
+                  this.roleList.forEach(role => {
+                    // 判断新增绑定角色：外循环角色列表，内循环要更新的角色列表
+                    modalData.roles.forEach(_role => {
+                      // 筛选二者id相同的角色
+                      if (role.id === _role.id) {
+                        // console.log(role);
+                        // 若这些角色的用户不含modalData.id，则给该角色的用户里添加该用户
+                        if (
+                          !role.users.some(user => user.id === modalData.id)
+                        ) {
+                          role.users.push({
+                            id: modalData.id,
+                            displayName: getValueByKey(
+                              this.tableDataOrg,
+                              "id",
+                              modalData.id,
+                              "displayName"
+                            )
+                          });
+                        }
+                      }
+                    });
+                    // 判断删除绑定角色：外循环角色列表，内循环角色的用户
+                    role.users.forEach((user, i) => {
+                      // 筛选用户id与modalData.id相同的用户 -> 找出包含这个用户的角色
+                      if (user.id === modalData.id) {
+                        // console.log(role);
+                        // 若要执行的更新列表里不含上述角色的id，则删除该id对应角色的该用户
+                        if (
+                          !modalData.roles.some(_role => role.id === _role.id)
+                        ) {
+                          role.users.splice(i, 1);
+                        }
+                      }
+                    });
+                  });
+                  // 3.回调函数
                   resultCallback(200, "修改成功！", () => {
                     this.refreshData();
+                    this.getSubList();
                     this.buttonLoading = false;
                     this.modalShow = false;
                   });

@@ -136,6 +136,61 @@ const userList = [
 // 角色列表
 const roleList = [
   {
+    name: "cestc",
+    title: "工程师",
+    description: "系统工程师，管理配置中心",
+    menus: [
+      {
+        title: "账号管理",
+        functionId: 12
+      },
+      {
+        title: "角色管理",
+        functionId: 13
+      },
+      {
+        title: "组合管理",
+        functionId: 14
+      },
+      {
+        title: "异常原因",
+        functionId: 15
+      },
+      {
+        title: "SOP配置",
+        functionId: 16
+      },
+      {
+        title: "数据配置",
+        functionId: 17
+      },
+      {
+        title: "配方配置",
+        functionId: 18
+      },
+      {
+        title: "设备配置",
+        functionId: 19
+      },
+      {
+        title: "工位配置",
+        functionId: 20
+      },
+      {
+        title: "产线配置",
+        functionId: 21
+      }
+    ],
+    users: [
+      {
+        id: "eec11929-3c60-497b-942c-92a3dd3eeeb5",
+        displayName: "工程师"
+      }
+    ],
+    id: "2",
+    parentId: "root"
+  },
+  {
     name: "admin",
     title: "管理员",
     description: "系统管理员，管理管理中心",
@@ -225,57 +280,18 @@ const roleList = [
         functionId: 21
       }
     ],
-    users: ["admin"],
-    id: "1"
-  },
-  {
-    name: "cestc",
-    title: "工程师",
-    description: "系统工程师，管理配置中心",
-    menus: [
+    users: [
       {
-        title: "账号管理",
-        functionId: 12
+        id: "dea72145-1ff2-42de-ae94-6d936a74ba5c",
+        displayName: "管理员"
       },
       {
-        title: "角色管理",
-        functionId: 13
-      },
-      {
-        title: "组合管理",
-        functionId: 14
-      },
-      {
-        title: "异常原因",
-        functionId: 15
-      },
-      {
-        title: "SOP配置",
-        functionId: 16
-      },
-      {
-        title: "数据配置",
-        functionId: 17
-      },
-      {
-        title: "配方配置",
-        functionId: 18
-      },
-      {
-        title: "设备配置",
-        functionId: 19
-      },
-      {
-        title: "工位配置",
-        functionId: 20
-      },
-      {
-        title: "产线配置",
-        functionId: 21
+        id: "f706830e-9b9f-498e-b1d9-536d7c366313",
+        displayName: "陈国华"
       }
     ],
-    users: ["cestc"],
-    id: "2"
+    id: "1",
+    parentId: "2"
   },
   {
     name: "workshop_manager",
@@ -315,8 +331,14 @@ const roleList = [
         functionId: 15
       }
     ],
-    users: ["workshop_manager"],
-    id: "3"
+    users: [
+      {
+        id: "75d5298a-2ba8-4308-80d7-cbed61ec420d",
+        displayName: "车间主管"
+      }
+    ],
+    id: "3",
+    parentId: "1"
   },
   {
     name: "proline_leader",
@@ -368,8 +390,14 @@ const roleList = [
         functionId: 15
       }
     ],
-    users: ["proline_leader"],
-    id: "4"
+    users: [
+      {
+        id: "57095390-9c42-41d4-ad8b-51f059bc83ac",
+        displayName: "产线线长"
+      }
+    ],
+    id: "4",
+    parentId: "3"
   },
   {
     name: "test",
@@ -442,8 +470,30 @@ const roleList = [
         ico: ""
       }
     ],
-    users: ["examine", "liuchaofan", "tuwenxuan", "wangmingxue", "zhangjiahui"],
-    id: "5"
+    users: [
+      {
+        id: "70f2ef02-9ee7-4062-b801-554ce00bb6a3",
+        displayName: "刘超凡"
+      },
+      {
+        id: "1c66b592-f522-456d-86b3-cdf2191abcb4",
+        displayName: "张家辉"
+      },
+      {
+        id: "9d974bb4-2386-4bb8-98c5-499b95ad025c",
+        displayName: "检测员"
+      },
+      {
+        id: "61144682-7438-47f1-9570-c7ddf6213832",
+        displayName: "涂文轩"
+      },
+      {
+        id: "c151b4b4-3bdc-4522-933a-5de6157bf5b1",
+        displayName: "王明雪"
+      }
+    ],
+    id: "5",
+    parentId: "4"
   }
 ];
 

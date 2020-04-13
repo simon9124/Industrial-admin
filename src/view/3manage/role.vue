@@ -44,11 +44,11 @@
                   prop="name">
           <Input type="text"
                  v-model.trim="modalDataRole.name"
-                 :disabled="modalDataRole.name==='admin'
-                          ||modalDataRole.name==='cestc'
-                          ||modalDataRole.name==='workshop_manager'
-                          ||modalDataRole.name==='proline_leader'
-                          ||modalDataRole.name==='test'"></Input>
+                 :disabled="modalDataRoleOrg.name==='admin'
+                          ||modalDataRoleOrg.name==='cestc'
+                          ||modalDataRoleOrg.name==='workshop_manager'
+                          ||modalDataRoleOrg.name==='proline_leader'
+                          ||modalDataRoleOrg.name==='test'"></Input>
         </FormItem>
         <FormItem label="名称："
                   prop="title">
@@ -107,7 +107,8 @@
                   @on-change="userOnChange">
             <Option v-for="(user,i) in userList"
                     :value="user.id"
-                    :key="i">
+                    :key="i"
+                    :disabled="JSON.stringify(userSelectList).indexOf(user.displayName)>-1">
               <!-- :disabled="JSON.stringify(userSelectList).indexOf(user.displayName)>-1" -->
               {{ user.displayName }}
             </Option>
@@ -552,6 +553,7 @@ export default {
     insert() {
       this.modalDataRoleType = "insert";
       this.$refs.formModalDataRole.resetFields();
+      this.modalDataRoleOrg = JSON.parse(JSON.stringify(this.modalDataRole));
       this.modalShowRole = true;
     },
     // 点击按钮 - 编辑
@@ -599,7 +601,7 @@ export default {
                 this.modalDataRole.users = this.userSelectList;
                 if (
                   this.tableDataOrg.some(
-                    item => item.title === this.modalDataRole.title
+                    item => item.name === this.modalDataRole.name
                   )
                 ) {
                   this.$Message.error("该角色已存在！");
@@ -639,9 +641,9 @@ export default {
                 // 判断重复
                 if (
                   this.tableDataOrg.some(
-                    item => item.title === this.modalDataRole.title
+                    item => item.name === this.modalDataRole.name
                   ) &&
-                  this.modalDataRole.title !== this.modalDataRoleOrg.title
+                  this.modalDataRole.name !== this.modalDataRoleOrg.name
                 ) {
                   this.$Message.error("该角色已存在！");
                   this.buttonLoading = false;
@@ -717,7 +719,7 @@ export default {
       this.roleId = row.id;
       this.userSelectList = !this.isMock
         ? (await getUsersByRole(row.id)).data.data || []
-        : row.users;
+        : JSON.parse(JSON.stringify(row)).users;
       this.modalShowUser = true;
     },
     // select框选择的数据发生变化 - user
@@ -745,29 +747,89 @@ export default {
     },
     // 提交表单 - 用户
     async handleSubmitUser() {
-      this.buttonLoading = true;
-      const userIds = [];
-      this.userSelectList.forEach(user => {
-        userIds.push(user.id);
-      });
-      // console.log(userIds);
-      const result = (
-        await updateRoleUser({
-          roleId: this.roleId,
-          userIds: userIds
-        })
-      ).data.status;
-      resultCallback(
-        result,
-        "修改成功！",
-        () => {
+      // this.buttonLoading = true;
+      // console.log(this.userSelectList);
+      if (!this.isMock) {
+        /* 接口数据 */
+        const userIds = [];
+        this.userSelectList.forEach(user => {
+          userIds.push(user.id);
+        });
+        // console.log(userIds);
+        const result = (
+          await updateRoleUser({
+            roleId: this.roleId,
+            userIds: userIds
+          })
+        ).data.status;
+        resultCallback(
+          result,
+          "修改成功！",
+          () => {
+            this.modalShowUser = false;
+            this.getData();
+          },
+          () => {
+            this.buttonLoading = false;
+          }
+        );
+      } else {
+        /* mock数据 */
+        const users = [];
+        this.userSelectList.forEach(user => {
+          users.push({
+            id: user.id,
+            displayName: user.displayName
+          });
+        });
+        // 1.在角色列表更新
+        this.tableData.forEach((row, i) => {
+          if (row.id === this.roleId) {
+            this.$set(row, "users", users);
+          }
+        });
+        // console.log(users, this.roleId);
+        // console.log(this.userList);
+        // 2.在用户列表更新
+        this.userList.forEach(user => {
+          // 判断新增绑定用户：外循环用户列表，内循环要更新的用户列表
+          users.forEach(_user => {
+            // 筛选二者id相同的用户
+            if (user.id === _user.id) {
+              // console.log(user);
+              // 若这些用户的角色不含roleId，则给该用户的角色里添加该角色
+              if (!user.roles.some(role => role.id === this.roleId)) {
+                user.roles.push({
+                  id: this.roleId,
+                  name: getValueByKey(
+                    this.tableDataOrg,
+                    "id",
+                    this.roleId,
+                    "title"
+                  )
+                });
+              }
+            }
+          });
+          // 判断删除绑定用户：外循环用户列表，内循环用户的角色
+          user.roles.forEach((role, i) => {
+            // 筛选角色id与roleId相同的用户 -> 找出包含这个角色的用户
+            if (role.id === this.roleId) {
+              // console.log(user);
+              // 若要执行的更新列表里不含上述用户的id，则删除该id对应用户的该角色
+              if (!users.some(_user => user.id === _user.id)) {
+                user.roles.splice(i, 1);
+              }
+            }
+          });
+        });
+        // 3.回调函数
+        resultCallback(200, "修改成功！", () => {
+          this.refreshData();
           this.modalShowUser = false;
-          this.getData();
-        },
-        () => {
           this.buttonLoading = false;
-        }
-      );
+        });
+      }
     },
     /* 菜单表单操作 */
     // 点击按钮 - 关联菜单

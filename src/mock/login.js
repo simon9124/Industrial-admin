@@ -20,11 +20,19 @@ userList.forEach(user => {
 export const login = req => {
   req = JSON.parse(req.body);
   if (USER_MAP[req.userName] !== undefined) {
-    return {
-      status: 200,
-      message: "成功！",
-      data: USER_MAP[req.userName].userName
-    };
+    if (USER_MAP[req.userName].lockFlag === 0) {
+      return {
+        status: 200,
+        message: "成功！",
+        data: USER_MAP[req.userName].userName
+      };
+    } else {
+      return {
+        status: 500,
+        message: "该用户已被锁定，请登录其他账号解锁",
+        data: null
+      };
+    }
   } else {
     return {
       status: 500,

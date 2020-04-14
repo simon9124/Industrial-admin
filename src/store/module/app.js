@@ -24,8 +24,9 @@ import {
   routerDataHanding, // @函数：遍历后台传来的路由数据，转为路由基础数据(与menus-data的数据格式相同)
   filterAsyncRouter // @函数: 遍历路由基础数据，转换为前端组件对象
 } from "@/libs/router-util"; // ①添 引入加载菜单(仅mock时用)
+import { getValueByKey } from "@/libs/dataHanding"; // 根据对象数组某个key的value，查询另一个key的value
 // mockData
-import { menuList } from "@/view/3manage/mockData/role";
+import { menuList, roleList } from "@/view/3manage/mockData/role";
 
 const { homeName, isMock } = config; // mockData - 全部菜单
 const closePage = (state, route) => {
@@ -178,10 +179,27 @@ export default {
               reject(error);
             }
           } else {
-            // mock数据
-            var routerData = routerDataHanding(
-              JSON.parse(JSON.stringify(menuList))
-            ); // 拿到路由模拟动态数据
+            /* mock数据 */
+            // 1.根据用户角色，处理该角色的路由数据
+            var menus = [];
+            rootState.user.access.forEach(_access => {
+              // 把该用户所有的角色对应的菜单都加进来
+              menus = menus.concat(
+                getValueByKey(roleList, "id", _access.id, "menus")
+              );
+            });
+            menus = [...new Set(menus)]; // 然后去重
+            // console.log(menus); // 获取该用户所有角色的所有菜单数据
+            // 2.拿到路由模拟动态数据，与该角色处理后的数据做比对筛选
+            var routerData = menuList.filter(menu => {
+              return menus.some(
+                _menu => _menu.title === menu.title // 根据title全等筛选数据
+              );
+            });
+            routerData = routerDataHanding(
+              JSON.parse(JSON.stringify(routerData))
+            );
+            // 3.处理后路由数据生成路由和菜单等
             localSave("dynamicRouter", JSON.stringify(routerData)); // 存储routerData到localStorage
             gotRouter = filterAsyncRouter(routerData); // 过滤路由,路由组件转换
             dispatch("updateMenuList", gotRouter).then(res => {

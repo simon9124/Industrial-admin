@@ -140,7 +140,7 @@ export const routerDataHanding = apiRouterData => {
     }
   });
 
-  console.log(asyncRouterMap);
+  // console.log(asyncRouterMap);
 
   // 内层子路由 - 递归
   const handleRecurrence = recurrenceData => {

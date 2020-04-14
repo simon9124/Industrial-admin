@@ -141,44 +141,120 @@ const roleList = [
     description: "系统工程师，管理配置中心",
     menus: [
       {
-        title: "账号管理",
-        functionId: 12
+        id: "a4a49ff8874044dfbd90c06544be165b",
+        title: "首页概览"
       },
       {
-        title: "角色管理",
-        functionId: 13
+        id: "3976b690e56b48639e108ac6d6ca622b",
+        title: "驾驶舱"
       },
       {
-        title: "组合管理",
-        functionId: 14
+        id: "5fafcc08f6c143ee86fb7486e5a80647",
+        title: "驾驶舱（产线）"
       },
       {
-        title: "异常原因",
-        functionId: 15
+        id: "b058f93cee0c43199ce9af19f17cffa9",
+        title: "检测员"
       },
       {
-        title: "SOP配置",
-        functionId: 16
+        id: "ef93f8fe1b154de688bcbaab1a2a88ef",
+        title: "任务管理"
       },
       {
-        title: "数据配置",
-        functionId: 17
+        id: "3db9fdd0ada749dab01149fa0248eb23",
+        title: "任务派发"
       },
       {
-        title: "配方配置",
-        functionId: 18
+        id: "e7dfaf2ec6aa482c93410d9b4e2323e5",
+        title: "历史任务"
       },
       {
-        title: "设备配置",
-        functionId: 19
+        id: "8502de35df2c4d19ad337c5548f661b4",
+        title: "查看SOP"
       },
       {
-        title: "工位配置",
-        functionId: 20
+        id: "c64f399d2c03445dbfa2b23c240e2dc6",
+        title: "条码打印"
       },
       {
-        title: "产线配置",
-        functionId: 21
+        id: "7a6bc598bead4430adf85cd56925e29a",
+        title: "检测列表"
+      },
+      {
+        id: "6939e2b2b0fa4c5b942c365278a8aab3",
+        title: "追溯查询"
+      },
+      {
+        id: "cd306e3afe40442d971b2ddc6c1a02d4",
+        title: "异常确认"
+      },
+      {
+        id: "013ad32e79c44427a8cad340fb056821",
+        title: "报表中心"
+      },
+      {
+        id: "6b2d3c49373946989262e586d655dccf",
+        title: "模板配置"
+      },
+      {
+        id: "82814bef61934f5aadb4e1e84608f414",
+        title: "异常产品报表"
+      },
+      {
+        id: "d30bf0ff035c4e51875e7014ad46e1af",
+        title: "管理中心"
+      },
+      {
+        id: "2",
+        title: "账号管理"
+      },
+      {
+        id: "3",
+        title: "角色管理"
+      },
+      {
+        id: "23001d1a12fe43ceac9769ee08f899f2",
+        title: "菜单管理"
+      },
+      {
+        id: "66",
+        title: "组合管理"
+      },
+      {
+        id: "5",
+        title: "异常原因"
+      },
+      {
+        id: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
+        title: "配置中心"
+      },
+      {
+        id: "7",
+        title: "SOP配置"
+      },
+      {
+        id: "8",
+        title: "数据配置"
+      },
+      {
+        id: "eafbc8e5c0fe4b3abe48fd27018a6c79",
+        title: "配方配置"
+      },
+      {
+        id: "cd63fe39ae954aacbaea376da1235b81",
+        title: "设备配置"
+      },
+      {
+        id: "5c6c5998a7d8426390bd7f2cfe7c1bcf",
+        title: "工位配置"
+      },
+      {
+        id: "3c557f993903480a8a5db6f472b8f36e",
+        title: "产线配置"
+      },
+      {
+        id: "f938e2ef05d4496c9ba0934ce36d38df",
+        title: "动态svg"
       }
     ],
     users: [
@@ -196,88 +272,104 @@ const roleList = [
     description: "系统管理员，管理管理中心",
     menus: [
       {
-        title: "首页概览",
-        functionId: 1
+        id: "a4a49ff8874044dfbd90c06544be165b",
+        title: "首页概览"
       },
       {
-        title: "车间驾驶舱",
-        functionId: 2
+        id: "3976b690e56b48639e108ac6d6ca622b",
+        title: "驾驶舱"
       },
       {
-        title: "产线驾驶舱",
-        functionId: 3
+        id: "5fafcc08f6c143ee86fb7486e5a80647",
+        title: "驾驶舱（产线）"
       },
       {
-        title: "检测员",
-        functionId: 4
+        id: "b058f93cee0c43199ce9af19f17cffa9",
+        title: "检测员"
       },
       {
-        title: "任务派发",
-        functionId: 5
+        id: "ef93f8fe1b154de688bcbaab1a2a88ef",
+        title: "任务管理"
       },
       {
-        title: "历史任务",
-        functionId: 6
+        id: "3db9fdd0ada749dab01149fa0248eb23",
+        title: "任务派发"
       },
       {
-        title: "查看SOP",
-        functionId: 7
+        id: "e7dfaf2ec6aa482c93410d9b4e2323e5",
+        title: "历史任务"
       },
       {
-        title: "条码打印",
-        functionId: 8
+        id: "8502de35df2c4d19ad337c5548f661b4",
+        title: "查看SOP"
       },
       {
-        title: "检测列表",
-        functionId: 9
+        id: "c64f399d2c03445dbfa2b23c240e2dc6",
+        title: "条码打印"
       },
       {
-        title: "追溯查询",
-        functionId: 10
+        id: "7a6bc598bead4430adf85cd56925e29a",
+        title: "检测列表"
       },
       {
-        title: "异常确认",
-        functionId: 11
+        id: "6939e2b2b0fa4c5b942c365278a8aab3",
+        title: "追溯查询"
       },
       {
-        title: "账号管理",
-        functionId: 12
+        id: "cd306e3afe40442d971b2ddc6c1a02d4",
+        title: "异常确认"
       },
       {
-        title: "角色管理",
-        functionId: 13
+        id: "013ad32e79c44427a8cad340fb056821",
+        title: "报表中心"
       },
       {
-        title: "组合管理",
-        functionId: 14
+        id: "6b2d3c49373946989262e586d655dccf",
+        title: "模板配置"
       },
       {
-        title: "异常原因",
-        functionId: 15
+        id: "82814bef61934f5aadb4e1e84608f414",
+        title: "异常产品报表"
       },
       {
-        title: "SOP配置",
-        functionId: 16
+        id: "d30bf0ff035c4e51875e7014ad46e1af",
+        title: "管理中心"
       },
       {
-        title: "数据配置",
-        functionId: 17
+        id: "2",
+        title: "账号管理"
       },
       {
-        title: "配方配置",
-        functionId: 18
+        id: "3",
+        title: "角色管理"
       },
       {
-        title: "设备配置",
-        functionId: 19
+        id: "23001d1a12fe43ceac9769ee08f899f2",
+        title: "菜单管理"
       },
       {
-        title: "工位配置",
-        functionId: 20
+        id: "66",
+        title: "组合管理"
       },
       {
-        title: "产线配置",
-        functionId: 21
+        id: "5",
+        title: "异常原因"
+      },
+      {
+        id: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
+        title: "配置中心"
+      },
+      {
+        id: "7",
+        title: "SOP配置"
+      },
+      {
+        id: "8",
+        title: "数据配置"
+      },
+      {
+        id: "eafbc8e5c0fe4b3abe48fd27018a6c79",
+        title: "配方配置"
       }
     ],
     users: [
@@ -299,36 +391,52 @@ const roleList = [
     description: "车间主管，管理整个车间",
     menus: [
       {
-        title: "车间驾驶舱",
-        functionId: 2
+        id: "3976b690e56b48639e108ac6d6ca622b",
+        title: "驾驶舱"
       },
       {
-        title: "产线驾驶舱",
-        functionId: 3
+        id: "5fafcc08f6c143ee86fb7486e5a80647",
+        title: "驾驶舱（产线）"
       },
       {
-        title: "检测列表",
-        functionId: 9
+        id: "ef93f8fe1b154de688bcbaab1a2a88ef",
+        title: "任务管理"
       },
       {
-        title: "追溯查询",
-        functionId: 10
+        id: "3db9fdd0ada749dab01149fa0248eb23",
+        title: "任务派发"
       },
       {
-        title: "账号管理",
-        functionId: 12
+        id: "e7dfaf2ec6aa482c93410d9b4e2323e5",
+        title: "历史任务"
       },
       {
-        title: "角色管理",
-        functionId: 13
+        id: "7a6bc598bead4430adf85cd56925e29a",
+        title: "检测列表"
       },
       {
-        title: "组合管理",
-        functionId: 14
+        id: "cd306e3afe40442d971b2ddc6c1a02d4",
+        title: "异常确认"
       },
       {
-        title: "异常原因",
-        functionId: 15
+        id: "013ad32e79c44427a8cad340fb056821",
+        title: "报表中心"
+      },
+      {
+        id: "82814bef61934f5aadb4e1e84608f414",
+        title: "异常产品报表"
+      },
+      {
+        id: "d30bf0ff035c4e51875e7014ad46e1af",
+        title: "管理中心"
+      },
+      {
+        id: "2",
+        title: "账号管理"
+      },
+      {
+        id: "3",
+        title: "角色管理"
       }
     ],
     users: [
@@ -346,48 +454,72 @@ const roleList = [
     description: "产线线长，管理单条产线",
     menus: [
       {
-        title: "首页概览",
-        functionId: 1
+        id: "a4a49ff8874044dfbd90c06544be165b",
+        title: "首页概览"
       },
       {
-        title: "产线驾驶舱",
-        functionId: 3
+        id: "3976b690e56b48639e108ac6d6ca622b",
+        title: "驾驶舱"
       },
       {
-        title: "检测员",
-        functionId: 4
+        id: "b058f93cee0c43199ce9af19f17cffa9",
+        title: "检测员"
       },
       {
-        title: "任务派发",
-        functionId: 5
+        id: "ef93f8fe1b154de688bcbaab1a2a88ef",
+        title: "任务管理"
       },
       {
-        title: "历史任务",
-        functionId: 6
+        id: "3db9fdd0ada749dab01149fa0248eb23",
+        title: "任务派发"
       },
       {
-        title: "查看SOP",
-        functionId: 7
+        id: "e7dfaf2ec6aa482c93410d9b4e2323e5",
+        title: "历史任务"
       },
       {
-        title: "条码打印",
-        functionId: 8
+        id: "8502de35df2c4d19ad337c5548f661b4",
+        title: "查看SOP"
       },
       {
-        title: "检测列表",
-        functionId: 9
+        id: "c64f399d2c03445dbfa2b23c240e2dc6",
+        title: "条码打印"
       },
       {
-        title: "追溯查询",
-        functionId: 10
+        id: "7a6bc598bead4430adf85cd56925e29a",
+        title: "检测列表"
       },
       {
-        title: "异常确认",
-        functionId: 11
+        id: "6939e2b2b0fa4c5b942c365278a8aab3",
+        title: "追溯查询"
       },
       {
-        title: "异常原因",
-        functionId: 15
+        id: "cd306e3afe40442d971b2ddc6c1a02d4",
+        title: "异常确认"
+      },
+      {
+        id: "013ad32e79c44427a8cad340fb056821",
+        title: "报表中心"
+      },
+      {
+        id: "6b2d3c49373946989262e586d655dccf",
+        title: "模板配置"
+      },
+      {
+        id: "82814bef61934f5aadb4e1e84608f414",
+        title: "异常产品报表"
+      },
+      {
+        id: "d30bf0ff035c4e51875e7014ad46e1af",
+        title: "管理中心"
+      },
+      {
+        id: "2",
+        title: "账号管理"
+      },
+      {
+        id: "3",
+        title: "角色管理"
       }
     ],
     users: [
@@ -406,68 +538,35 @@ const roleList = [
     menus: [
       {
         id: "8502de35df2c4d19ad337c5548f661b4",
-        name: "sopMessage/message",
-        title: "查看SOP",
-        url: "sopMessage/message",
-        path: "8taskManage/sopMessage",
-        sort: 13,
-        parenetId: "root",
-        parenetPath: "root",
-        status: 1,
-        description: "",
-        ico: "md-document"
+        title: "查看SOP"
       },
       {
         id: "c64f399d2c03445dbfa2b23c240e2dc6",
-        name: "number/print",
-        title: "条码打印",
-        url: "number/print",
-        path: "3manage/number",
-        sort: 11,
-        parenetId: "root",
-        parenetPath: "root",
-        status: 1,
-        description: "",
-        ico: "md-print"
+        title: "条码打印"
       },
       {
         id: "6939e2b2b0fa4c5b942c365278a8aab3",
-        name: "check/checkSearch",
-        title: "追溯查询",
-        url: "check/checkSearch",
-        path: "2systemManage/checkSearch",
-        sort: 7,
-        parenetId: "root",
-        parenetPath: "root",
-        status: 1,
-        description: "",
-        ico: "md-git-pull-request"
+        title: "追溯查询"
       },
       {
         id: "013ad32e79c44427a8cad340fb056821",
-        name: "report",
-        title: "报表中心",
-        url: "report",
-        path: "",
-        sort: 3,
-        parenetId: "root",
-        parenetPath: "root",
-        status: 1,
-        description: "",
-        ico: "md-analytics"
+        title: "报表中心"
       },
       {
         id: "82814bef61934f5aadb4e1e84608f414",
-        name: "view",
-        title: "异常产品报表",
-        url: "view/12",
-        path: "3manage/mould/reportView",
-        sort: 1,
-        parenetId: "013ad32e79c44427a8cad340fb056821",
-        parenetPath: "root.013ad32e79c44427a8cad340fb056821",
-        status: 1,
-        description: "",
-        ico: ""
+        title: "异常产品报表"
+      },
+      {
+        id: "d30bf0ff035c4e51875e7014ad46e1af",
+        title: "管理中心"
+      },
+      {
+        id: "2",
+        title: "账号管理"
+      },
+      {
+        id: "3",
+        title: "角色管理"
       }
     ],
     users: [

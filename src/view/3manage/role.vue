@@ -470,10 +470,11 @@ export default {
   async created() {
     this.getData();
     this.getSubList();
-    // 设置menuList的副本，每次关联时以副本为基准清空已选项
+    // 未处理的menu数据 -> 非isMock时功能列表筛选用
     this.menuListNotComputed = !this.isMock
       ? (await getAllMenus()).data.data || []
       : menuList;
+    // 设置menuList的副本，每次关联时以副本为基准清空已选项
     this.menuListOrg = computedMenuData(this.menuListNotComputed);
     this.menuList = JSON.parse(JSON.stringify(this.menuListOrg));
     this.userList = !this.isMock
@@ -572,7 +573,7 @@ export default {
           switch (this.modalDataRoleType) {
             case "insert":
               if (!this.isMock) {
-                // 接口数据
+                /* 接口数据 */
                 const result = (await addRole(this.modalDataRole)).data.status;
                 resultCallback(
                   result,
@@ -585,20 +586,8 @@ export default {
                     this.buttonLoading = false;
                   }
                 );
-                // if (result === 200) {
-                //   this.$Message.success("添加成功！");
-                // }
-                // this.modalShowRole = false;
-                // this.getData();
               } else {
-                // mock时
-                this.modalDataRole.id = (
-                  this.tableDataOrg.length + 1
-                ).toString();
-                // 按"id"升序
-                this.menuSelectList.sort(arraySort("functionId", "asc"));
-                this.modalDataRole.menus = this.menuSelectList;
-                this.modalDataRole.users = this.userSelectList;
+                /* mock数据 */
                 if (
                   this.tableDataOrg.some(
                     item => item.name === this.modalDataRole.name
@@ -607,6 +596,13 @@ export default {
                   this.$Message.error("该角色已存在！");
                   this.buttonLoading = false;
                 } else {
+                  var id = "1";
+                  this.tableDataOrg.forEach(item => {
+                    if (id === item.id) id = (parseInt(id) + 1).toString();
+                  });
+                  this.modalDataRole.id = id; // 生成角色id，不能与现有的id重复
+                  this.modalDataRole.menus = [];
+                  this.modalDataRole.users = [];
                   this.tableDataOrg.push(
                     JSON.parse(JSON.stringify(this.modalDataRole))
                   );
@@ -637,7 +633,7 @@ export default {
               } else {
                 // mock时
                 // 按"id"升序
-                this.menuSelectList.sort(arraySort("functionId", "asc"));
+                // this.menuSelectList.sort(arraySort("functionId", "asc"));
                 // 判断重复
                 if (
                   this.tableDataOrg.some(
@@ -747,7 +743,7 @@ export default {
     },
     // 提交表单 - 用户
     async handleSubmitUser() {
-      // this.buttonLoading = true;
+      this.buttonLoading = true;
       // console.log(this.userSelectList);
       if (!this.isMock) {
         /* 接口数据 */
@@ -838,6 +834,7 @@ export default {
       this.menuSelectList = !this.isMock
         ? (await getMenusByRole(row.id)).data.data || []
         : JSON.parse(JSON.stringify(row.menus));
+      // console.log(this.menuSelectList);
       // 根据menuSelectList，动态渲染menuList已选中的选项
       if (this.menuList.length > 0) {
         this.menuList.forEach(menu => {
@@ -862,6 +859,7 @@ export default {
     },
     // 提交表单 - 菜单
     async handleSubmitMenu() {
+      this.buttonLoading = true;
       /* 1获取所有的tree中被勾选的节点，concat成一个数组（数组对象） */
       let menuSelected = [];
       this.menuList.forEach((menu, i) => {
@@ -872,32 +870,58 @@ export default {
         );
       });
       // console.log(menuSelected);
-      /* 2.将所有被勾选的节点（数组对象），处理成只保留id的一维数组 */
+      /* 2.处理被勾选的节点数组 -> 非mock时保留id / mock时保留id和title */
       this.menuSelected = [];
       menuSelected.forEach(menu => {
-        this.menuSelected.push(menu.id);
+        if (!this.isMock) {
+          this.menuSelected.push(menu.id);
+        } else {
+          this.menuSelected.push({
+            id: menu.id,
+            title: menu.title
+          });
+        }
       });
       // console.log(this.menuSelected);
       /* 3.调用接口 */
-      const result = (
-        await updateRoleMenu({
-          roleId: this.roleId,
-          menuIds: this.menuSelected
-        })
-      ).data.status;
-      resultCallback(
-        result,
-        "修改成功！",
-        () => {
+      if (!this.isMock) {
+        /* 接口数据 */
+        const result = (
+          await updateRoleMenu({
+            roleId: this.roleId,
+            menuIds: this.menuSelected
+          })
+        ).data.status;
+        resultCallback(
+          result,
+          "修改成功！",
+          () => {
+            this.modalShowMenu = false;
+            this.getData();
+            // 清空选项
+            this.menuList = JSON.parse(JSON.stringify(this.menuListOrg));
+          },
+          () => {
+            this.buttonLoading = false;
+          }
+        );
+      } else {
+        /* mock数据 */
+        // 1.在角色列表更新
+        this.tableData.forEach((row, i) => {
+          if (row.id === this.roleId) {
+            this.$set(row, "menus", this.menuSelected);
+          }
+        });
+        // 3.回调函数
+        resultCallback(200, "修改成功！", () => {
           this.modalShowMenu = false;
-          this.getData();
+          this.refreshData();
+          this.buttonLoading = false;
           // 清空选项
           this.menuList = JSON.parse(JSON.stringify(this.menuListOrg));
-        },
-        () => {
-          this.buttonLoading = false;
-        }
-      );
+        });
+      }
     }
   }
 };

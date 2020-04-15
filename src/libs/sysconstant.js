@@ -1,6 +1,7 @@
 import mqtt from "mqtt";
 
-const MQTT_SERVICE = "ws://192.168.200.99:1884/mqtt";
+// const MQTT_SERVICE = "ws://192.168.200.99:1884/mqtt";
+const MQTT_SERVICE = "ws://192.168.100.99:1884/mqtt";
 const MQTT_USERNAME = "admin";
 const MQTT_PASSWORD = "public";
 

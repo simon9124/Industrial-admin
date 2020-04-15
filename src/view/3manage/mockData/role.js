@@ -141,126 +141,96 @@ const roleList = [
     description: "系统工程师，管理配置中心",
     menus: [
       {
-        id: "a4a49ff8874044dfbd90c06544be165b",
-        title: "首页概览"
+        id: "a4a49ff8874044dfbd90c06544be165b"
       },
       {
-        id: "3976b690e56b48639e108ac6d6ca622b",
-        title: "驾驶舱"
+        id: "3976b690e56b48639e108ac6d6ca622b"
       },
       {
-        id: "5fafcc08f6c143ee86fb7486e5a80647",
-        title: "驾驶舱（产线）"
+        id: "5fafcc08f6c143ee86fb7486e5a80647"
       },
       {
-        id: "b058f93cee0c43199ce9af19f17cffa9",
-        title: "检测员"
+        id: "b058f93cee0c43199ce9af19f17cffa9"
       },
       {
-        id: "ef93f8fe1b154de688bcbaab1a2a88ef",
-        title: "任务管理"
+        id: "ef93f8fe1b154de688bcbaab1a2a88ef"
       },
       {
-        id: "3db9fdd0ada749dab01149fa0248eb23",
-        title: "任务派发"
+        id: "3db9fdd0ada749dab01149fa0248eb23"
       },
       {
-        id: "e7dfaf2ec6aa482c93410d9b4e2323e5",
-        title: "历史任务"
+        id: "e7dfaf2ec6aa482c93410d9b4e2323e5"
       },
       {
-        id: "8502de35df2c4d19ad337c5548f661b4",
-        title: "查看SOP"
+        id: "8502de35df2c4d19ad337c5548f661b4"
       },
       {
-        id: "c64f399d2c03445dbfa2b23c240e2dc6",
-        title: "条码打印"
+        id: "c64f399d2c03445dbfa2b23c240e2dc6"
       },
       {
-        id: "7a6bc598bead4430adf85cd56925e29a",
-        title: "检测列表"
+        id: "7a6bc598bead4430adf85cd56925e29a"
       },
       {
-        id: "6939e2b2b0fa4c5b942c365278a8aab3",
-        title: "追溯查询"
+        id: "6939e2b2b0fa4c5b942c365278a8aab3"
       },
       {
-        id: "cd306e3afe40442d971b2ddc6c1a02d4",
-        title: "异常确认"
+        id: "cd306e3afe40442d971b2ddc6c1a02d4"
       },
       {
-        id: "013ad32e79c44427a8cad340fb056821",
-        title: "报表中心"
+        id: "013ad32e79c44427a8cad340fb056821"
       },
       {
-        id: "6b2d3c49373946989262e586d655dccf",
-        title: "模板配置"
+        id: "6b2d3c49373946989262e586d655dccf"
       },
       {
-        id: "82814bef61934f5aadb4e1e84608f414",
-        title: "异常产品报表"
+        id: "82814bef61934f5aadb4e1e84608f414"
       },
       {
-        id: "d30bf0ff035c4e51875e7014ad46e1af",
-        title: "管理中心"
+        id: "d30bf0ff035c4e51875e7014ad46e1af"
       },
       {
-        id: "2",
-        title: "账号管理"
+        id: "2"
       },
       {
-        id: "3",
-        title: "角色管理"
+        id: "3"
       },
       {
-        id: "23001d1a12fe43ceac9769ee08f899f2",
-        title: "菜单管理"
+        id: "23001d1a12fe43ceac9769ee08f899f2"
       },
       {
-        id: "66",
-        title: "组合管理"
+        id: "66"
       },
       {
-        id: "5",
-        title: "异常原因"
+        id: "5"
       },
       {
-        id: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
-        title: "配置中心"
+        id: "0e1ddfaa1e7d49cdabd3aa045889e6d0"
       },
       {
-        id: "7",
-        title: "SOP配置"
+        id: "7"
       },
       {
-        id: "8",
-        title: "数据配置"
+        id: "8"
       },
       {
-        id: "eafbc8e5c0fe4b3abe48fd27018a6c79",
-        title: "配方配置"
+        id: "eafbc8e5c0fe4b3abe48fd27018a6c79"
       },
       {
-        id: "cd63fe39ae954aacbaea376da1235b81",
-        title: "设备配置"
+        id: "cd63fe39ae954aacbaea376da1235b81"
       },
       {
-        id: "5c6c5998a7d8426390bd7f2cfe7c1bcf",
-        title: "工位配置"
+        id: "5c6c5998a7d8426390bd7f2cfe7c1bcf"
       },
       {
-        id: "3c557f993903480a8a5db6f472b8f36e",
-        title: "产线配置"
+        id: "3c557f993903480a8a5db6f472b8f36e"
       },
       {
-        id: "f938e2ef05d4496c9ba0934ce36d38df",
-        title: "动态svg"
+        id: "f938e2ef05d4496c9ba0934ce36d38df"
       }
     ],
     users: [
       {
-        id: "eec11929-3c60-497b-942c-92a3dd3eeeb5",
-        displayName: "工程师"
+        id: "eec11929-3c60-497b-942c-92a3dd3eeeb5"
       }
     ],
     id: "2",
@@ -272,114 +242,87 @@ const roleList = [
     description: "系统管理员，管理管理中心",
     menus: [
       {
-        id: "a4a49ff8874044dfbd90c06544be165b",
-        title: "首页概览"
+        id: "a4a49ff8874044dfbd90c06544be165b"
       },
       {
-        id: "3976b690e56b48639e108ac6d6ca622b",
-        title: "驾驶舱"
+        id: "3976b690e56b48639e108ac6d6ca622b"
       },
       {
-        id: "5fafcc08f6c143ee86fb7486e5a80647",
-        title: "驾驶舱（产线）"
+        id: "5fafcc08f6c143ee86fb7486e5a80647"
       },
       {
-        id: "b058f93cee0c43199ce9af19f17cffa9",
-        title: "检测员"
+        id: "b058f93cee0c43199ce9af19f17cffa9"
       },
       {
-        id: "ef93f8fe1b154de688bcbaab1a2a88ef",
-        title: "任务管理"
+        id: "ef93f8fe1b154de688bcbaab1a2a88ef"
       },
       {
-        id: "3db9fdd0ada749dab01149fa0248eb23",
-        title: "任务派发"
+        id: "3db9fdd0ada749dab01149fa0248eb23"
       },
       {
-        id: "e7dfaf2ec6aa482c93410d9b4e2323e5",
-        title: "历史任务"
+        id: "e7dfaf2ec6aa482c93410d9b4e2323e5"
       },
       {
-        id: "8502de35df2c4d19ad337c5548f661b4",
-        title: "查看SOP"
+        id: "8502de35df2c4d19ad337c5548f661b4"
       },
       {
-        id: "c64f399d2c03445dbfa2b23c240e2dc6",
-        title: "条码打印"
+        id: "c64f399d2c03445dbfa2b23c240e2dc6"
       },
       {
-        id: "7a6bc598bead4430adf85cd56925e29a",
-        title: "检测列表"
+        id: "7a6bc598bead4430adf85cd56925e29a"
       },
       {
-        id: "6939e2b2b0fa4c5b942c365278a8aab3",
-        title: "追溯查询"
+        id: "6939e2b2b0fa4c5b942c365278a8aab3"
       },
       {
-        id: "cd306e3afe40442d971b2ddc6c1a02d4",
-        title: "异常确认"
+        id: "cd306e3afe40442d971b2ddc6c1a02d4"
       },
       {
-        id: "013ad32e79c44427a8cad340fb056821",
-        title: "报表中心"
+        id: "013ad32e79c44427a8cad340fb056821"
       },
       {
-        id: "6b2d3c49373946989262e586d655dccf",
-        title: "模板配置"
+        id: "6b2d3c49373946989262e586d655dccf"
       },
       {
-        id: "82814bef61934f5aadb4e1e84608f414",
-        title: "异常产品报表"
+        id: "82814bef61934f5aadb4e1e84608f414"
       },
       {
-        id: "d30bf0ff035c4e51875e7014ad46e1af",
-        title: "管理中心"
+        id: "d30bf0ff035c4e51875e7014ad46e1af"
       },
       {
-        id: "2",
-        title: "账号管理"
+        id: "2"
       },
       {
-        id: "3",
-        title: "角色管理"
+        id: "3"
       },
       {
-        id: "23001d1a12fe43ceac9769ee08f899f2",
-        title: "菜单管理"
+        id: "23001d1a12fe43ceac9769ee08f899f2"
       },
       {
-        id: "66",
-        title: "组合管理"
+        id: "66"
       },
       {
-        id: "5",
-        title: "异常原因"
+        id: "5"
       },
       {
-        id: "0e1ddfaa1e7d49cdabd3aa045889e6d0",
-        title: "配置中心"
+        id: "0e1ddfaa1e7d49cdabd3aa045889e6d0"
       },
       {
-        id: "7",
-        title: "SOP配置"
+        id: "7"
       },
       {
-        id: "8",
-        title: "数据配置"
+        id: "8"
       },
       {
-        id: "eafbc8e5c0fe4b3abe48fd27018a6c79",
-        title: "配方配置"
+        id: "eafbc8e5c0fe4b3abe48fd27018a6c79"
       }
     ],
     users: [
       {
-        id: "dea72145-1ff2-42de-ae94-6d936a74ba5c",
-        displayName: "管理员"
+        id: "dea72145-1ff2-42de-ae94-6d936a74ba5c"
       },
       {
-        id: "f706830e-9b9f-498e-b1d9-536d7c366313",
-        displayName: "陈国华"
+        id: "f706830e-9b9f-498e-b1d9-536d7c366313"
       }
     ],
     id: "1",
@@ -391,58 +334,45 @@ const roleList = [
     description: "车间主管，管理整个车间",
     menus: [
       {
-        id: "3976b690e56b48639e108ac6d6ca622b",
-        title: "驾驶舱"
+        id: "3976b690e56b48639e108ac6d6ca622b"
       },
       {
-        id: "5fafcc08f6c143ee86fb7486e5a80647",
-        title: "驾驶舱（产线）"
+        id: "5fafcc08f6c143ee86fb7486e5a80647"
       },
       {
-        id: "ef93f8fe1b154de688bcbaab1a2a88ef",
-        title: "任务管理"
+        id: "ef93f8fe1b154de688bcbaab1a2a88ef"
       },
       {
-        id: "3db9fdd0ada749dab01149fa0248eb23",
-        title: "任务派发"
+        id: "3db9fdd0ada749dab01149fa0248eb23"
       },
       {
-        id: "e7dfaf2ec6aa482c93410d9b4e2323e5",
-        title: "历史任务"
+        id: "e7dfaf2ec6aa482c93410d9b4e2323e5"
       },
       {
-        id: "7a6bc598bead4430adf85cd56925e29a",
-        title: "检测列表"
+        id: "7a6bc598bead4430adf85cd56925e29a"
       },
       {
-        id: "cd306e3afe40442d971b2ddc6c1a02d4",
-        title: "异常确认"
+        id: "cd306e3afe40442d971b2ddc6c1a02d4"
       },
       {
-        id: "013ad32e79c44427a8cad340fb056821",
-        title: "报表中心"
+        id: "013ad32e79c44427a8cad340fb056821"
       },
       {
-        id: "82814bef61934f5aadb4e1e84608f414",
-        title: "异常产品报表"
+        id: "82814bef61934f5aadb4e1e84608f414"
       },
       {
-        id: "d30bf0ff035c4e51875e7014ad46e1af",
-        title: "管理中心"
+        id: "d30bf0ff035c4e51875e7014ad46e1af"
       },
       {
-        id: "2",
-        title: "账号管理"
+        id: "2"
       },
       {
-        id: "3",
-        title: "角色管理"
+        id: "3"
       }
     ],
     users: [
       {
-        id: "75d5298a-2ba8-4308-80d7-cbed61ec420d",
-        displayName: "车间主管"
+        id: "75d5298a-2ba8-4308-80d7-cbed61ec420d"
       }
     ],
     id: "3",
@@ -454,78 +384,60 @@ const roleList = [
     description: "产线线长，管理单条产线",
     menus: [
       {
-        id: "a4a49ff8874044dfbd90c06544be165b",
-        title: "首页概览"
+        id: "a4a49ff8874044dfbd90c06544be165b"
       },
       {
-        id: "3976b690e56b48639e108ac6d6ca622b",
-        title: "驾驶舱"
+        id: "3976b690e56b48639e108ac6d6ca622b"
       },
       {
-        id: "b058f93cee0c43199ce9af19f17cffa9",
-        title: "检测员"
+        id: "b058f93cee0c43199ce9af19f17cffa9"
       },
       {
-        id: "ef93f8fe1b154de688bcbaab1a2a88ef",
-        title: "任务管理"
+        id: "ef93f8fe1b154de688bcbaab1a2a88ef"
       },
       {
-        id: "3db9fdd0ada749dab01149fa0248eb23",
-        title: "任务派发"
+        id: "3db9fdd0ada749dab01149fa0248eb23"
       },
       {
-        id: "e7dfaf2ec6aa482c93410d9b4e2323e5",
-        title: "历史任务"
+        id: "e7dfaf2ec6aa482c93410d9b4e2323e5"
       },
       {
-        id: "8502de35df2c4d19ad337c5548f661b4",
-        title: "查看SOP"
+        id: "8502de35df2c4d19ad337c5548f661b4"
       },
       {
-        id: "c64f399d2c03445dbfa2b23c240e2dc6",
-        title: "条码打印"
+        id: "c64f399d2c03445dbfa2b23c240e2dc6"
       },
       {
-        id: "7a6bc598bead4430adf85cd56925e29a",
-        title: "检测列表"
+        id: "7a6bc598bead4430adf85cd56925e29a"
       },
       {
-        id: "6939e2b2b0fa4c5b942c365278a8aab3",
-        title: "追溯查询"
+        id: "6939e2b2b0fa4c5b942c365278a8aab3"
       },
       {
-        id: "cd306e3afe40442d971b2ddc6c1a02d4",
-        title: "异常确认"
+        id: "cd306e3afe40442d971b2ddc6c1a02d4"
       },
       {
-        id: "013ad32e79c44427a8cad340fb056821",
-        title: "报表中心"
+        id: "013ad32e79c44427a8cad340fb056821"
       },
       {
-        id: "6b2d3c49373946989262e586d655dccf",
-        title: "模板配置"
+        id: "6b2d3c49373946989262e586d655dccf"
       },
       {
-        id: "82814bef61934f5aadb4e1e84608f414",
-        title: "异常产品报表"
+        id: "82814bef61934f5aadb4e1e84608f414"
       },
       {
-        id: "d30bf0ff035c4e51875e7014ad46e1af",
-        title: "管理中心"
+        id: "d30bf0ff035c4e51875e7014ad46e1af"
       },
       {
-        id: "2",
-        title: "账号管理"
+        id: "2"
       },
       {
-        id: "3",
-        title: "角色管理"
+        id: "3"
       }
     ],
     users: [
       {
-        id: "57095390-9c42-41d4-ad8b-51f059bc83ac",
-        displayName: "产线线长"
+        id: "57095390-9c42-41d4-ad8b-51f059bc83ac"
       }
     ],
     id: "4",
@@ -537,58 +449,45 @@ const roleList = [
     description: "检测员，负责检测产品",
     menus: [
       {
-        id: "8502de35df2c4d19ad337c5548f661b4",
-        title: "查看SOP"
+        id: "8502de35df2c4d19ad337c5548f661b4"
       },
       {
-        id: "c64f399d2c03445dbfa2b23c240e2dc6",
-        title: "条码打印"
+        id: "c64f399d2c03445dbfa2b23c240e2dc6"
       },
       {
-        id: "6939e2b2b0fa4c5b942c365278a8aab3",
-        title: "追溯查询"
+        id: "6939e2b2b0fa4c5b942c365278a8aab3"
       },
       {
-        id: "013ad32e79c44427a8cad340fb056821",
-        title: "报表中心"
+        id: "013ad32e79c44427a8cad340fb056821"
       },
       {
-        id: "82814bef61934f5aadb4e1e84608f414",
-        title: "异常产品报表"
+        id: "82814bef61934f5aadb4e1e84608f414"
       },
       {
-        id: "d30bf0ff035c4e51875e7014ad46e1af",
-        title: "管理中心"
+        id: "d30bf0ff035c4e51875e7014ad46e1af"
       },
       {
-        id: "2",
-        title: "账号管理"
+        id: "2"
       },
       {
-        id: "3",
-        title: "角色管理"
+        id: "3"
       }
     ],
     users: [
       {
-        id: "70f2ef02-9ee7-4062-b801-554ce00bb6a3",
-        displayName: "刘超凡"
+        id: "70f2ef02-9ee7-4062-b801-554ce00bb6a3"
       },
       {
-        id: "1c66b592-f522-456d-86b3-cdf2191abcb4",
-        displayName: "张家辉"
+        id: "1c66b592-f522-456d-86b3-cdf2191abcb4"
       },
       {
-        id: "9d974bb4-2386-4bb8-98c5-499b95ad025c",
-        displayName: "检测员"
+        id: "9d974bb4-2386-4bb8-98c5-499b95ad025c"
       },
       {
-        id: "61144682-7438-47f1-9570-c7ddf6213832",
-        displayName: "涂文轩"
+        id: "61144682-7438-47f1-9570-c7ddf6213832"
       },
       {
-        id: "c151b4b4-3bdc-4522-933a-5de6157bf5b1",
-        displayName: "王明雪"
+        id: "c151b4b4-3bdc-4522-933a-5de6157bf5b1"
       }
     ],
     id: "5",

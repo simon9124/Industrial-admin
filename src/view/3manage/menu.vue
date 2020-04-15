@@ -161,6 +161,8 @@
 </template>
 
 <script>
+// vuex
+import store from "@/store";
 // component
 import IconChoose from "@/components/icons/icon-choose";
 // mockData
@@ -176,7 +178,6 @@ import {
   getValueByKey // 根据对象数组某个key的value，查询另一个key的value
 } from "@/libs/dataHanding";
 import { refreshRoute } from "@/router"; // 路由初始化，清空动态路由
-import { initRouter } from "@/libs/router-util"; // 动态路由渲染
 // api
 import {
   getAllMenus, // 获取全部菜单
@@ -403,7 +404,6 @@ export default {
                   result,
                   "新增成功！",
                   () => {
-                    this.getData();
                     this.refreshRouteData();
                     this.buttonLoading = false;
                   },
@@ -426,7 +426,6 @@ export default {
                     .substr(-10);
                   menuList.push(JSON.parse(JSON.stringify(this.modalData)));
                   resultCallback(200, "添加成功！", () => {
-                    this.getData();
                     this.refreshRouteData();
                     this.buttonLoading = false;
                   });
@@ -441,7 +440,6 @@ export default {
                   result,
                   "修改成功！",
                   () => {
-                    this.getData();
                     this.refreshRouteData();
                     this.buttonLoading = false;
                   },
@@ -471,7 +469,6 @@ export default {
                     }
                   });
                   resultCallback(200, "修改成功！", () => {
-                    this.getData();
                     this.refreshRouteData();
                     this.buttonLoading = false;
                   });
@@ -494,7 +491,6 @@ export default {
               // 接口数据
               const result = (await removeMenu(data.id)).data.status;
               resultCallback(result, "删除成功！", () => {
-                this.getData();
                 this.refreshRouteData();
                 this.insert();
                 this.menuType = "notFirst";
@@ -502,13 +498,12 @@ export default {
             } else {
               // mock数据
               menuList.forEach((list, i) => {
-                if (data.id === list.id) {
-                  menuList.splice(i, 1);
-                }
+                data.id === list.id && menuList.splice(i, 1);
               });
               resultCallback(200, "删除成功！", () => {
                 this.refreshRouteData();
-                this.getData();
+                this.insert();
+                this.menuType = "notFirst";
               });
             }
           },
@@ -520,7 +515,9 @@ export default {
     refreshRouteData() {
       localStorage.setItem("dynamicRouter", []);
       refreshRoute();
-      initRouter();
+      store.dispatch("getRouters").then(res => {
+        this.getData();
+      });
     }
   }
 };

@@ -63,7 +63,6 @@
         <FormItem label="角色："
                   prop="roles">
           <Select v-model="modalData.roles"
-                  @on-change="accessOnChange"
                   multiple
                   :max-tag-count="3">
             <Option v-for="(role,i) in roleList"
@@ -358,23 +357,8 @@ export default {
     },
     // 根据条件刷新数据
     refreshData() {
-      if (this.isMock) {
-        // 按"userName"升序
-        this.tableDataOrg.sort(arraySort("userName", "asc"));
-        // 车间主管只能看检测员、产线线长和自己信息
-        if (this.userAccess[0] === "workshop_manager") {
-          for (let i = this.tableDataOrg.length - 1; i >= 0; i--) {
-            if (
-              this.tableDataOrg[i].userAccess[0].name === "admin" ||
-              this.tableDataOrg[i].userAccess[0].name === "cestc" ||
-              (this.tableDataOrg[i].userAccess[0].name === "workshop_manager" &&
-                this.tableDataOrg[i].userName !== this.userName)
-            ) {
-              this.tableDataOrg.splice(i, 1);
-            }
-          }
-        }
-      }
+      // 按"userName"升序
+      this.isMock && this.tableDataOrg.sort(arraySort("userName", "asc"));
       // 分页 & 每页条数
       this.tableData = this.tableDataOrg.slice(
         (this.pageNum - 1) * this.pageSize,
@@ -415,22 +399,12 @@ export default {
       this.modalData.roles = roles;
       this.modalShow = true;
     },
-    // 用户角色被选择
-    accessOnChange(value) {
-      // this.modalData.roles = value.join(",");
-      // const roles = [];
-      // value.forEach(role => {
-      //   roles.push({ id: role });
-      // });
-      // this.modalData.roles = roles;
-      // this.modalData.roles = [this.modalData.roles];
-    },
     // 点击表单按钮 - 确定
     handleSubmit() {
       // console.log(this.modalData);
       this.$refs.formModalData.validate(async valid => {
         if (valid) {
-          // this.buttonLoading = true;
+          this.buttonLoading = true;
           // 处理roles的格式，赋给新对象
           const modalData = JSON.parse(JSON.stringify(this.modalData));
           const roles = [];
@@ -442,10 +416,9 @@ export default {
           switch (this.modalDataType) {
             case "insert":
               if (!this.isMock) {
-                // 非mock时
-                if (this.modalData.phone === undefined) {
-                  this.modalData.phone = "";
-                }
+                /* 接口数据 */
+                this.modalData.phone === undefined &&
+                  (this.modalData.phone = "");
                 const result = (await insertUser(modalData)).data.status;
                 resultCallback(
                   result,
@@ -459,7 +432,7 @@ export default {
                   }
                 );
               } else {
-                // mock时
+                /* mock数据 */
                 if (
                   this.tableDataOrg.some(
                     item => item.userName === this.modalData.userName
@@ -484,7 +457,7 @@ export default {
               break;
             case "edit":
               if (!this.isMock) {
-                /* 非mock时 */
+                /* 接口数据 */
                 const result = (await updateUser(modalData)).data.status;
                 resultCallback(
                   result,
@@ -498,7 +471,7 @@ export default {
                   }
                 );
               } else {
-                // mock时
+                /* mock数据 */
                 if (
                   this.tableDataOrg.some(
                     item => item.userName === this.modalData.userName
@@ -525,9 +498,7 @@ export default {
                       if (role.id === _role.id) {
                         // console.log(role);
                         // 若这些角色的用户不含modalData.id，则给该角色的用户里添加该用户
-                        if (
-                          !role.users.some(user => user.id === modalData.id)
-                        ) {
+                        !role.users.some(user => user.id === modalData.id) &&
                           role.users.push({
                             id: modalData.id,
                             displayName: getValueByKey(
@@ -537,7 +508,6 @@ export default {
                               "displayName"
                             )
                           });
-                        }
                       }
                     });
                     // 判断删除绑定角色：外循环角色列表，内循环角色的用户
@@ -546,11 +516,8 @@ export default {
                       if (user.id === modalData.id) {
                         // console.log(role);
                         // 若要执行的更新列表里不含上述角色的id，则删除该id对应角色的该用户
-                        if (
-                          !modalData.roles.some(_role => role.id === _role.id)
-                        ) {
+                        !modalData.roles.some(_role => role.id === _role.id) &&
                           role.users.splice(i, 1);
-                        }
                       }
                     });
                   });
@@ -572,7 +539,7 @@ export default {
     async lock(row) {
       row.lockFlag = row.lockFlag === 0 ? 1 : 0;
       if (!this.isMock) {
-        // 非mock时
+        /* 接口数据 */
         const result = (await lockUser(row)).data.status;
         resultCallback(
           result,
@@ -582,7 +549,7 @@ export default {
           }
         );
       } else {
-        // mock时
+        /* mock数据 */
         this.$set(
           this.tableDataOrg,
           (this.pageNum - 1) * this.pageSize + row._index,
@@ -610,12 +577,11 @@ export default {
                 this.pageNum * this.pageSize
               )
               .forEach((item, i) => {
-                if (row.id === item.id) {
+                row.id === item.id &&
                   this.tableDataOrg.splice(
                     (this.pageNum - 1) * this.pageSize + i,
                     1
                   );
-                }
               });
             resultCallback(200, "删除成功！", () => {
               this.refreshData();

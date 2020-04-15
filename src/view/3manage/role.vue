@@ -204,7 +204,6 @@ import {
   updateRoleUser, // 角色 - 用户关系维护
   getMenusByRole, // 根据角色id获取关联的菜单
   updateRoleMenu // 角色 - 菜单关系维护
-  // updateRoleMenu // 角色菜单关系维护
 } from "@/api/role/index";
 import { getUserList } from "@/api/user/index"; // 获取全部用户
 import { getAllMenus } from "@/api/menu/index"; // 获取全部菜单
@@ -246,15 +245,15 @@ export default {
                       display:
                         getValueByKey(
                           this.menuListNotComputed,
-                          "title",
-                          this.isMock ? item.title : item,
+                          this.isMock ? "id" : "title",
+                          this.isMock ? item.id : item,
                           "path"
                         ) !== ""
                           ? "inline-block"
                           : "none"
                     }
                   },
-                  this.isMock ? item.title : item
+                  !this.isMock ? item : item.title
                 );
               })
             ]);
@@ -402,8 +401,6 @@ export default {
         title: "",
         parentId: "",
         description: ""
-        // menus: [],
-        // users: []
       }, // 数据 - role
       modalDataUser: {
         users: []
@@ -417,7 +414,6 @@ export default {
       userSelectedData: [], // select里选择的user - 整个data
       menuSelectList: [], // 已选择的menu - 接口数据
       menuSelectedId: [], // tree提交的menu - id
-      // menuSelectedData: [], // tree里选择的menu - 整个data
       formModalRule: {
         name: [
           {
@@ -468,27 +464,30 @@ export default {
     ...mapGetters(["userAccess"])
   },
   async created() {
+    this.init();
     this.getData();
     this.getSubList();
-    // 未处理的menu数据 -> 非isMock时功能列表筛选用
-    this.menuListNotComputed = !this.isMock
-      ? (await getAllMenus()).data.data || []
-      : menuList;
-    // 设置menuList的副本，每次关联时以副本为基准清空已选项
-    this.menuListOrg = computedMenuData(this.menuListNotComputed);
-    this.menuList = JSON.parse(JSON.stringify(this.menuListOrg));
-    this.userList = !this.isMock
-      ? (await getUserList()).data.data || []
-      : userList;
   },
   methods: {
+    // 初始化页面 -> userList 和 menuList
+    async init() {
+      // 未处理的menu数据 -> 非isMock时功能列表筛选用
+      this.menuListNotComputed = !this.isMock
+        ? (await getAllMenus()).data.data || []
+        : menuList;
+      // 设置menuList的副本，每次关联时以副本为基准清空已选项
+      this.menuListOrg = computedMenuData(this.menuListNotComputed);
+      this.menuList = JSON.parse(JSON.stringify(this.menuListOrg));
+      this.userList = !this.isMock
+        ? (await getUserList()).data.data || []
+        : userList;
+    },
     // 获取首页数据
     async getData() {
       if (!this.isMock) {
         // 接口数据
         this.tableLoading = true;
         this.tableDataOrg = (await getRolelist()).data.data;
-        // this.tableDataOrg = roleList;
         this.refreshData();
         this.buttonLoading = false;
         this.tableLoading = false;
@@ -524,8 +523,26 @@ export default {
     // 根据条件刷新数据
     refreshData() {
       if (this.isMock) {
-        // 按"id"升序
-        this.tableDataOrg.sort(arraySort("id", "asc"));
+        this.tableDataOrg.sort(arraySort("id", "asc")); // 按"id"升序
+        this.tableDataOrg.forEach(role => {
+          // 给每个role的users设置displayName
+          role.users.forEach(user => {
+            this.$set(
+              user,
+              "displayName",
+              getValueByKey(this.userList, "id", user.id, "displayName")
+            );
+          });
+          // 给每个role的menus设置title
+          role.menus.forEach(menu => {
+            this.$set(
+              menu,
+              "title",
+              getValueByKey(this.menuListNotComputed, "id", menu.id, "title")
+            );
+          });
+        });
+        // console.log(this.tableDataOrg);
       }
       // 分页 & 每页条数
       this.tableData = this.tableDataOrg.slice(
@@ -598,7 +615,7 @@ export default {
                 } else {
                   var id = "1";
                   this.tableDataOrg.forEach(item => {
-                    if (id === item.id) id = (parseInt(id) + 1).toString();
+                    id === item.id && (id = (parseInt(id) + 1).toString());
                   });
                   this.modalDataRole.id = id; // 生成角色id，不能与现有的id重复
                   this.modalDataRole.menus = [];
@@ -616,7 +633,7 @@ export default {
               break;
             case "edit":
               if (!this.isMock) {
-                // 非mock时
+                /* 接口数据 */
                 const result = (await updateRole(this.modalDataRole)).data
                   .status;
                 resultCallback(
@@ -631,10 +648,7 @@ export default {
                   }
                 );
               } else {
-                // mock时
-                // 按"id"升序
-                // this.menuSelectList.sort(arraySort("functionId", "asc"));
-                // 判断重复
+                /* mock数据 */
                 if (
                   this.tableDataOrg.some(
                     item => item.name === this.modalDataRole.name
@@ -700,9 +714,7 @@ export default {
             this.pageNum * this.pageSize
           )
           .forEach((list, i) => {
-            if (row.id === list.id) {
-              this.tableDataOrg.splice(i, 1);
-            }
+            row.id === list.id && this.tableDataOrg.splice(i, 1);
           });
         resultCallback(200, "删除成功！", () => {
           this.refreshData();
@@ -745,13 +757,18 @@ export default {
     async handleSubmitUser() {
       this.buttonLoading = true;
       // console.log(this.userSelectList);
+      const userIds = []; // 要执行的用户列表
+      this.userSelectList.forEach(user => {
+        !this.isMock && userIds.push(user.id);
+        this.isMock &&
+          userIds.push({
+            id: user.id,
+            displayName: user.displayName
+          });
+      });
+      // console.log(userIds);
       if (!this.isMock) {
         /* 接口数据 */
-        const userIds = [];
-        this.userSelectList.forEach(user => {
-          userIds.push(user.id);
-        });
-        // console.log(userIds);
         const result = (
           await updateRoleUser({
             roleId: this.roleId,
@@ -771,30 +788,21 @@ export default {
         );
       } else {
         /* mock数据 */
-        const users = [];
-        this.userSelectList.forEach(user => {
-          users.push({
-            id: user.id,
-            displayName: user.displayName
-          });
-        });
         // 1.在角色列表更新
         this.tableData.forEach((row, i) => {
-          if (row.id === this.roleId) {
-            this.$set(row, "users", users);
-          }
+          row.id === this.roleId && this.$set(row, "users", userIds);
         });
-        // console.log(users, this.roleId);
+        // console.log(userIds, this.roleId);
         // console.log(this.userList);
         // 2.在用户列表更新
         this.userList.forEach(user => {
           // 判断新增绑定用户：外循环用户列表，内循环要更新的用户列表
-          users.forEach(_user => {
+          userIds.forEach(_user => {
             // 筛选二者id相同的用户
             if (user.id === _user.id) {
               // console.log(user);
               // 若这些用户的角色不含roleId，则给该用户的角色里添加该角色
-              if (!user.roles.some(role => role.id === this.roleId)) {
+              !user.roles.some(role => role.id === this.roleId) &&
                 user.roles.push({
                   id: this.roleId,
                   name: getValueByKey(
@@ -804,7 +812,6 @@ export default {
                     "title"
                   )
                 });
-              }
             }
           });
           // 判断删除绑定用户：外循环用户列表，内循环用户的角色
@@ -813,9 +820,8 @@ export default {
             if (role.id === this.roleId) {
               // console.log(user);
               // 若要执行的更新列表里不含上述用户的id，则删除该id对应用户的该角色
-              if (!users.some(_user => user.id === _user.id)) {
+              !userIds.some(_user => user.id === _user.id) &&
                 user.roles.splice(i, 1);
-              }
             }
           });
         });
@@ -836,28 +842,24 @@ export default {
         : JSON.parse(JSON.stringify(row.menus));
       // console.log(this.menuSelectList);
       // 根据menuSelectList，动态渲染menuList已选中的选项
-      if (this.menuList.length > 0) {
+      this.menuList.length > 0 &&
         this.menuList.forEach(menu => {
-          if (row.name === "cestc") this.$set(menu, "disableCheckbox", true); // 工程师所有父节点禁止选择
+          row.parentId === "root" && this.$set(menu, "disableCheckbox", true); // 根角色所有父节点禁止选择
           if (menu.children.length === 0) {
-            // 如果没有子节点
-            if (JSON.stringify(this.menuSelectList).indexOf(menu.title) > -1) {
+            // 如果没有子节点 -> 选中包含title的父节点
+            this.menuSelectList.some(_menu => menu.title === _menu.title) &&
               this.$set(menu, "checked", true);
-            }
           } else {
-            // 如果有子节点
+            // 如果有子节点 -> 选中包含title的子节点
             menu.children.forEach(_menu => {
-              if (
-                JSON.stringify(this.menuSelectList).indexOf(_menu.title) > -1
-              ) {
-                this.$set(_menu, "checked", true);
-                if (row.name === "cestc")
-                  this.$set(_menu, "disableCheckbox", true); // 工程师所有子节点禁止选择
-              }
+              this.menuSelectList.some(
+                __menu => _menu.title === __menu.title
+              ) && this.$set(_menu, "checked", true);
+              row.parentId === "root" &&
+                this.$set(_menu, "disableCheckbox", true); // 根角色所有子节点禁止选择
             });
           }
         });
-      }
       this.modalShowMenu = true;
     },
     // 提交表单 - 菜单
@@ -876,14 +878,12 @@ export default {
       /* 2.处理被勾选的节点数组 -> 非mock时保留id / mock时保留id和title */
       this.menuSelected = [];
       menuSelected.forEach(menu => {
-        if (!this.isMock) {
-          this.menuSelected.push(menu.id);
-        } else {
+        !this.isMock && this.menuSelected.push(menu.id);
+        this.isMock &&
           this.menuSelected.push({
             id: menu.id,
             title: menu.title
           });
-        }
       });
       // console.log(this.menuSelected);
       /* 3.调用接口 */
@@ -910,13 +910,11 @@ export default {
         );
       } else {
         /* mock数据 */
-        // 1.在角色列表更新
         this.tableData.forEach((row, i) => {
           if (row.id === this.roleId) {
             this.$set(row, "menus", this.menuSelected);
           }
         });
-        // 3.回调函数
         resultCallback(200, "修改成功！", () => {
           this.modalShowMenu = false;
           this.refreshData();

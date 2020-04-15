@@ -34,20 +34,18 @@ export function listToCascader(array) {
     casList2.forEach(string2 => {
       const casList3Value = [];
       array.forEach(string3 => {
-        if (string3.indexOf(string2) > -1) {
+        string3.indexOf(string2) > -1 &&
           casList3Value.push({
             value: string3,
             label: string3
           });
-        }
       });
-      if (string2.indexOf(string1) > -1) {
+      string2.indexOf(string1) > -1 &&
         casList2Value.push({
           value: string2,
           label: string2,
           children: casList3Value
         });
-      }
     });
     cascaderValue.push({
       value: string1,
@@ -67,9 +65,9 @@ export function listToCascader(array) {
 export const computedMenuData = array => {
   let treeData = [];
 
+  // 外层节点
   array.forEach(menu => {
-    // 外层节点
-    if (menu.parenetId === "root") {
+    menu.parenetId === "root" &&
       treeData.push({
         id: menu.id,
         name: menu.name,
@@ -86,14 +84,13 @@ export const computedMenuData = array => {
         ico: menu.ico,
         children: []
       });
-    }
   });
 
   // 内层节点：递归
   const handleRecurrence = recurrenceData => {
     recurrenceData.forEach(data => {
       array.forEach(menu => {
-        if (data.id === menu.parenetId) {
+        data.id === menu.parenetId &&
           data.children.push({
             id: menu.id,
             name: menu.name,
@@ -110,7 +107,6 @@ export const computedMenuData = array => {
             ico: menu.ico,
             children: []
           });
-        }
       });
       // console.log(data);
       handleRecurrence(data.children);
@@ -118,23 +114,8 @@ export const computedMenuData = array => {
   };
   handleRecurrence(treeData);
 
-  // 内层节点
-  // treeData.forEach(data => {
-  //   array.forEach(menu => {
-  //     if (data.id === menu.parenetId) {
-  //       data.children.push({
-  //         title: menu.title,
-  //         id: menu.id,
-  //         children: []
-  //       });
-  //     }
-  //   });
-  // });
-
   // 外层第一项若有内层，则展开
-  if (treeData.length > 0) {
-    treeData[0].expand = true;
-  }
+  treeData.length > 0 && (treeData[0].expand = true);
   return treeData;
 };
 
@@ -169,9 +150,7 @@ export function arraySort(key, sort) {
 export function getValueByKey(array, queryKey, queryValue, getKey) {
   var getValue = "";
   array.forEach(item => {
-    if (item[queryKey].toString() === queryValue) {
-      getValue = item[getKey];
-    }
+    item[queryKey].toString() === queryValue && (getValue = item[getKey]);
   });
   return getValue;
 }
@@ -250,9 +229,7 @@ export function setKeyFromTableHeader(tableHeader) {
 export const addValueByKey = (array, key, condition = true) => {
   var addValue = 0;
   array.forEach(item => {
-    if (condition) {
-      addValue += Number(item[key]);
-    }
+    condition && (addValue += Number(item[key]));
   });
   return addValue;
 };

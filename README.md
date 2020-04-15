@@ -1,5 +1,13 @@
 ## Industrial-admin
 
+**安装运行：**
+
+cd ~npm install
+
+解决xlsx-style插件的bug.png：![Image text](https://github.com/simon9124/Industrial-admin/blob/master/src/assets/%E8%A7%A3%E5%86%B3xlsx-style%E7%9A%84bug.png)
+
+npm run dev
+
 **平台介绍：**
 
 - 基于 view-admin 和 工业互联网 4.0 的质量追溯平台
@@ -21,13 +29,3 @@ nodejs + vuejs + iview + echart
 - test：检测员
 
 *密码均为2019@cestc
-
-**安装教程：**
-
-cd ~
-
-npm install
-npm run dev
-
-修改 vue.config.js
-npm run build

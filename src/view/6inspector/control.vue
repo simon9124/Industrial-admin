@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height:100%">
     <ControlCabin v-if="showShop"></ControlCabin>
     <ControlCabinLine v-else></ControlCabinLine>
   </div>

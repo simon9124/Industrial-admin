@@ -193,12 +193,13 @@ export default {
             // 2.拿到路由模拟动态数据，与该角色处理后的数据做比对筛选
             var routerData = menuList.filter(menu => {
               return menus.some(
-                _menu => _menu.title === menu.title // 根据title全等筛选数据
+                _menu => _menu.id === menu.id // 根据id全等筛选数据
               );
             });
             routerData = routerDataHanding(
               JSON.parse(JSON.stringify(routerData))
             );
+            // console.log(routerData);
             // 3.处理后路由数据生成路由和菜单等
             localSave("dynamicRouter", JSON.stringify(routerData)); // 存储routerData到localStorage
             gotRouter = filterAsyncRouter(routerData); // 过滤路由,路由组件转换

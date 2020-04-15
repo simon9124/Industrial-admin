@@ -1,49 +1,7 @@
-/**
- * ①添
- * @新增：定义初始化菜单
- */
-import store from "@/store";
-import { localSave, localRead } from "@/libs/util";
+import { localRead } from "@/libs/util";
 import { lazyLoadingCop } from "@/libs/tools";
-import config from "@/config";
 import Main from "@/components/main"; // Main 是架构组件，不在后台返回，在文件里单独引入
 import parentView from "@/components/parent-view"; // parentView 是二级架构组件，不在后台返回，在文件里单独引入
-import { getAllMenus } from "@/api/menu"; // api - 获取当前用户的全部菜单
-import { menuList } from "@/view/3manage/mockData/role"; // mockData - 全部菜单
-
-// 初始化路由数据
-export const initRouter = async () => {
-  var gotRouter = []; // 获得的动态路由
-  if (localRead("dynamicRouter") === "") {
-    /* localStorage里dynamicRouter值为空 -> 没有路由数据 -> 获取路由数据 */
-    console.log("获取路由：从api");
-    if (!config.isMock) {
-      // 接口数据
-      getAllMenus().then(result => {
-        var routerData = routerDataHanding(result.data.data); // 拿到路由接口数据
-        localSave("dynamicRouter", JSON.stringify(routerData)); // 存储routerData到localStorage
-        gotRouter = filterAsyncRouter(routerData); // 过滤路由,路由组件转换
-        console.log(gotRouter);
-        store.dispatch("updateMenuList", gotRouter);
-      });
-    } else {
-      // mock数据
-      var routerData = routerDataHanding(JSON.parse(JSON.stringify(menuList))); // 拿到路由模拟动态数据
-      localSave("dynamicRouter", JSON.stringify(routerData)); // 存储routerData到localStorage
-      gotRouter = filterAsyncRouter(routerData); // 过滤路由,路由组件转换
-      store.dispatch("updateMenuList", gotRouter);
-    }
-  } else {
-    /* 有路由数据 -> 直接从localStorage里面获取 */
-    console.log("获取路由：从localStorage");
-    gotRouter = dynamicRouterAdd("router-util.js");
-    store.commit("setMenuList", {
-      menuList: gotRouter,
-      access: store.state.user.access
-    });
-  }
-  return gotRouter;
-};
 
 // 加载路由菜单,从localStorage拿到路由,在创建路由时使用
 export const dynamicRouterAdd = from => {

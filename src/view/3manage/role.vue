@@ -838,6 +838,7 @@ export default {
       // 根据menuSelectList，动态渲染menuList已选中的选项
       if (this.menuList.length > 0) {
         this.menuList.forEach(menu => {
+          if (row.name === "cestc") this.$set(menu, "disableCheckbox", true); // 工程师所有父节点禁止选择
           if (menu.children.length === 0) {
             // 如果没有子节点
             if (JSON.stringify(this.menuSelectList).indexOf(menu.title) > -1) {
@@ -850,6 +851,8 @@ export default {
                 JSON.stringify(this.menuSelectList).indexOf(_menu.title) > -1
               ) {
                 this.$set(_menu, "checked", true);
+                if (row.name === "cestc")
+                  this.$set(_menu, "disableCheckbox", true); // 工程师所有子节点禁止选择
               }
             });
           }

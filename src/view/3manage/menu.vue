@@ -257,9 +257,26 @@ export default {
         showLevel: [
           { required: true, message: "请选择菜单层级", trigger: "change" }
         ],
-        sort: [
-          // { required: true, message: "请填写排序值", trigger: "change" }
-          // { type: "string", max: 4, message: "排序值过大", trigger: "change" }
+        ico: [
+          {
+            required: true,
+            validator: (rule, value, callback) => {
+              // console.log(this.menuType);
+              if (
+                this.menuType === "first" ||
+                this.modalData.parenetId === "root"
+              ) {
+                if (this.modalData.ico === "") {
+                  callback(new Error("请选择图标"));
+                } else {
+                  callback();
+                }
+              } else {
+                callback();
+              }
+            },
+            trigger: "change"
+          }
         ]
       }, // form规则
       modalDataType: "insert", // 类型：insert/edit

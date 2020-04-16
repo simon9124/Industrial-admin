@@ -3,7 +3,8 @@
 **安装运行：**
 
 - cd ~npm install
-- 解决xlsx-style插件的bug.png：![Image text](https://github.com/simon9124/Industrial-admin/blob/master/src/assets/%E8%A7%A3%E5%86%B3xlsx-style%E7%9A%84bug.png)
+- 解决xlsx-style插件的bug.png：node_modules>xlsx-style>dist>cpexcel.js，第807行```var cpt = require('./cpt' + 'able)```改为```var cpt = cptable```
+![Image text](https://github.com/simon9124/Industrial-admin/blob/master/src/assets/%E8%A7%A3%E5%86%B3xlsx-style%E7%9A%84bug.png)
 - npm run dev
 
 **平台介绍：**

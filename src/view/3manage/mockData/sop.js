@@ -1,3 +1,19 @@
+// 工位列表
+const workStationList = [
+  {
+    id: 1,
+    typeName: "综合检测"
+  },
+  {
+    id: 2,
+    typeName: "静音检测"
+  },
+  {
+    id: 3,
+    typeName: "外观检测"
+  }
+];
+
 // 顶部tab列表
 const tabList = [
   {
@@ -677,4 +693,4 @@ const itemList = {
   ]
 };
 
-export { tabList, sopList, itemList };
+export { workStationList, tabList, sopList, itemList };

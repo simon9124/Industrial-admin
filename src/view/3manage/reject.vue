@@ -13,17 +13,8 @@
              disabled-hover
              :data="tableData"
              :columns="tableColumns"
-             stripe></Table>
-
-      <!-- <div style="margin: 10px;overflow: hidden">
-        <div style="float: right;">
-          <Page show-sizer
-                :total="tableDataOrg.length"
-                :current="1"
-                @on-change="changePage"
-                @on-page-size-change="changePageSize"></Page>
-        </div>
-      </div> -->
+             stripe>
+      </Table>
     </Card>
 
     <!-- Modal -->
@@ -41,9 +32,11 @@
         <FormItem label="所属步骤："
                   prop="test_item_group_index">
           <Select v-model="modalData.test_item_group_index">
-            <Option value="1">综合检测</Option>
-            <Option value="2">静音检测</Option>
-            <Option value="3">外观检测</Option>
+            <Option v-for="(workStation,i) in workStationList"
+                    :value="workStation.id.toString()"
+                    :key="i">
+              {{ workStation.typeName }}
+            </Option>
           </Select>
         </FormItem>
         <FormItem label="不良品项："
@@ -53,8 +46,9 @@
         </FormItem>
         <FormItem>
           <Button type="primary"
-                  @click="handleSubmit('formModalData')">确定</Button>
-          <Button @click="handleReset('formModalData')"
+                  @click="handleSubmit('formModalData')"
+                  :loading="buttonLoading">确定</Button>
+          <Button @click="modalShow=false"
                   style="margin-left: 8px">取消</Button>
         </FormItem>
       </Form>
@@ -63,215 +57,29 @@
 </template>
 
 <script>
+// mockData
+import { rejectList } from "./mockData/reject"; // 异常原因列表
+import { workStationList } from "./mockData/sop"; // 测试步骤列表
 // function
-import { resultCallback } from "@/libs/dataHanding"; // 根据请求的status执行回调函数
+import {
+  arraySort, // 对象数组根据key排序
+  resultCallback, // 根据请求的status执行回调函数
+  getValueByKey // 根据对象数组某个key的value，查询另一个key的value
+} from "@/libs/dataHanding";
 // api
 import {
   getUnqualifiedList,
   updateUnqualified,
   insertUnqualified,
   deleteUnqualified
-} from "@/api/unqualified";
+} from "@/api/unqualified"; // 增删改查
 
 export default {
   data() {
     return {
-      // 原始数据
-      tableDataOrg: [
-        {
-          unqualified_item: [
-            {
-              unqualified_name: "刹车打滑",
-              id: 1,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "砝码拉不动",
-              id: 2,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "单转",
-              id: 3,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "短路",
-              id: 4,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "反转",
-              id: 5,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "不转",
-              id: 6,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "减速不良",
-              id: 7,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "对码不良",
-              id: 8,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "转速不良",
-              id: 9,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "点动",
-              id: 10,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "蜗杆紧/松",
-              id: 11,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "蜗杆减不死",
-              id: 12,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "通电自转",
-              id: 13,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "蜗杆加不活",
-              id: 14,
-              test_item_group_name: "综合检测"
-            },
-            {
-              unqualified_name: "芯片测试不良",
-              id: 15,
-              test_item_group_name: "综合检测"
-            }
-          ],
-          test_item_group_name: "综合检测"
-        },
-        {
-          unqualified_item: [
-            {
-              unqualified_name: "低电压不吸合",
-              id: 16,
-              test_item_group_name: "静音检测"
-            },
-            {
-              unqualified_name: "热保护不到4分钟",
-              id: 17,
-              test_item_group_name: "静音检测"
-            },
-            {
-              unqualified_name: "超分贝",
-              id: 18,
-              test_item_group_name: "静音检测"
-            },
-            {
-              unqualified_name: "轴承响",
-              id: 19,
-              test_item_group_name: "静音检测"
-            },
-            {
-              unqualified_name: "电机扫堂",
-              id: 20,
-              test_item_group_name: "静音检测"
-            },
-            {
-              unqualified_name: "电机响",
-              id: 21,
-              test_item_group_name: "静音检测"
-            },
-            {
-              unqualified_name: "杂音(减速异响）",
-              id: 22,
-              test_item_group_name: "静音检测"
-            },
-            {
-              unqualified_name: "接地不过",
-              id: 23,
-              test_item_group_name: "静音检测"
-            },
-            {
-              unqualified_name: "高压不过",
-              id: 24,
-              test_item_group_name: "静音检测"
-            }
-          ],
-          test_item_group_name: "静音检测"
-        },
-        {
-          unqualified_item: [
-            {
-              unqualified_name: "外管不良",
-              id: 25,
-              test_item_group_name: "外观检测"
-            },
-            {
-              unqualified_name: "螺丝、销子不良",
-              id: 26,
-              test_item_group_name: "外观检测"
-            },
-            {
-              unqualified_name: "排线不良",
-              id: 27,
-              test_item_group_name: "外观检测"
-            },
-            {
-              unqualified_name: "电源线不良",
-              id: 28,
-              test_item_group_name: "外观检测"
-            },
-            {
-              unqualified_name: "电子行程头不良",
-              id: 29,
-              test_item_group_name: "外观检测"
-            },
-            {
-              unqualified_name: "内外端盖不良",
-              id: 30,
-              test_item_group_name: "外观检测"
-            },
-            {
-              unqualified_name: "行程内齿套不良",
-              id: 31,
-              test_item_group_name: "外观检测"
-            },
-            {
-              unqualified_name: "行程网印不良",
-              id: 32,
-              test_item_group_name: "外观检测"
-            },
-            {
-              unqualified_name: "零件漏装、多装、错装",
-              id: 33,
-              test_item_group_name: "外观检测"
-            },
-            {
-              unqualified_name: "前盖板方轴不良",
-              id: 34,
-              test_item_group_name: "外观检测"
-            },
-            {
-              unqualified_name: "电源线、铜皮脱落、接地端子不良",
-              id: 35,
-              test_item_group_name: "外观检测"
-            }
-          ],
-          test_item_group_name: "外观检测"
-        }
-      ],
-      // 处理后的当页数据
-      tableData: [],
-      // 表头列项
+      workStationList: workStationList, // 测试步骤列表
+      /* table */
+      tableData: [], // 数据
       tableColumns: [
         {
           title: "测试步骤",
@@ -294,7 +102,7 @@ export default {
               [
                 h(
                   "ul",
-                  this.tableDataOrg[params.index].unqualified_item.map(item => {
+                  this.tableData[params.index].unqualified_item.map(item => {
                     return h("li", {}, item.unqualified_name);
                   })
                 )
@@ -320,7 +128,7 @@ export default {
               [
                 h(
                   "ul",
-                  this.tableDataOrg[params.index].unqualified_item.map(
+                  this.tableData[params.index].unqualified_item.map(
                     (item, index) => {
                       return h("li", [
                         h(
@@ -386,19 +194,18 @@ export default {
             );
           }
         }
-      ],
-      // 页码
-      pageNum: 1,
-      // 每页显示数量
-      pageSize: 10,
-      // modal弹框 - 是否显示
-      modalShow: false,
-      // modal弹框 - 数据
+      ], // 表头列项
+      /* loading */
+      tableLoading: false, // table
+      buttonLoading: false, // button
+      /* modal弹框 */
+      modalShow: false, // 是否显示
+      modalDataType: "", // 类型 - insert or edit
       modalData: {
         test_item_group_index: "",
         unqualified_name: ""
-      },
-      // modal弹框 - form规则
+      }, // 数据
+      modalDataOrg: {}, // 数据 - 行内原始
       formModalRule: {
         test_item_group_index: [
           { required: true, message: "请选择所属步骤", trigger: "change" }
@@ -407,44 +214,35 @@ export default {
           { required: true, message: "请输入不良品项", trigger: "change" },
           {
             type: "string",
-            max: 20,
+            max: 30,
             message: "不良品项过长",
             trigger: "change"
           }
         ]
-      },
-      // modal弹框 - 类型
-      modalDataType: ""
+      } // form规则
     };
   },
   async created() {
     this.getData();
   },
   methods: {
-    // 获取首页数据
+    // 获取数据
     async getData() {
-      if (!this.isMock) {
-        this.tableDataOrg = (await getUnqualifiedList()).data.data || [];
-      }
+      this.tableLoading = true;
+      this.tableData = !this.isMock
+        ? (await getUnqualifiedList()).data.data || []
+        : rejectList;
       this.refreshData();
+      this.buttonLoading = false;
+      this.tableLoading = false;
     },
     // 根据条件刷新数据
     refreshData() {
-      this.tableData = this.tableDataOrg;
-      // this.tableData = this.tableDataOrg.slice(
-      //   (this.pageNum - 1) * this.pageSize,
-      //   this.pageNum * this.pageSize
-      // );
-    },
-    // 分页
-    changePage(pageNum) {
-      this.pageNum = pageNum;
-      this.refreshData();
-    },
-    // 每页条数变化
-    changePageSize(pageSize) {
-      this.pageSize = pageSize;
-      this.refreshData();
+      this.isMock &&
+        this.tableData.forEach(item => {
+          // 按"unqualified_name"升序
+          item.unqualified_item.sort(arraySort("unqualified_name", "asc"));
+        });
     },
     // 点击按钮 - 新增
     insert() {
@@ -454,133 +252,182 @@ export default {
     },
     // 点击按钮 - 详情
     async edit(row) {
-      // console.log(row);
-      if (!this.isMock) {
-        // 非mock时
-        this.modalDataType = "edit";
-        this.modalData = JSON.parse(JSON.stringify(row));
-        this.modalData.test_item_group_index = this.modalData.test_item_group_index.toString();
-        this.modalShow = true;
-      } else {
-        // mock时
-        this.modalDataType = "edit";
-        this.modalData = row;
-        this.modalData.test_item_group_name = row.test_item_group_name;
-        localStorage.setItem(
-          "test_item_group_name",
-          this.modalData.test_item_group_name
-        );
-        this.modalShow = true;
-      }
+      this.modalDataType = "edit";
+      this.modalDataOrg = row;
+      this.modalData = JSON.parse(JSON.stringify(row));
+      this.modalData.test_item_group_index = this.modalData.test_item_group_index.toString();
+      // localStorage.setItem(
+      //   "test_item_group_name",
+      //   this.modalData.test_item_group_name
+      // );
+      this.modalShow = true;
     },
     // 点击表单按钮 - 确定
     handleSubmit() {
       this.$refs.formModalData.validate(async valid => {
         if (valid) {
+          this.buttonLoading = true;
+          this.modalData.test_item_group_name = getValueByKey(
+            workStationList,
+            "id",
+            this.modalData.test_item_group_index,
+            "typeName"
+          );
+          // console.log(this.modalData);
           switch (this.modalDataType) {
             case "insert":
               if (!this.isMock) {
-                // 非mock时
+                /* 接口数据 */
                 const result = (await insertUnqualified(this.modalData)).data
                   .status;
-                if (result === 200) {
-                  this.$refs.formModalData.resetFields();
-                  this.$Message.success("新增成功！");
-                  this.modalShow = false;
-                  this.getData();
-                }
+                resultCallback(
+                  result,
+                  "添加成功！",
+                  () => {
+                    this.modalShow = false;
+                    this.getData();
+                  },
+                  () => {
+                    this.buttonLoading = false;
+                  }
+                );
               } else {
-                // mock时
-                this.tableDataOrg.forEach(list => {
+                /* mock数据 */
+                this.tableData.forEach(list => {
                   if (
-                    this.modalData.test_item_group_name.indexOf(
-                      list.test_item_group_name
-                    ) > -1
+                    this.modalData.test_item_group_name ===
+                    list.test_item_group_name
                   ) {
-                    // console.log(list);
-                    this.modalData.id = (
-                      this.tableDataOrg.length + 1
-                    ).toString();
-                    list.unqualified_item.push(this.modalData);
+                    if (
+                      list.unqualified_item.some(
+                        item =>
+                          item.unqualified_name ===
+                          this.modalData.unqualified_name
+                      )
+                    ) {
+                      // 判断重复
+                      this.$Message.error("该步骤的该不合格项目已存在！");
+                      this.buttonLoading = false;
+                    } else {
+                      // 随机生成id
+                      this.modalData.id = Math.random()
+                        .toString(36)
+                        .substr(-10);
+                      list.unqualified_item.push(
+                        JSON.parse(JSON.stringify(this.modalData))
+                      );
+                      resultCallback(200, "添加成功！", () => {
+                        this.refreshData();
+                        this.buttonLoading = false;
+                        this.modalShow = false;
+                      });
+                    }
                   }
                 });
-                this.refreshData();
-                this.$Message.success("添加成功!");
-                this.modalShow = false;
               }
               break;
             case "edit":
               if (!this.isMock) {
-                // 非mock时
+                /* 接口数据 */
                 const result = (await updateUnqualified(this.modalData)).data
                   .status;
-                if (result === 200) {
-                  this.$refs.formModalData.resetFields();
-                  this.$Message.success("修改成功！");
-                  this.modalShow = false;
-                  this.getData();
-                }
+                resultCallback(
+                  result,
+                  "修改成功！",
+                  () => {
+                    this.modalShow = false;
+                    this.getData();
+                  },
+                  () => {
+                    this.buttonLoading = false;
+                  }
+                );
               } else {
-                // mock时
+                /* mock数据 */
                 if (
-                  localStorage.getItem("test_item_group_name") ===
-                  this.modalData.test_item_group_name
+                  this.modalData.test_item_group_name ===
+                  this.modalDataOrg.test_item_group_name
                 ) {
-                  // 所属步骤分组无变化
-                  this.tableDataOrg.forEach(list => {
+                  // console.log("所属分组无变化");
+                  this.tableData.forEach(list => {
                     if (
                       this.modalData.test_item_group_name ===
                       list.test_item_group_name
                     ) {
-                      list.unqualified_item.forEach(item => {
-                        if (this.modalData.id === item.id) {
-                          this.$set(
-                            item,
-                            "unqualified_name",
+                      if (
+                        list.unqualified_item.some(
+                          item =>
+                            item.unqualified_name ===
                             this.modalData.unqualified_name
-                          );
-                        }
-                      });
+                        ) &&
+                        this.modalData.unqualified_name !==
+                          this.modalDataOrg.unqualified_name
+                      ) {
+                        // 判断重复
+                        this.$Message.error("该步骤的该不合格项目已存在！");
+                        this.buttonLoading = false;
+                      } else {
+                        list.unqualified_item.forEach((item, i) => {
+                          this.modalData.id === item.id &&
+                            this.$set(
+                              list.unqualified_item,
+                              i,
+                              JSON.parse(JSON.stringify(this.modalData))
+                            );
+                        });
+                        resultCallback(200, "修改成功", () => {
+                          this.refreshData();
+                          this.buttonLoading = false;
+                          this.modalShow = false;
+                        });
+                      }
                     }
                   });
                 } else {
-                  // 所属步骤分组有变化
-                  this.tableDataOrg.forEach(list => {
-                    // 在原所属分组下删除
-                    if (
-                      localStorage.getItem("test_item_group_name") ===
-                      list.test_item_group_name
-                    ) {
-                      // console.log(list);
-                      list.unqualified_item.forEach(item => {
-                        if (this.modalData.id === item.id) {
-                          const index = list.unqualified_item.indexOf(item);
-                          list.unqualified_item.splice(index, 1);
-                        }
-                      });
-                    }
-                    // 在新所属分组下增加
-                    if (
+                  // console.log("所属分组有变化");
+                  if (
+                    this.tableData.some(
+                      list =>
+                        list.unqualified_item.some(
+                          item =>
+                            item.unqualified_name ===
+                            this.modalData.unqualified_name
+                        ) &&
+                        this.modalData.test_item_group_name ===
+                          list.test_item_group_name
+                    )
+                  ) {
+                    // 判断重复
+                    this.$Message.error("该步骤的该不合格项目已存在！");
+                    this.buttonLoading = false;
+                  } else {
+                    this.tableData.forEach(list => {
+                      // 1.在原所属分组下删除
+                      this.modalDataOrg.test_item_group_name ===
+                        list.test_item_group_name &&
+                        list.unqualified_item.forEach((item, i) => {
+                          this.modalData.id === item.id &&
+                            list.unqualified_item.splice(i, 1);
+                        });
+                      // 2.在新所属分组下增加
                       this.modalData.test_item_group_name ===
-                      list.test_item_group_name
-                    ) {
-                      list.unqualified_item.push(this.modalData);
-                    }
-                  });
+                        list.test_item_group_name &&
+                        list.unqualified_item.push(
+                          JSON.parse(JSON.stringify(this.modalData))
+                        );
+                    });
+                    resultCallback(200, "修改成功", () => {
+                      this.refreshData();
+                      this.buttonLoading = false;
+                      this.modalShow = false;
+                    });
+                  }
                 }
-                this.refreshData();
-                this.$Message.success("修改成功!");
-                this.modalShow = false;
               }
               break;
           }
         }
       });
-    },
-    // 点击表单按钮 - 取消
-    handleReset() {
-      this.$refs.formModalData.resetFields();
-      this.modalShow = false;
     },
     // 点击按钮 - 删除
     delete(row) {
@@ -588,25 +435,23 @@ export default {
         title: "确定删除该不良品项？",
         onOk: async () => {
           if (!this.isMock) {
-            // 非mock时
+            /* 接口数据 */
             const result = (await deleteUnqualified(row.id)).data.status;
             resultCallback(result, "删除成功！", () => {
               this.getData();
             });
           } else {
-            // mock时
-            this.tableDataOrg.forEach(list => {
+            /* mock数据 */
+            this.tableData.forEach(list => {
               if (row.test_item_group_name === list.test_item_group_name) {
-                list.unqualified_item.forEach(item => {
-                  if (row.test_item_group_name === item.test_item_group_name) {
-                    const index = list.unqualified_item.indexOf(item);
-                    list.unqualified_item.splice(index, 1);
-                  }
+                list.unqualified_item.forEach((item, i) => {
+                  row.id === item.id && list.unqualified_item.splice(i, 1);
                 });
               }
             });
-            this.$Message.success("删除成功");
-            this.refreshData();
+            resultCallback(200, "删除成功！", () => {
+              this.refreshData();
+            });
           }
         },
         closable: true

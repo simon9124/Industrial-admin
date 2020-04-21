@@ -5,7 +5,7 @@
         <TabPane v-for="tab in tabList"
                  :key="tab.id"
                  :label="tab.typeName"
-                 :name="tab.id">
+                 :name="tab.id.toString()">
 
           <!-- 操作 -->
           <div style="margin: 10px 0">
@@ -20,7 +20,7 @@
                  disabled-hover
                  :loading="tableLoading"
                  :data="tableData"
-                 :columns="tabSelected===3?tableColumns3:tableColumns"
+                 :columns="tableColumns"
                  stripe>
           </Table>
 
@@ -148,11 +148,11 @@ import {
 } from "@/libs/dataHanding";
 // api
 import {
-  getAllEquipmentFunctype,
-  findSopByPage,
-  addSop,
-  editSop,
-  removeSop
+  getAllEquipmentFunctype, // 获取工位列表（顶部tab）
+  findSopByPage, // 分页获取SOP
+  addSop, // 新增SOP
+  editSop, // 编辑SOP
+  removeSop // 删除SOP
 } from "@/api/process";
 
 export default {
@@ -262,83 +262,6 @@ export default {
           }
         }
       ], // table表头
-      tableColumns3: [
-        {
-          title: "名称",
-          key: "sop",
-          align: "center",
-          minWidth: 100
-        },
-        {
-          title: "描述",
-          key: "sopDescription",
-          // align: "center",
-          minWidth: 180
-        },
-        {
-          title: "操作",
-          key: "action",
-          minWidth: 120,
-          align: "center",
-          render: (h, params) => {
-            return h("div", [
-              h(
-                "Tooltip",
-                {
-                  props: {
-                    trigger: "hover",
-                    content: "修改",
-                    placement: "top",
-                    transfer: true
-                  }
-                },
-                [
-                  h("Button", {
-                    props: {
-                      type: "primary",
-                      size: "small",
-                      icon: "ios-create-outline"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.edit(params.row);
-                      }
-                    }
-                  })
-                ]
-              ),
-              h(
-                "Tooltip",
-                {
-                  props: {
-                    trigger: "hover",
-                    content: "删除",
-                    placement: "top",
-                    transfer: true
-                  }
-                },
-                [
-                  h("Button", {
-                    props: {
-                      type: "error",
-                      size: "small",
-                      icon: "md-close"
-                    },
-                    on: {
-                      click: () => {
-                        this.delete(params.row);
-                      }
-                    }
-                  })
-                ]
-              )
-            ]);
-          }
-        }
-      ], // table表头 - 外观检测
       total: 0, // 总数
       pageNum: 1, // 页码
       pageSize: 10, // 每页显示数量
@@ -356,25 +279,12 @@ export default {
       processTemporary: [], // 编辑SOP工序顺序时临时的数组 - copy
       formModalRule: {
         sop: [
-          {
-            required: true,
-            message: "请输入SOP名称",
-            trigger: "blur"
-          },
+          { required: true, message: "请输入SOP名称", trigger: "blur" },
           { type: "string", max: 15, message: "名称过长", trigger: "change" }
         ],
         sopDescription: [
-          {
-            required: true,
-            message: "请输入SOP描述",
-            trigger: "blur"
-          },
-          {
-            type: "string",
-            max: 30,
-            message: "描述过长",
-            trigger: "change"
-          }
+          { required: true, message: "请输入SOP描述", trigger: "blur" },
+          { type: "string", max: 30, message: "描述过长", trigger: "change" }
         ]
       }, // form规则
       modalDataType: "" // 类型：insert/edit
@@ -385,15 +295,8 @@ export default {
     this.tabList = !this.isMock
       ? (await getAllEquipmentFunctype()).data.data
       : tabList;
-    this.tabList.forEach(tab => {
-      this.$set(tab, "id", tab.id.toString());
-    });
-    if (this.tabList.length !== 0) {
-      /* 2.自动选择第一个标签 */
-      this.tabSelected = this.tabList[0].id;
-      /* 3.SOP列表 */
-      this.getData();
-    }
+    /* 2.自动选择第一个标签 */
+    this.tabList.length !== 0 && this.tabSelect(this.tabList[0].id);
   },
   methods: {
     // 顶部tab被选择
@@ -408,11 +311,9 @@ export default {
       if (!this.isMock) {
         // 接口数据
         this.tableLoading = true;
-        const dataResult = (await findSopByPage(
-          this.pageNum,
-          this.pageSize,
-          this.tabSelected
-        )).data.data;
+        const dataResult = (
+          await findSopByPage(this.pageNum, this.pageSize, this.tabSelected)
+        ).data.data;
         if (dataResult !== null) {
           // 如果是在删除之后获取的数据 -> 若删掉的是某一页的最后项且页码不是1，则自动获取前一页的数据
           if (dataResult.pageData.length === 0 && dataResult.pageIndex !== 1) {
@@ -506,6 +407,7 @@ export default {
     },
     // 工序input输入框失去焦点
     inputBlur(index) {
+      // console.log(event);
       this.$set(this.modalDataDescribe, index, {
         description: event.target.value
       });
@@ -533,7 +435,7 @@ export default {
                   });
                 }
                 if (!this.isMock) {
-                  // 接口数据
+                  /* 接口数据 */
                   const result = (await addSop(this.modalData)).data.status;
                   resultCallback(
                     result,
@@ -547,7 +449,7 @@ export default {
                     }
                   );
                 } else {
-                  // mock数据
+                  /* mock数据 */
                   this.modalData.items = this.modalData.SopItem;
                   // 随机生成sop的id
                   this.modalData.id = Math.random()
@@ -581,7 +483,7 @@ export default {
                   });
                 }
                 if (!this.isMock) {
-                  // 接口数据
+                  /* 接口数据 */
                   const result = (await editSop(this.modalData)).data.status;
                   resultCallback(
                     result,
@@ -595,15 +497,15 @@ export default {
                     }
                   );
                 } else {
-                  // mock数据
+                  /* mock数据 */
                   this.modalData.items = this.modalData.SopItem;
-                  // 判断重复
                   if (
                     this.tableDataOrg.some(
                       item => item.sop === this.modalData.sop
                     ) &&
                     this.modalData.sop !== this.modalDataOrg.sop
                   ) {
+                    // 判断重复
                     this.$Message.error("此Sop已存在！");
                     this.buttonLoading = false;
                   } else {
@@ -645,12 +547,11 @@ export default {
                 this.pageNum * this.pageSize
               )
               .forEach((item, i) => {
-                if (row.sop === item.sop) {
+                row.sop === item.sop &&
                   this.tableDataOrg.splice(
                     (this.pageNum - 1) * this.pageSize + i,
                     1
                   );
-                }
               });
             resultCallback(200, "删除成功！", () => {
               this.refreshData();

@@ -7,7 +7,7 @@
         <TabPane v-for="tab in tabList"
                  :key="tab.id"
                  :label="tab.typeName"
-                 :name="tab.id">
+                 :name="tab.id.toString()">
 
           <!-- 操作 -->
           <div style="margin: 10px 0">
@@ -187,16 +187,17 @@
 <script>
 // mockData
 import {
+  tabList, // 顶部tab列表
+  sopList // sop列表 - select下拉
+} from "./mockData/sop";
+import {
   processList, // 工序列表
   processSelectList, // 工序参数列表
   valueSelectList // 过程值下拉列表
 } from "./mockData/process";
-import {
-  tabList, // 顶部tab列表
-  sopList // sop列表 - select下拉
-} from "./mockData/sop";
 // function
 import {
+  arraySort, // 对象数组根据key排序
   getValueByKey, // 根据对象数组某个key的value，查询另一个key的value
   resultCallback // 根据请求的status执行回调函数
 } from "@/libs/dataHanding";
@@ -246,21 +247,28 @@ export default {
               "div",
               {
                 style: {
-                  display: params.row.params.length === 0 ? "none" : "block"
+                  /* eslint-disable */
+                  display:
+                    params.row.params === undefined
+                      ? "none"
+                      : params.row.params.length === 0
+                      ? "none"
+                      : "block"
                 }
               },
               [
-                params.row.params.map(item => {
-                  return h(
-                    "Tag",
-                    {
-                      props: {
-                        color: "blue"
-                      }
-                    },
-                    item.description
-                  );
-                })
+                params.row.params !== undefined &&
+                  params.row.params.map(item => {
+                    return h(
+                      "Tag",
+                      {
+                        props: {
+                          color: "blue"
+                        }
+                      },
+                      item.description
+                    );
+                  })
               ]
             );
           },
@@ -329,14 +337,8 @@ export default {
     this.tabList = !this.isMock
       ? (await getAllEquipmentFunctype()).data.data
       : tabList;
-    this.tabList.forEach(tab => {
-      this.$set(tab, "id", tab.id.toString());
-    });
-    if (this.tabList.length !== 0) {
-      /* 2.自动选择第一个标签 */
-      this.tabSelected = this.tabList[0].id;
-      this.tabSelect(this.tabSelected);
-    }
+    /* 2.自动选择第一个标签 */
+    this.tabList.length !== 0 && this.tabSelect(this.tabList[0].id);
   },
   methods: {
     // 顶部tab被选择
@@ -367,51 +369,69 @@ export default {
     // 获取首页数据
     async getData() {
       if (!this.isMock) {
-        // 非mock时
+        /* 接口数据 */
         this.tableData = (await findSopItemBySop(this.sopSelected)).data.data;
         this.tableLoading = false;
       } else {
-        // mock时
-        this.tableData = processList[this.tabSelected];
-        this.tableLoading = false;
+        /* mock数据 */
+        sopList[this.tabSelected].forEach(sop => {
+          this.sopSelected === sop.id && (this.tableData = sop.items);
+        });
+        // tableData数据处理
+        this.tableData.forEach(item => {
+          processList[this.tabSelected].forEach(process => {
+            if (process.description === item.description) {
+              item.params === undefined &&
+                this.$set(item, "params", process.params);
+              item.plcResultAdd === undefined &&
+                this.$set(item, "plcResultAdd", process.plcResultAdd);
+              item.describeParams === undefined &&
+                this.$set(item, "describeParams", process.describeParams);
+            }
+          });
+        });
+        // console.log(this.tableData);
         this.refreshData();
+        this.tableLoading = false;
       }
     },
     // 根据条件刷新数据
-    refreshData() {
-      // this.tableData = this.tableData;
-    },
+    refreshData() {},
     // 点击按钮 - 详情
     async edit(row) {
       this.modalData = JSON.parse(JSON.stringify(row));
-      // 过程值显示与否
+      // 1.过程值显示与否
       this.resultValueShow =
         this.modalData.plcResultAdd !== "" &&
         this.modalData.plcResultAdd !== null;
-      // 渲染已选择的参数checkbox
+      // 2.渲染已选择的参数checkbox
       this.modalDataDescribe = [];
-      this.modalData.params.forEach(item => {
-        this.modalDataDescribe.push(parseInt(item.code));
-      });
-      // 根据已选择的参数，渲染参数select框
+      this.modalData.params !== undefined &&
+        this.modalData.params.forEach(item => {
+          this.modalDataDescribe.push(parseInt(item.code));
+        });
+      // 3.根据已选择的参数，渲染参数select框
       this.describeOnChange(this.modalDataDescribe.sort());
-      // 渲染参数list
-      if (!this.isMock) {
-        // 接口数据
-        this.rowId = row.id;
-        this.getDescribeParams();
-      } else {
-        // mock数据
-        this.describeParams = this.modalData.describeParams;
-      }
+      // 4.渲染底部参数list
+      this.rowId = row.id;
+      this.getDescribeParams();
       this.modalShow = true;
     },
-    // 根据工序id获取参数list（下限/上限/结果值）
+    // 参数被勾选 -> 重新渲染参数select框
+    describeOnChange(value) {
+      this.processTempList = [];
+      this.modalDataDescribe = this.modalDataDescribe.sort();
+      this.modalDataDescribe.forEach(i => {
+        this.processTempList.push(this.processSelectList[i - 1]);
+      });
+    },
+    // 根据工序id获取底部参数list（下限/上限/结果值）
     async getDescribeParams() {
       this.spinShow = true;
-      this.describeParams = (await getItemParamAddByItemId(
-        this.rowId
-      )).data.data;
+      // 底部参数list
+      this.describeParams = !this.isMock
+        ? (await getItemParamAddByItemId(this.rowId)).data.data
+        : this.modalData.describeParams || [];
       // 为每行数据添加 isEdit 和 loading 属性
       this.describeParams.forEach(item => {
         this.$set(item, "isEdit", false);
@@ -423,10 +443,10 @@ export default {
     async resultValueOnchange(value) {
       this.resultValueShow = value;
       if (value === false) {
-        // 关闭可见，设置为"不可编辑"，并传值给后台
+        // 关闭可见：设置为"不可编辑"，并传值给后台
         this.resultValueCanBeEdit = false;
         if (!this.isMock) {
-          // 接口数据
+          /* 接口数据 */
           const data = {
             id: this.rowId,
             plCAdd: ""
@@ -434,13 +454,16 @@ export default {
           const result = await editSopItemPlcAdd(data);
           resultCallback(result.data.status, "修改成功！", () => {});
         } else {
-          // mock数据
+          /* mock数据 */
+          this.tableData.forEach(item => {
+            item.id === this.rowId && this.$set(item, "plcResultAdd", "");
+          });
           resultCallback(200, "修改成功！", () => {
             this.modalData.plcResultAdd = "";
           });
         }
       } else {
-        // 可见，重置值
+        // 打开可见：重置值
         this.modalData.plcResultAdd = "";
       }
     },
@@ -454,7 +477,7 @@ export default {
         this.$Message.error("结果值必须以'DB'开头");
       } else {
         if (!this.isMock) {
-          // 接口数据
+          /* 接口数据 */
           this.buttonLoading = true;
           const data = {
             id: this.rowId,
@@ -473,31 +496,26 @@ export default {
             }
           );
         } else {
-          // mock数据
+          /* mock数据 */
+          this.tableData.forEach(item => {
+            item.id === this.rowId &&
+              this.$set(item, "plcResultAdd", this.modalData.plcResultAdd);
+          });
           resultCallback(200, "修改成功！", () => {
             this.resultValueCanBeEdit = !this.resultValueCanBeEdit;
           });
         }
       }
     },
-    // 参数被勾选 -> 渲染参数select框
-    describeOnChange(value) {
-      this.processTempList = [];
-      this.modalDataDescribe = this.modalDataDescribe.sort();
-      this.modalDataDescribe.forEach(i => {
-        this.processTempList.push(this.processSelectList[i - 1]);
-      });
-    },
     // 参数值 - 添加（结果值/上限/下限）
     async addParams() {
-      // 根据数组[{},{},{}...]中某个对象的key的value，查询该对象另一个key的value
       var processSelected = getValueByKey(
         this.processTempList,
         "id",
         this.processSelected,
         "description"
       );
-      var valueSelected = this.valueSelected;
+      // var valueSelected = this.valueSelected;
       if (this.processPlcAdd.substr(0, 2) !== "DB") {
         // 验证是否以"DB开头"
         this.$Message.error("过程值/上限/下限均必须以'DB'开头");
@@ -506,20 +524,19 @@ export default {
         this.describeParams.some(
           item =>
             item.paramDescription === processSelected &&
-            item.plcType === valueSelected
+            item.plcType === this.valueSelected
         )
       ) {
         this.$Message.error("添加重复！");
       } else {
-        // 验证通过 -> 放入describeParams数组
         if (!this.isMock) {
-          // 接口数据
+          /* 接口数据 */
           this.buttonLoading = true;
           const data = {
             ItemId: this.rowId,
             ParamId: this.processSelected,
             PlcAdd: this.processPlcAdd,
-            Type: valueSelected
+            Type: this.valueSelected
           };
           const result = await addItemParamPlcAdd(data);
           resultCallback(
@@ -538,14 +555,30 @@ export default {
             }
           );
         } else {
-          // mock数据
+          /* mock数据 */
+          this.describeParams.push({
+            id:
+              getValueByKey(
+                this.processSelectList,
+                "id",
+                this.processSelected,
+                "code"
+              ) +
+              "-" +
+              this.valueSelected,
+            paramDescription: processSelected,
+            plcType: this.valueSelected,
+            plCAdd: this.processPlcAdd,
+            isEdit: false
+          });
+          this.tableData.forEach(item => {
+            if (item.id === this.rowId) {
+              this.$set(item, "params", this.processTempList); //参数下拉框
+              this.$set(item, "describeParams", this.describeParams); //底部list
+              item.describeParams.sort(arraySort("id", "asc")); // 按"id"升序
+            }
+          });
           resultCallback(200, "添加成功！", () => {
-            this.describeParams.push({
-              paramDescription: processSelected,
-              plcType: valueSelected,
-              plCAdd: this.processPlcAdd,
-              isEdit: false
-            });
             // 清空2个select框和1个input框
             this.$refs.processSelect.clearSingleSelect();
             this.$refs.valueSelect.clearSingleSelect();
@@ -560,9 +593,8 @@ export default {
         // 验证是否以"DB开头"
         this.$Message.error("过程值/上限/下限均必须以'DB'开头");
       } else {
-        // 验证通过
         if (!this.isMock) {
-          // 接口数据
+          /* 接口数据 */
           const data = {
             id: describe.id,
             plcAdd: describe.plCAdd
@@ -581,7 +613,14 @@ export default {
             }
           );
         } else {
-          // mock数据
+          /* mock数据 */
+          this.tableData.forEach(item => {
+            item.id === this.rowId &&
+              item.describeParams.forEach(_item => {
+                _item.id === describe.id &&
+                  this.$set(_item, "plCAdd", describe.plCAdd);
+              });
+          });
           resultCallback(200, "修改成功！", () => {
             describe.isEdit = !describe.isEdit;
           });
@@ -594,20 +633,42 @@ export default {
         title: "确定删除？",
         onOk: async () => {
           if (!this.isMock) {
-            // 接口数据
+            /* 接口数据 */
             const result = await removeSopItemParamAdd(describe.id);
             resultCallback(result.data.status, "删除成功！", () => {
               this.getDescribeParams();
             });
           } else {
-            // mock数据
-            resultCallback(200, "删除成功！", () => {
-              this.describeParams.forEach((item, i) => {
-                if (item.id === describe.id) {
-                  this.describeParams.splice(i, 1);
-                }
-              });
+            /* mock数据 */
+            // 1.底部list更新
+            this.describeParams.forEach((item, i) => {
+              if (item.id === describe.id) {
+                this.describeParams.splice(i, 1);
+              }
             });
+            // console.log(this.describeParams);
+            // console.log(this.processTempList);
+            // console.log(this.modalDataDescribe);
+            //2.参数下拉框更新
+            this.processTempList = this.processTempList.filter(item => {
+              return this.describeParams.some(
+                _item => _item.paramDescription === item.description
+              );
+            });
+            // console.log(this.processTempList);
+            // 3.被选中的参数checkBox更新
+            this.modalDataDescribe = this.modalDataDescribe.filter(item => {
+              return this.processTempList.some(_item => _item.code === item);
+            });
+            // console.log(this.modalDataDescribe);
+            // 4.tableData整体更新
+            this.tableData.forEach(item => {
+              if (item.id === this.rowId) {
+                this.$set(item, "params", this.processTempList); //参数下拉框
+                this.$set(item, "describeParams", this.describeParams); //底部list
+              }
+            });
+            resultCallback(200, "删除成功！", () => {});
           }
         },
         closable: true
@@ -616,13 +677,13 @@ export default {
     // 表单显示状态发生变化
     handleVisibleChange(visible) {
       if (visible === false) {
-        // 过程值恢复"不可编辑"
+        // 1.过程值恢复"不可编辑"
         this.resultValueCanBeEdit = false;
-        // 参数列表恢复"不可编辑"
+        // 2.参数列表恢复"不可编辑"
         this.describeParams.forEach(item => {
           this.$set(item, "isEdit", false);
         });
-        // 重置table
+        // 3.重置table
         this.getData();
       }
     }

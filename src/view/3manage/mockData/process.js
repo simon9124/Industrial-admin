@@ -13,27 +13,27 @@ const processList = {
       description: "顺转一",
       params: [
         {
-          description: "行程",
+          description: "行程(CM)",
           id: "1",
           code: "1"
         },
         {
-          description: "转速",
+          description: "转速(RPM)",
           id: "2",
           code: "2"
         },
         {
-          description: "电压",
+          description: "电压(V)",
           id: "3",
           code: "3"
         },
         {
-          description: "电流",
+          description: "电流(A)",
           id: "4",
           code: "4"
         },
         {
-          description: "功率",
+          description: "功率(W)",
           id: "5",
           code: "5"
         }
@@ -89,27 +89,27 @@ const processList = {
       description: "顺转二",
       params: [
         {
-          description: "行程",
+          description: "行程(CM)",
           id: "1",
           code: "1"
         },
         {
-          description: "转速",
+          description: "转速(RPM)",
           id: "2",
           code: "2"
         },
         {
-          description: "电压",
+          description: "电压(V)",
           id: "3",
           code: "3"
         },
         {
-          description: "电流",
+          description: "电流(A)",
           id: "4",
           code: "4"
         },
         {
-          description: "功率",
+          description: "功率(W)",
           id: "5",
           code: "5"
         }
@@ -158,22 +158,22 @@ const processList = {
       description: "顺转三",
       params: [
         {
-          description: "行程",
+          description: "行程(CM)",
           id: "1",
           code: "1"
         },
         {
-          description: "转速",
+          description: "转速(RPM)",
           id: "2",
           code: "2"
         },
         {
-          description: "电压",
+          description: "电压(V)",
           id: "3",
           code: "3"
         },
         {
-          description: "电流",
+          description: "电流(A)",
           id: "4",
           code: "4"
         }
@@ -215,12 +215,12 @@ const processList = {
       description: "逆转一",
       params: [
         {
-          description: "转速",
+          description: "转速(RPM)",
           id: "2",
           code: "2"
         },
         {
-          description: "电压",
+          description: "电压(V)",
           id: "3",
           code: "3"
         }
@@ -255,22 +255,22 @@ const processList = {
       description: "逆转三",
       params: [
         {
-          description: "行程",
+          description: "行程(CM)",
           id: "1",
           code: "1"
         },
         {
-          description: "转速",
+          description: "转速(RPM)",
           id: "2",
           code: "2"
         },
         {
-          description: "电压",
+          description: "电压(V)",
           id: "3",
           code: "3"
         },
         {
-          description: "电流",
+          description: "电流(A)",
           id: "4",
           code: "4"
         }
@@ -321,7 +321,7 @@ const processList = {
       description: "顺转噪音",
       params: [
         {
-          description: "分贝",
+          description: "分贝(dB)",
           id: "1",
           code: "1"
         }
@@ -342,7 +342,7 @@ const processList = {
       description: "逆转噪音",
       params: [
         {
-          description: "分贝",
+          description: "分贝(dB)",
           id: "1",
           code: "1"
         }
@@ -363,12 +363,12 @@ const processList = {
       description: "交耐测试",
       params: [
         {
-          description: "交耐电流",
+          description: "交耐电流(mA)",
           id: "2",
           code: "2"
         },
         {
-          description: "接地电阻",
+          description: "接地电阻(mΩ)",
           id: "3",
           code: "3"
         }
@@ -410,17 +410,17 @@ const processList = {
       description: "接地测试",
       params: [
         {
-          description: "分贝",
+          description: "分贝(dB)",
           id: "1",
           code: "1"
         },
         {
-          description: "交耐电流",
+          description: "交耐电流(mA)",
           id: "2",
           code: "2"
         },
         {
-          description: "接地电阻",
+          description: "接地电阻(mΩ)",
           id: "3",
           code: "3"
         }

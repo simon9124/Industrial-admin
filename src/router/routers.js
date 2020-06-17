@@ -20,7 +20,7 @@ import { dynamicRouterAdd } from "@/libs/router-util"; // ①添 引入加载菜
  */
 
 // 不作为Main组件的子页面展示的页面单独写
-export const otherRouter = [
+export const constantRouter = [
   {
     path: "/login",
     name: "login",
@@ -124,7 +124,7 @@ export const mainRouter = [
 // 作为Main组件的子页面展示并且在左侧菜单显示的路由写在appRouter里
 export const appRouter = [...dynamicRouterAdd("router.js")];
 
-export const routes = [...otherRouter, ...mainRouter, ...appRouter];
+export const routes = [...constantRouter, ...mainRouter, ...appRouter];
 
 // 所有上面定义的路由都要写在下面输出
 export default routes;

@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
-import { routes, otherRouter, mainRouter } from "./routers";
+import { routes, constantRouter, mainRouter } from "./routers";
 import store from "@/store";
 import iView from "iview";
 import { setToken, getToken, canTurnTo, setTitle } from "@/libs/util";
@@ -60,7 +60,7 @@ const turnTo = (to, access, next) => {
 
 // 方法：初始化路由表刷新
 export const refreshRoute = () => {
-  const routes = [...otherRouter, ...mainRouter];
+  const routes = [...constantRouter, ...mainRouter];
   router.matcher = new Router({ routes }).matcher;
 };
 

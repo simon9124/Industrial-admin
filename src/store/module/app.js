@@ -136,7 +136,7 @@ export default {
       });
     },
     // 动态路由数据 -> 首次登录挂载路由
-    updateMenuList({ commit, rootState }, routes) {
+    addRouterData({ commit, rootState }, routes) {
       console.log("动态添加路由：", routes);
       // 动态添加路由 - 真正添加路由（不会立刻刷新，需要手动往router.options.routes里添加数据）
       router.addRoutes(routes);
@@ -168,7 +168,7 @@ export default {
                   var routerData = routerDataHanding(res.data.data); // 拿到路由接口数据
                   localSave("dynamicRouter", JSON.stringify(routerData)); // 存储routerData到localStorage
                   gotRouter = filterAsyncRouter(routerData); // 过滤路由,路由组件转换
-                  dispatch("updateMenuList", gotRouter).then(res => {
+                  dispatch("addRouterData", gotRouter).then(res => {
                     resolve(routerData);
                   });
                 })
@@ -203,7 +203,7 @@ export default {
             // 3.处理后路由数据生成路由和菜单等
             localSave("dynamicRouter", JSON.stringify(routerData)); // 存储routerData到localStorage
             gotRouter = filterAsyncRouter(routerData); // 过滤路由,路由组件转换
-            dispatch("updateMenuList", gotRouter).then(res => {
+            dispatch("addRouterData", gotRouter).then(res => {
               resolve(routerData);
             });
           }

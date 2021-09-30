@@ -21,7 +21,7 @@
     "echarts": "^4.2.1",
     "echarts-liquidfill": "^2.0.5",
     "element-ui": "^2.11.1",
-    "handsontable": "^7.4.2",
+    "handsontable": "^10.0.0",
     "html2canvas": "^1.0.0-alpha.12",
     "iview": "^3.5.1",
     "iview-area": "^1.5.17",
